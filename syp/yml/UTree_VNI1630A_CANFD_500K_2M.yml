@@ -1,0 +1,39 @@
+CAN_Options:
+  AppConfig:
+    CanHostDevice: Virtual Channel 1
+    CanTargetDevice: VN1630A Channel 1
+    Interface: CANFD
+    SendID: 7c6
+    RecvID: 7ce
+
+  AppInfo:
+    DiagPort: 37
+
+  ASK:
+    LibFileName: HKMC_AdvancedSeedKey_Win32.dll
+  
+  Basic_CAN:
+    bitrateAbr: 500
+    sjwAbr: 32
+    tseg1Abr: 127
+    tseg2Abr: 32
+  
+  FD_only:
+    bitrateDbr: 2000
+    sjwDbr: 10
+    tseg1Dbr: 29
+    tseg2Dbr: 10
+  
+  ISOTP:
+    BS: 8
+    KrBaseAddr: 0x50000002
+    Padding: 55
+    STmin: 10
+  
+  TCP_Server:
+    ip: 10.0.0.128
+    port: 13402
+  
+  Sample_Point:
+    samplePointAbr: 80
+    samplePointDbr: 75
