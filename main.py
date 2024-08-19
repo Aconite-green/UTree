@@ -12,6 +12,7 @@
 # commercially, I recommend reading them on the official website:
 # https://doc.qt.io/qtforpython/licenses.html
 #
+# pyrcc6 -o resource_rc.py resource.qrc
 # ///////////////////////////////////////////////////////////////
 
 import sys
@@ -45,8 +46,8 @@ class MainWindow(QMainWindow):
 
         # APP NAME
         # ///////////////////////////////////////////////////////////////
-        title = "PyDracula - Modern GUI"
-        description = "PyDracula APP - Theme with colors based on Dracula for Python."
+        title = "UTree"
+        description = "UTree APP - GUI Program for UDS Management."
         # APPLY TEXTS
         self.setWindowTitle(title)
         widgets.titleRightInfo.setText(description)
@@ -87,21 +88,6 @@ class MainWindow(QMainWindow):
         # ///////////////////////////////////////////////////////////////
         self.show()
 
-        # SET CUSTOM THEME
-        # ///////////////////////////////////////////////////////////////
-        useCustomTheme = False
-        themeFile = "themes\py_dracula_light.qss"
-
-        # SET THEME AND HACKS
-        if useCustomTheme:
-            # LOAD AND APPLY STYLE
-            UIFunctions.theme(self, themeFile, True)
-
-            # SET HACKS
-            AppFunctions.setThemeHack(self)
-
-        # SET HOME PAGE AND SELECT MENU
-        # ///////////////////////////////////////////////////////////////
         widgets.stackedWidget.setCurrentWidget(widgets.home)
         widgets.btn_home.setStyleSheet(UIFunctions.selectMenu(widgets.btn_home.styleSheet()))
 
