@@ -226,6 +226,10 @@ Content App */
 	background-color: rgb(102, 163, 255);
 	color: rgb(255, 255, 255);
 }
+#contentSettings .QPushButton:checked {	
+	background-color: rgb(102, 163, 255);
+	color: rgb(255, 255, 255);
+}
 
 /* /////////////////////////////////////////////////////////////////////////////////////////////////
 QTableWidget */
@@ -536,6 +540,7 @@ Button */
 	border: 2px solid rgb(43, 50, 61);
 }
 
+
 </string>
    </property>
    <layout class="QVBoxLayout" name="appMargins">
@@ -685,6 +690,7 @@ Button */
                <family>Segoe UI Semibold</family>
                <pointsize>12</pointsize>
                <italic>false</italic>
+               <bold>false</bold>
               </font>
              </property>
              <property name="text">
@@ -2628,6 +2634,9 @@ background-repeat: no-repeat;</string>
                            </property>
                            <property name="text">
                             <string>Connect</string>
+                           </property>
+                           <property name="checkable">
+                            <bool>true</bool>
                            </property>
                           </widget>
                          </item>

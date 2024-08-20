@@ -28,3 +28,5 @@ from . ui_functions import *
 
 # APP FUNCTIONS
 from . app_functions import *
+
+from . resource_rc import *
