@@ -106,9 +106,9 @@ class UIFunctions(MainWindow):
                 widthExtended = maxExtend
                 # SELECT BTN
                 self.ui.toggleLeftBox.setStyleSheet(style + color)
-                if widthRightBox != 0:
-                    style = self.ui.settingsTopBtn.styleSheet()
-                    self.ui.settingsTopBtn.setStyleSheet(style.replace(Settings.BTN_RIGHT_BOX_COLOR, ''))
+                # if widthRightBox != 0:
+                #     style = self.ui.settingsTopBtn.styleSheet()
+                #     self.ui.settingsTopBtn.setStyleSheet(style.replace(Settings.BTN_RIGHT_BOX_COLOR, ''))
             else:
                 widthExtended = standard
                 # RESET BTN

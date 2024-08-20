@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainRznQqp.ui'
+## Form generated from reading UI file 'mainCxCzeY.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.7.2
 ##
@@ -669,21 +669,9 @@ class Ui_MainWindow(object):
         self.verticalLayout_8.setSpacing(0)
         self.verticalLayout_8.setObjectName(u"verticalLayout_8")
         self.verticalLayout_8.setContentsMargins(0, 0, 0, 0)
-        self.btn_home = QPushButton(self.topMenu)
-        self.btn_home.setObjectName(u"btn_home")
-        self.btn_home.setEnabled(True)
-        sizePolicy.setHeightForWidth(self.btn_home.sizePolicy().hasHeightForWidth())
-        self.btn_home.setSizePolicy(sizePolicy)
-        self.btn_home.setMinimumSize(QSize(0, 45))
-        self.btn_home.setFont(font)
-        self.btn_home.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_home.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-        self.btn_home.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-3d.png);")
-
-        self.verticalLayout_8.addWidget(self.btn_home)
-
         self.btn_widgets = QPushButton(self.topMenu)
         self.btn_widgets.setObjectName(u"btn_widgets")
+        self.btn_widgets.setEnabled(True)
         sizePolicy.setHeightForWidth(self.btn_widgets.sizePolicy().hasHeightForWidth())
         self.btn_widgets.setSizePolicy(sizePolicy)
         self.btn_widgets.setMinimumSize(QSize(0, 45))
@@ -693,6 +681,18 @@ class Ui_MainWindow(object):
         self.btn_widgets.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-folder.png);")
 
         self.verticalLayout_8.addWidget(self.btn_widgets)
+
+        self.btn_home = QPushButton(self.topMenu)
+        self.btn_home.setObjectName(u"btn_home")
+        sizePolicy.setHeightForWidth(self.btn_home.sizePolicy().hasHeightForWidth())
+        self.btn_home.setSizePolicy(sizePolicy)
+        self.btn_home.setMinimumSize(QSize(0, 45))
+        self.btn_home.setFont(font)
+        self.btn_home.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_home.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+        self.btn_home.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-3d.png);")
+
+        self.verticalLayout_8.addWidget(self.btn_home)
 
 
         self.verticalMenuLayout.addWidget(self.topMenu, 0, Qt.AlignmentFlag.AlignTop)
@@ -1112,7 +1112,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 218, 218))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 274, 218))
         self.scrollAreaWidgetContents.setStyleSheet(u" QScrollBar:vertical {\n"
 "	border: none;\n"
 "    background: rgb(52, 59, 72);\n"
@@ -1455,8 +1455,8 @@ class Ui_MainWindow(object):
         self.titleLeftApp.setText(QCoreApplication.translate("MainWindow", u"UTree", None))
         self.titleLeftDescription.setText(QCoreApplication.translate("MainWindow", u"PySide6 / CAN-TP / UDS", None))
         self.toggleButton.setText(QCoreApplication.translate("MainWindow", u"Hide", None))
-        self.btn_home.setText(QCoreApplication.translate("MainWindow", u"Workspace", None))
         self.btn_widgets.setText(QCoreApplication.translate("MainWindow", u"Project", None))
+        self.btn_home.setText(QCoreApplication.translate("MainWindow", u"Workspace", None))
         self.toggleLeftBox.setText(QCoreApplication.translate("MainWindow", u"Menual", None))
         self.extraLabel.setText(QCoreApplication.translate("MainWindow", u"Hide Menual", None))
 #if QT_CONFIG(tooltip)
