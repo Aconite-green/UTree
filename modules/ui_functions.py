@@ -126,10 +126,10 @@ class UIFunctions(MainWindow):
             maxExtend = Settings.RIGHT_BOX_WIDTH
             color = Settings.BTN_RIGHT_BOX_COLOR
             standard = 0
-
+    
             # GET BTN STYLE
             style = self.ui.settingsTopBtn.styleSheet()
-
+    
             # SET MAX WIDTH
             if width == 0:
                 widthExtended = maxExtend
@@ -142,7 +142,7 @@ class UIFunctions(MainWindow):
                 widthExtended = standard
                 # RESET BTN
                 self.ui.settingsTopBtn.setStyleSheet(style.replace(color, ''))
-
+    
             UIFunctions.start_box_animation(self, widthLeftBox, width, "right")
 
     def start_box_animation(self, left_box_width, right_box_width, direction):

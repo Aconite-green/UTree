@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainVfPfWb.ui'
+## Form generated from reading UI file 'mainBACPnO.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.7.2
 ##
@@ -22,7 +22,7 @@ from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplicat
     QScrollArea, QScrollBar, QSizePolicy, QSlider,
     QStackedWidget, QTableWidget, QTableWidgetItem, QTextEdit,
     QVBoxLayout, QWidget)
-# import resources_rc
+
 from modules.resource_rc import *
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -102,8 +102,8 @@ class Ui_MainWindow(object):
 "	background-color: rgb(40, 44, 52);\n"
 "}\n"
 "#topMenu .QPushButton:pressed {	\n"
-"	background-color: rgb(18"
-                        "9, 147, 249);\n"
+"	background-color: rgb(10"
+                        "2, 163, 255);\n"
 "	color: rgb(255, 255, 255);\n"
 "}\n"
 "#bottomMenu .QPushButton {	\n"
@@ -142,7 +142,7 @@ class Ui_MainWindow(object):
 "}\n"
 "#toggleButton:pressed {\n"
 "	background-color: rgb("
-                        "189, 147, 249);\n"
+                        "102, 163, 255);\n"
 "}\n"
 "\n"
 "/* Title Menu */\n"
@@ -672,7 +672,7 @@ class Ui_MainWindow(object):
         self.btn_home.setFont(font)
         self.btn_home.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_home.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-        self.btn_home.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-folder.png);")
+        self.btn_home.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-3d.png);")
 
         self.verticalLayout_8.addWidget(self.btn_home)
 
@@ -684,7 +684,7 @@ class Ui_MainWindow(object):
         self.btn_widgets.setFont(font)
         self.btn_widgets.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_widgets.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-        self.btn_widgets.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-3d.png);")
+        self.btn_widgets.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-folder.png);")
 
         self.verticalLayout_8.addWidget(self.btn_widgets)
 
@@ -707,7 +707,7 @@ class Ui_MainWindow(object):
         self.toggleLeftBox.setFont(font)
         self.toggleLeftBox.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.toggleLeftBox.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-        self.toggleLeftBox.setStyleSheet(u"background-image: url(:/icons/images/icons/icon_settings.png);")
+        self.toggleLeftBox.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-bell.png);")
 
         self.verticalLayout_9.addWidget(self.toggleLeftBox)
 
@@ -1348,6 +1348,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_7.setContentsMargins(0, 0, 0, 0)
         self.themeSettingsTopDetail = QFrame(self.extraRightBox)
         self.themeSettingsTopDetail.setObjectName(u"themeSettingsTopDetail")
+        self.themeSettingsTopDetail.setEnabled(True)
         self.themeSettingsTopDetail.setMaximumSize(QSize(16777215, 3))
         self.themeSettingsTopDetail.setFrameShape(QFrame.Shape.NoFrame)
         self.themeSettingsTopDetail.setFrameShadow(QFrame.Shadow.Raised)
@@ -1372,13 +1373,14 @@ class Ui_MainWindow(object):
         self.verticalLayout_14.setContentsMargins(0, 0, 0, 0)
         self.btn_message = QPushButton(self.topMenus)
         self.btn_message.setObjectName(u"btn_message")
+        self.btn_message.setEnabled(True)
         sizePolicy.setHeightForWidth(self.btn_message.sizePolicy().hasHeightForWidth())
         self.btn_message.setSizePolicy(sizePolicy)
         self.btn_message.setMinimumSize(QSize(0, 45))
         self.btn_message.setFont(font)
         self.btn_message.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_message.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-        self.btn_message.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-envelope-open.png);")
+        self.btn_message.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-equalizer.png);")
 
         self.verticalLayout_14.addWidget(self.btn_message)
 
@@ -1589,7 +1591,7 @@ class Ui_MainWindow(object):
         self.tableWidget.setSortingEnabled(__sortingEnabled)
 
         self.label.setText(QCoreApplication.translate("MainWindow", u"NEW PAGE TEST", None))
-        self.btn_message.setText(QCoreApplication.translate("MainWindow", u"Message", None))
+        self.btn_message.setText(QCoreApplication.translate("MainWindow", u"Connect", None))
         self.btn_print.setText(QCoreApplication.translate("MainWindow", u"Print", None))
         self.btn_logout.setText(QCoreApplication.translate("MainWindow", u"Logout", None))
         self.creditsLabel.setText(QCoreApplication.translate("MainWindow", u"By: SeongYong Park", None))
