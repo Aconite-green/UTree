@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainGbbGRn.ui'
+## Form generated from reading UI file 'mainRznQqp.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.7.2
 ##
@@ -1332,7 +1332,7 @@ class Ui_MainWindow(object):
 
         self.extraRightBox = QFrame(self.content)
         self.extraRightBox.setObjectName(u"extraRightBox")
-        self.extraRightBox.setMinimumSize(QSize(200, 0))
+        self.extraRightBox.setMinimumSize(QSize(240, 0))
         self.extraRightBox.setMaximumSize(QSize(0, 16777215))
         self.extraRightBox.setFrameShape(QFrame.Shape.NoFrame)
         self.extraRightBox.setFrameShadow(QFrame.Shadow.Raised)

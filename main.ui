@@ -2499,7 +2499,7 @@ background-repeat: no-repeat;</string>
                  <widget class="QFrame" name="extraRightBox">
                   <property name="minimumSize">
                    <size>
-                    <width>200</width>
+                    <width>240</width>
                     <height>0</height>
                    </size>
                   </property>
