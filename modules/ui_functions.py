@@ -177,7 +177,7 @@ class UIFunctions(MainWindow):
         # GROUP ANIMATION
         self.group = QParallelAnimationGroup()
         self.group.addAnimation(self.left_box)
-        self.group.addAnimation(self.right_box)
+        # self.group.addAnimation(self.right_box)
         self.group.start()
 
     # SELECT/DESELECT MENU
