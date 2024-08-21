@@ -68,8 +68,11 @@ class MainWindow(QMainWindow):
         # ///////////////////////////////////////////////////////////////
 
         # LEFT MENUS
-        widgets.btn_home.clicked.connect(self.buttonClick)
-        widgets.btn_widgets.clicked.connect(self.buttonClick)
+        widgets.btn_project.clicked.connect(self.buttonClick)
+        widgets.btn_workspace.clicked.connect(self.buttonClick)
+        widgets.btn_can.clicked.connect(self.buttonClick)
+        widgets.btn_save.clicked.connect(self.buttonClick)
+        widgets.btn_import.clicked.connect(self.buttonClick)
 
         # EXTRA LEFT BOX
         def openCloseLeftBox():
@@ -77,17 +80,13 @@ class MainWindow(QMainWindow):
         widgets.toggleLeftBox.clicked.connect(openCloseLeftBox)
         widgets.extraCloseColumnBtn.clicked.connect(openCloseLeftBox)
 
-        # EXTRA RIGHT BOX
-        # def openCloseRightBox():
-        #     UIFunctions.toggleRightBox(self, True)
-        # widgets.btn_widgets.clicked.connect(openCloseRightBox)
 
         # SHOW APP
         # ///////////////////////////////////////////////////////////////
         self.show()
 
-        widgets.stackedWidget.setCurrentWidget(widgets.widgets)
-        widgets.btn_widgets.setStyleSheet(UIFunctions.selectMenu(widgets.btn_widgets.styleSheet()))
+        widgets.stackedWidget.setCurrentWidget(widgets.widgets_project)
+        widgets.btn_project.setStyleSheet(UIFunctions.selectMenu(widgets.btn_project.styleSheet()))
 
 
     # BUTTONS CLICK
@@ -98,17 +97,24 @@ class MainWindow(QMainWindow):
         btn = self.sender()
         btnName = btn.objectName()
 
-        # SHOW HOME PAGE
-        if btnName == "btn_home":
-            widgets.stackedWidget.setCurrentWidget(widgets.home)
+        # SHOW WROK SPACE PAGE
+        if btnName == "btn_workspace":
+            widgets.stackedWidget.setCurrentWidget(widgets.widgets_workspace)
             UIFunctions.resetStyle(self, btnName)
             btn.setStyleSheet(UIFunctions.selectMenu(btn.styleSheet()))
 
-        # SHOW WIDGETS PAGE
-        if btnName == "btn_widgets":
-            widgets.stackedWidget.setCurrentWidget(widgets.widgets)
+        # SHOW PROJECT PAGE
+        if btnName == "btn_project":
+            widgets.stackedWidget.setCurrentWidget(widgets.widgets_project)
             UIFunctions.resetStyle(self, btnName)
             btn.setStyleSheet(UIFunctions.selectMenu(btn.styleSheet()))
+        
+         # SHOW CAN PAGE
+        if btnName == "btn_can":
+            widgets.stackedWidget.setCurrentWidget(widgets.widgets_can)
+            UIFunctions.resetStyle(self, btnName)
+            btn.setStyleSheet(UIFunctions.selectMenu(btn.styleSheet()))
+
 
 
 
