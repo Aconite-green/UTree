@@ -27,5 +27,9 @@ from . app_settings import Settings
 from . ui_functions import *
 
 # APP FUNCTIONS
-
 from . resource_rc import *
+
+# USER DEFINE
+from . yml_loader import *
+from . can_manager import *
+from . error_handler import *

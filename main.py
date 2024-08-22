@@ -52,10 +52,6 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(title)
         widgets.titleRightInfo.setText(description)
 
-        # TOGGLE MENU
-        # ///////////////////////////////////////////////////////////////
-        widgets.toggleButton.clicked.connect(lambda: UIFunctions.toggleMenu(self, True))
-
         # SET UI DEFINITIONS
         # ///////////////////////////////////////////////////////////////
         UIFunctions.uiDefinitions(self)
@@ -68,62 +64,60 @@ class MainWindow(QMainWindow):
         # ///////////////////////////////////////////////////////////////
 
         # LEFT MENUS
-        widgets.btn_project.clicked.connect(self.buttonClick)
-        widgets.btn_workspace.clicked.connect(self.buttonClick)
-        widgets.btn_can.clicked.connect(self.buttonClick)
-        widgets.btn_save.clicked.connect(self.buttonClick)
-        widgets.btn_import.clicked.connect(self.buttonClick)
-
+        widgets.btn_connect.clicked.connect(self.buttonClick)
+        
         # EXTRA LEFT BOX
         def openCloseLeftBox():
             UIFunctions.toggleLeftBox(self, True)
         widgets.toggleLeftBox.clicked.connect(openCloseLeftBox)
         widgets.extraCloseColumnBtn.clicked.connect(openCloseLeftBox)
 
+        # LOAD YML FILES
+        # ///////////////////////////////////////////////////////////////
+        self.populateComboBoxes()
 
         # SHOW APP
         # ///////////////////////////////////////////////////////////////
         self.show()
+        widgets.stackedWidget.setCurrentWidget(widgets.widgets_workspace)
+        
+        
 
-        widgets.stackedWidget.setCurrentWidget(widgets.widgets_project)
-        widgets.btn_project.setStyleSheet(UIFunctions.selectMenu(widgets.btn_project.styleSheet()))
 
 
     # BUTTONS CLICK
-    # Post here your functions for clicked buttons
     # ///////////////////////////////////////////////////////////////
     def buttonClick(self):
         # GET BUTTON CLICKED
         btn = self.sender()
         btnName = btn.objectName()
 
-        # SHOW WROK SPACE PAGE
-        if btnName == "btn_workspace":
-            widgets.stackedWidget.setCurrentWidget(widgets.widgets_workspace)
-            UIFunctions.resetStyle(self, btnName)
-            btn.setStyleSheet(UIFunctions.selectMenu(btn.styleSheet()))
-
-        # SHOW PROJECT PAGE
-        if btnName == "btn_project":
-            widgets.stackedWidget.setCurrentWidget(widgets.widgets_project)
-            UIFunctions.resetStyle(self, btnName)
-            btn.setStyleSheet(UIFunctions.selectMenu(btn.styleSheet()))
-        
-         # SHOW CAN PAGE
-        if btnName == "btn_can":
-            widgets.stackedWidget.setCurrentWidget(widgets.widgets_can)
-            UIFunctions.resetStyle(self, btnName)
-            btn.setStyleSheet(UIFunctions.selectMenu(btn.styleSheet()))
-
-
-
-
+        # a) CONNECT
+        if btnName == "btn_connect":
+            if btn.isChecked():
+                widgets.pagesContainer.setStyleSheet(UIFunctions.erase_background())
+            else:
+                widgets.pagesContainer.setStyleSheet(UIFunctions.show_utree_logo())
         
 
-        
-        # PRINT BTN NAME
-        print(f'Button "{btnName}" pressed!')
+    def populateComboBoxes(self):
+        # Create YmlLoader instance and load files
+        loader = YmlLoader('./config_can', './config_project_uds')
+        loader.load_yml_files()
 
+        # Populate comboBox_can with CAN YML file names
+        can_file_names = loader.get_can_file_names()
+        widgets.comboBox_can.clear()
+        widgets.comboBox_can.addItems(can_file_names)
+
+        # 필요에 따라 UDS 관련 comboBox도 추가 가능
+        # uds_file_names = loader.get_uds_file_names()
+        # widgets.comboBox_uds.clear()
+        # widgets.comboBox_uds.addItems(uds_file_names)
+
+
+
+        
 
     # RESIZE EVENTS
     # ///////////////////////////////////////////////////////////////
@@ -135,13 +129,14 @@ class MainWindow(QMainWindow):
     # ///////////////////////////////////////////////////////////////
     def mousePressEvent(self, event):
         # SET DRAG POS WINDOW
-        self.dragPos = event.globalPos()
+        self.dragPos = event.globalPosition().toPoint()
 
         # PRINT MOUSE EVENTS
         if event.buttons() == Qt.LeftButton:
             print('Mouse click: LEFT CLICK')
         if event.buttons() == Qt.RightButton:
             print('Mouse click: RIGHT CLICK')
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

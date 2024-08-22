@@ -116,35 +116,6 @@ class UIFunctions(MainWindow):
                 
         UIFunctions.start_box_animation(self, width, widthRightBox, "left")
 
-    # TOGGLE RIGHT BOX
-    # ///////////////////////////////////////////////////////////////
-    # def toggleRightBox(self, enable):
-    #     if enable:
-    #         # GET WIDTH
-    #         width = self.ui.extraRightBox.width()
-    #         widthLeftBox = self.ui.extraLeftBox.width()
-    #         maxExtend = Settings.RIGHT_BOX_WIDTH
-    #         color = Settings.BTN_RIGHT_BOX_COLOR
-    #         standard = 0
-    # 
-    #         # GET BTN STYLE
-    #         style = self.ui.settingsTopBtn.styleSheet()
-    # 
-    #         # SET MAX WIDTH
-    #         if width == 0:
-    #             widthExtended = maxExtend
-    #             # SELECT BTN
-    #             self.ui.settingsTopBtn.setStyleSheet(style + color)
-    #             if widthLeftBox != 0:
-    #                 style = self.ui.toggleLeftBox.styleSheet()
-    #                 self.ui.toggleLeftBox.setStyleSheet(style.replace(Settings.BTN_LEFT_BOX_COLOR, ''))
-    #         else:
-    #             widthExtended = standard
-    #             # RESET BTN
-    #             self.ui.settingsTopBtn.setStyleSheet(style.replace(color, ''))
-    # 
-    #         UIFunctions.start_box_animation(self, widthLeftBox, width, "right")
-
     def start_box_animation(self, left_box_width, right_box_width, direction):
         right_width = 0
         left_width = 0 
@@ -278,5 +249,12 @@ class UIFunctions(MainWindow):
             self.top_grip.setGeometry(0, 0, self.width(), 10)
             self.bottom_grip.setGeometry(0, self.height() - 10, self.width(), 10)
 
+    def erase_background():
+        result = "background: none;"
+        return result
+    
+    def show_utree_logo():
+        result = "background-image: url(:/images/images/images/UTree_vertical.png); background-position: center; background-repeat: no-repeat;"
+        return result
     # ///////////////////////////////////////////////////////////////
     # END - GUI DEFINITIONS
