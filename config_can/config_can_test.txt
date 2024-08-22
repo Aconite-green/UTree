@@ -1,0 +1,39 @@
+CAN_Options:
+  AppConfig:
+    CanHostDevice: Virtual Channel 2
+    CanTargetDevice: VN1630A Channel 2
+    Interface: CANFD
+    SendID: 7d2
+    RecvID: 7d8
+
+  AppInfo:
+    DiagPort: 42
+
+  ASK:
+    LibFileName: ExampleLib_Win32.dll
+  
+  Basic_CAN:
+    bitrateAbr: 600
+    sjwAbr: 15
+    tseg1Abr: 112
+    tseg2Abr: 22
+  
+  FD_only:
+    bitrateDbr: 2500
+    sjwDbr: 12
+    tseg1Dbr: 31
+    tseg2Dbr: 11
+  
+  ISOTP:
+    BS: 4
+    KrBaseAddr: 0x60000003
+    Padding: 77
+    STmin: 15
+  
+  TCP_Server:
+    ip: 192.168.1.100
+    port: 14502
+  
+  Sample_Point:
+    samplePointAbr: 85
+    samplePointDbr: 80
