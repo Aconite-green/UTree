@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainMSslFe.ui'
+## Form generated from reading UI file 'mainNvjleq.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.7.2
 ##
@@ -17,11 +17,11 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplication, QCheckBox,
     QComboBox, QCommandLinkButton, QFrame, QGridLayout,
-    QHBoxLayout, QHeaderView, QLabel, QLineEdit,
-    QMainWindow, QPlainTextEdit, QPushButton, QRadioButton,
-    QScrollArea, QScrollBar, QSizePolicy, QSlider,
-    QSpacerItem, QStackedWidget, QTableWidget, QTableWidgetItem,
-    QTextEdit, QVBoxLayout, QWidget)
+    QGroupBox, QHBoxLayout, QHeaderView, QLabel,
+    QLineEdit, QMainWindow, QPlainTextEdit, QPushButton,
+    QRadioButton, QScrollArea, QScrollBar, QSizePolicy,
+    QSlider, QSpacerItem, QStackedWidget, QTableWidget,
+    QTableWidgetItem, QTextEdit, QVBoxLayout, QWidget)
 # import resources_rc
 
 class Ui_MainWindow(object):
@@ -598,6 +598,8 @@ class Ui_MainWindow(object):
 "    border-right: none; \n"
 "    border-bottom: none;\n"
 "}\n"
+"\n"
+"\n"
 "\n"
 "")
         self.appMargins = QVBoxLayout(self.styleSheet)
@@ -1312,6 +1314,9 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.project_row_3)
 
         self.stackedWidget.addWidget(self.widgets_test)
+        self.widgets_landing = QWidget()
+        self.widgets_landing.setObjectName(u"widgets_landing")
+        self.stackedWidget.addWidget(self.widgets_landing)
         self.widgets_workspace = QWidget()
         self.widgets_workspace.setObjectName(u"widgets_workspace")
         self.widgets_workspace.setStyleSheet(u"")
@@ -1323,6 +1328,61 @@ class Ui_MainWindow(object):
         self.comboBox_can.setObjectName(u"comboBox_can")
         self.comboBox_can.setGeometry(QRect(220, 0, 211, 41))
         self.comboBox_can.setStyleSheet(u" background-color: rgb(27, 29, 35);")
+        self.groupBox = QGroupBox(self.widgets_workspace)
+        self.groupBox.setObjectName(u"groupBox")
+        self.groupBox.setGeometry(QRect(0, 50, 751, 491))
+        self.horizontalLayoutWidget = QWidget(self.groupBox)
+        self.horizontalLayoutWidget.setObjectName(u"horizontalLayoutWidget")
+        self.horizontalLayoutWidget.setGeometry(QRect(0, 20, 751, 52))
+        self.horizontalLayout_6 = QHBoxLayout(self.horizontalLayoutWidget)
+        self.horizontalLayout_6.setSpacing(3)
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.horizontalLayout_6.setContentsMargins(6, 0, 6, 0)
+        self.comboBox_did = QComboBox(self.horizontalLayoutWidget)
+        self.comboBox_did.setObjectName(u"comboBox_did")
+        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.comboBox_did.sizePolicy().hasHeightForWidth())
+        self.comboBox_did.setSizePolicy(sizePolicy4)
+        self.comboBox_did.setMinimumSize(QSize(150, 0))
+        self.comboBox_did.setStyleSheet(u" background-color: rgb(27, 29, 35);")
+
+        self.horizontalLayout_6.addWidget(self.comboBox_did)
+
+        self.verticalLayout_14 = QVBoxLayout()
+        self.verticalLayout_14.setObjectName(u"verticalLayout_14")
+        self.radioButton_read = QRadioButton(self.horizontalLayoutWidget)
+        self.radioButton_read.setObjectName(u"radioButton_read")
+
+        self.verticalLayout_14.addWidget(self.radioButton_read)
+
+        self.radioButton_write = QRadioButton(self.horizontalLayoutWidget)
+        self.radioButton_write.setObjectName(u"radioButton_write")
+
+        self.verticalLayout_14.addWidget(self.radioButton_write)
+
+
+        self.horizontalLayout_6.addLayout(self.verticalLayout_14)
+
+        self.lineEdit_cancmd = QLineEdit(self.horizontalLayoutWidget)
+        self.lineEdit_cancmd.setObjectName(u"lineEdit_cancmd")
+        sizePolicy4.setHeightForWidth(self.lineEdit_cancmd.sizePolicy().hasHeightForWidth())
+        self.lineEdit_cancmd.setSizePolicy(sizePolicy4)
+        self.lineEdit_cancmd.setMinimumSize(QSize(415, 0))
+        self.lineEdit_cancmd.setStyleSheet(u" background-color: rgb(27, 29, 35);")
+
+        self.horizontalLayout_6.addWidget(self.lineEdit_cancmd)
+
+        self.btn_send = QPushButton(self.horizontalLayoutWidget)
+        self.btn_send.setObjectName(u"btn_send")
+        sizePolicy4.setHeightForWidth(self.btn_send.sizePolicy().hasHeightForWidth())
+        self.btn_send.setSizePolicy(sizePolicy4)
+        self.btn_send.setMinimumSize(QSize(100, 0))
+        self.btn_send.setStyleSheet(u" background-color: rgb(27, 29, 35);")
+
+        self.horizontalLayout_6.addWidget(self.btn_send)
+
         self.stackedWidget.addWidget(self.widgets_workspace)
 
         self.verticalLayout_15.addWidget(self.stackedWidget)
@@ -1470,7 +1530,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(1)
+        self.stackedWidget.setCurrentIndex(2)
         self.btn_connect.setDefault(False)
 
 
@@ -1584,6 +1644,10 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem23.setText(QCoreApplication.translate("MainWindow", u"Line", None));
         self.tableWidget.setSortingEnabled(__sortingEnabled)
 
+        self.groupBox.setTitle(QCoreApplication.translate("MainWindow", u"PANNEL", None))
+        self.radioButton_read.setText(QCoreApplication.translate("MainWindow", u"Read", None))
+        self.radioButton_write.setText(QCoreApplication.translate("MainWindow", u"Write", None))
+        self.btn_send.setText(QCoreApplication.translate("MainWindow", u"SEND", None))
         self.btn_connect.setText(QCoreApplication.translate("MainWindow", u"Connect", None))
         self.label_search.setText(QCoreApplication.translate("MainWindow", u"Search", None))
         self.lineEdit_search.setText("")

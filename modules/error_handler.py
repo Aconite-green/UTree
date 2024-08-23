@@ -17,3 +17,12 @@ class ErrorHandler:
 
     def log_message(self, message):
         self.log_widget.appendPlainText(f"{message}")
+    
+    def clear_log(self):
+        """
+        log_widget에 출력된 로그를 모두 지웁니다.
+        """
+        if self.log_widget:
+            self.log_widget.clear()
+        else:
+            print("Log widget is not set, cannot clear log.")

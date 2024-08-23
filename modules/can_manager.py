@@ -202,9 +202,19 @@ class CanManager:
     
 
     def send_message(self, message):
-        # CAN 메시지 송신 코드
-        pass
+        try:
+            self.layer.send(message, target_address_type=0, send_timeout=2.0)
+        except Exception as e:
+                self.error_handler.handle_error(str(e))
+        
 
     def receive_message(self):
-        # CAN 메시지 수신 코드
-        pass
+        try:
+            msg = self.layer.recv(block=True, timeout=2.0)
+            if msg:
+                log_message = msg.hex().upper()
+                self.error_handler.log_message(log_message)
+            else:
+                self.error_handler.log_message("No message received within the timeout period.")
+        except Exception as e:
+            self.error_handler.handle_error(str(e))

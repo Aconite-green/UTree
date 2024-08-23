@@ -73,6 +73,7 @@ class MainWindow(QMainWindow):
 
         # CONNECT BUTTON
         widgets.btn_connect.clicked.connect(self.handle_connect)
+        widgets.btn_send.clicked.connect(self.send_connect)
         
         # EXTRA LEFT BOX
         def openCloseLeftBox():
@@ -85,7 +86,7 @@ class MainWindow(QMainWindow):
         # SHOW APP
         # ///////////////////////////////////////////////////////////////
         self.show()
-        widgets.stackedWidget.setCurrentWidget(widgets.widgets_workspace)
+        widgets.stackedWidget.setCurrentWidget(widgets.widgets_landing)
         
         
 
@@ -99,7 +100,9 @@ class MainWindow(QMainWindow):
             # CHECK 해제 시: CAN 통신 중지
             try:
                 if hasattr(self, 'can_manager'):
+                    self.error_handler.clear_log()
                     self.can_manager.stop_communication()
+                    widgets.stackedWidget.setCurrentWidget(widgets.widgets_landing)
                     widgets.pagesContainer.setStyleSheet(UIFunctions.show_utree_logo())
             except Exception as e:
                 self.error_handler.handle_error(str(e))
@@ -113,11 +116,20 @@ class MainWindow(QMainWindow):
                 self.can_manager = CanManager(can_data, self.error_handler)
                 self.can_manager.setup_can()
                 self.can_manager.start_communication()
+                widgets.stackedWidget.setCurrentWidget(widgets.widgets_workspace)
                 widgets.pagesContainer.setStyleSheet(UIFunctions.erase_background())
             except Exception as e:
                 self.error_handler.handle_error(str(e))
-        
     
+    def send_connect(self):
+        # btn = self.sender()
+        try:
+            test_msg = bytearray([0x22, 0x00, 0x80])
+            self.can_manager.send_message(test_msg)
+            self.can_manager.receive_message()
+        except Exception as e:
+                self.error_handler.handle_error(str(e))
+        
     # INIT YML
     # ///////////////////////////////////////////////////////////////
     def populateComboBoxes(self):
