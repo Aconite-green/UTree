@@ -99,7 +99,7 @@ class MainWindow(QMainWindow):
             # CHECK 해제 시: CAN 통신 중지
             try:
                 if hasattr(self, 'can_manager'):
-                    self.can_manager.shutdown_can()
+                    self.can_manager.stop_communication()
                     widgets.pagesContainer.setStyleSheet(UIFunctions.show_utree_logo())
             except Exception as e:
                 self.error_handler.handle_error(str(e))
@@ -158,7 +158,7 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event):
         try:
             if hasattr(self, 'can_manager'):
-                self.can_manager.shutdown_can()
+                self.can_manager.stop_communication()
                 self.error_handler.log_message("CAN bus and layer were successfully shut down before closing.")
         except Exception as e:
             self.error_handler.handle_error(f"Error during application shutdown: {str(e)}")
