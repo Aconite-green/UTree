@@ -48,6 +48,10 @@ class MainWindow(QMainWindow):
         # ///////////////////////////////////////////////////////////////
         title = "UTree"
         description = "UTree APP - GUI Program for UDS Management."
+
+        # Initialize ErrorHandler
+        self.error_handler = ErrorHandler(log_widget=widgets.plainTextEdit_log)
+
         # APPLY TEXTS
         self.setWindowTitle(title)
         widgets.titleRightInfo.setText(description)
@@ -60,11 +64,15 @@ class MainWindow(QMainWindow):
         # ///////////////////////////////////////////////////////////////
         widgets.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
+        # LOAD YML FILES
+        # ///////////////////////////////////////////////////////////////
+        self.populateComboBoxes()
+        
         # BUTTONS CLICK
         # ///////////////////////////////////////////////////////////////
 
-        # LEFT MENUS
-        widgets.btn_connect.clicked.connect(self.buttonClick)
+        # CONNECT BUTTON
+        widgets.btn_connect.clicked.connect(self.handle_connect)
         
         # EXTRA LEFT BOX
         def openCloseLeftBox():
@@ -72,9 +80,7 @@ class MainWindow(QMainWindow):
         widgets.toggleLeftBox.clicked.connect(openCloseLeftBox)
         widgets.extraCloseColumnBtn.clicked.connect(openCloseLeftBox)
 
-        # LOAD YML FILES
-        # ///////////////////////////////////////////////////////////////
-        self.populateComboBoxes()
+        
 
         # SHOW APP
         # ///////////////////////////////////////////////////////////////
@@ -87,26 +93,40 @@ class MainWindow(QMainWindow):
 
     # BUTTONS CLICK
     # ///////////////////////////////////////////////////////////////
-    def buttonClick(self):
-        # GET BUTTON CLICKED
+    def handle_connect(self):
         btn = self.sender()
-        btnName = btn.objectName()
+        if not btn.isChecked():
+            # CHECK 해제 시: CAN 통신 중지
+            try:
+                if hasattr(self, 'can_manager'):
+                    self.can_manager.shutdown_can()
+                    widgets.pagesContainer.setStyleSheet(UIFunctions.show_utree_logo())
+            except Exception as e:
+                self.error_handler.handle_error(str(e))
+        else:
+            # CHECK 시: CAN 통신 시작
+            try:
+                selected_can_file = widgets.comboBox_can.currentText()
+                can_data = self.loader.get_selected_can_yml(selected_can_file)
 
-        # a) CONNECT
-        if btnName == "btn_connect":
-            if btn.isChecked():
+                # Initialize and set up CAN communication
+                self.can_manager = CanManager(can_data, self.error_handler)
+                self.can_manager.setup_can()
+                self.can_manager.start_communication()
                 widgets.pagesContainer.setStyleSheet(UIFunctions.erase_background())
-            else:
-                widgets.pagesContainer.setStyleSheet(UIFunctions.show_utree_logo())
+            except Exception as e:
+                self.error_handler.handle_error(str(e))
         
-
+    
+    # INIT YML
+    # ///////////////////////////////////////////////////////////////
     def populateComboBoxes(self):
         # Create YmlLoader instance and load files
-        loader = YmlLoader('./config_can', './config_project_uds')
-        loader.load_yml_files()
+        self.loader = YmlLoader('./config_can', './config_project_uds', self.error_handler)
+        self.loader.load_yml_files()
 
         # Populate comboBox_can with CAN YML file names
-        can_file_names = loader.get_can_file_names()
+        can_file_names = self.loader.get_can_file_names()
         widgets.comboBox_can.clear()
         widgets.comboBox_can.addItems(can_file_names)
 
@@ -114,10 +134,6 @@ class MainWindow(QMainWindow):
         # uds_file_names = loader.get_uds_file_names()
         # widgets.comboBox_uds.clear()
         # widgets.comboBox_uds.addItems(uds_file_names)
-
-
-
-        
 
     # RESIZE EVENTS
     # ///////////////////////////////////////////////////////////////
@@ -137,6 +153,17 @@ class MainWindow(QMainWindow):
         if event.buttons() == Qt.RightButton:
             print('Mouse click: RIGHT CLICK')
 
+    # CLOSE EVENT HANDLER
+    # ///////////////////////////////////////////////////////////////
+    def closeEvent(self, event):
+        try:
+            if hasattr(self, 'can_manager'):
+                self.can_manager.shutdown_can()
+                self.error_handler.log_message("CAN bus and layer were successfully shut down before closing.")
+        except Exception as e:
+            self.error_handler.handle_error(f"Error during application shutdown: {str(e)}")
+        # Accept the event to close the application
+        event.accept()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -1,17 +1,19 @@
 class ErrorHandler:
-    def __init__(self):
-        # 초기화 코드
-        pass
+    def __init__(self, log_widget=None):
+        """
+        ErrorHandler 초기화 함수. 
+        log_widget은 QPlainTextEdit와 같은 로그를 출력할 위젯입니다.
+        """
+        self.log_widget = log_widget
 
-    def log_error(self, error_message):
-        print(f"Error logged: {error_message}")
+    def handle_error(self, error_message):
+        """
+        오류를 처리하고, 메시지를 log_widget에 표시합니다.
+        """
+        if self.log_widget:
+            self.log_widget.appendPlainText(f"[Error] {error_message}")
+        else:
+            print(f"Error: {error_message}")
 
-    def display_error(self, error_message):
-        # GUI에 에러 메시지 표시
-        pass
-
-    def handle_critical_error(self, error_message):
-        # 치명적인 에러 처리
-        self.log_error(error_message)
-        self.display_error(error_message)
-        # 추가 조치 (예: 통신 중지 등)
+    def log_message(self, message):
+        self.log_widget.appendPlainText(f"{message}")
