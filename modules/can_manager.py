@@ -3,13 +3,14 @@ import logging
 import time
 import can
 import isotp.errors
-
-import ctypes
-import binascii
+import os
+import yaml
 
 class CanManager:
-    def __init__(self, can_data, error_handler):
-        self.can_data = can_data
+    def __init__(self, can_directory, error_handler):
+        
+        self.can_directory = os.path.abspath(can_directory)
+        self.can_data = {}
         self.error_handler = error_handler
 
         # CAN configuration
@@ -36,6 +37,61 @@ class CanManager:
         self.can_send_msg = None
         self.can_recv_msg = None
         self.layer = None
+
+    # GET CAN CONFIGURATION
+    # ///////////////////////////////////////////////////////////////
+    def load_yml_files(self):
+        try:
+            self.can_data = self._load_yml_from_directory(self.can_directory)
+        except Exception as e:
+            self.error_handler.handle_error(f"Error loading YML files: {str(e)}")
+    
+    def _load_yml_from_directory(self, directory):
+        data = {}
+        try:
+            if not os.path.exists(directory):
+                raise FileNotFoundError(f"Directory not found: {directory}")
+            
+            yml_files = [f for f in os.listdir(directory) if f.endswith('.yml')]
+            if not yml_files:
+                self.error_handler.handle_error(f"No YML files found in directory: {directory}")
+
+            for filename in yml_files:
+                try:
+                    with open(os.path.join(directory, filename), 'r') as file:
+                        data[filename] = yaml.safe_load(file)
+                except yaml.YAMLError as e:
+                    self.error_handler.handle_error(f"Error parsing YML file '{filename}': {str(e)}")
+                except Exception as e:
+                    self.error_handler.handle_error(f"Unexpected error with file '{filename}': {str(e)}")
+        except Exception as e:
+            self.error_handler.handle_error(f"Error reading directory '{directory}': {str(e)}")
+
+        return data
+    
+    def get_selected_can_yml(self, filename):
+
+        if not filename.endswith('.yml'):
+            filename += '.yml'
+        try:
+            if filename in self.can_data.keys():
+                self.can_data = self.can_data[filename]
+            else:
+                raise KeyError(f"Filename '{filename}' not found in CAN data.")
+        except KeyError as e:
+            self.error_handler.handle_error(str(e))
+            return None
+        except Exception as e:
+            self.error_handler.handle_error(f"Error retrieving CAN YML data: {str(e)}")
+            return None
+        
+    def get_can_file_names(self):
+        try:
+            return [os.path.splitext(filename)[0] for filename in self.can_data.keys()]
+        except Exception as e:
+            self.error_handler.handle_error(f"Error getting CAN file names: {str(e)}")
+            return []
+
 
     # SET CAN CONFIGURATION
     # ///////////////////////////////////////////////////////////////
@@ -96,7 +152,7 @@ class CanManager:
                     }
             
             
-    # START/STOP CAN CONFIGURATION
+    # CAN UTILS
     # ///////////////////////////////////////////////////////////////
     def start_communication(self):
     # Connect CAN BUS
@@ -151,10 +207,6 @@ class CanManager:
 
 
         self.error_handler.log_message("can disconnected.")
-
-
-
-
 
 
     def _get_required_value(self, config_section, key):

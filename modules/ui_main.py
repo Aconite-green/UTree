@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainFMcwSI.ui'
+## Form generated from reading UI file 'mainGVNmbV.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.7.2
 ##
@@ -1116,7 +1116,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 263, 218))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 218, 218))
         self.scrollAreaWidgetContents.setStyleSheet(u" QScrollBar:vertical {\n"
 "	border: none;\n"
 "    background: rgb(52, 59, 72);\n"
@@ -1331,10 +1331,10 @@ class Ui_MainWindow(object):
         self.horizontalLayoutWidget = QWidget(self.groupBox_pannel)
         self.horizontalLayoutWidget.setObjectName(u"horizontalLayoutWidget")
         self.horizontalLayoutWidget.setGeometry(QRect(0, 20, 751, 52))
-        self.horizontalLayout_6 = QHBoxLayout(self.horizontalLayoutWidget)
-        self.horizontalLayout_6.setSpacing(3)
-        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
-        self.horizontalLayout_6.setContentsMargins(6, 0, 6, 0)
+        self.horizontalLayout_pannel_top = QHBoxLayout(self.horizontalLayoutWidget)
+        self.horizontalLayout_pannel_top.setSpacing(3)
+        self.horizontalLayout_pannel_top.setObjectName(u"horizontalLayout_pannel_top")
+        self.horizontalLayout_pannel_top.setContentsMargins(6, 0, 6, 0)
         self.comboBox_did = QComboBox(self.horizontalLayoutWidget)
         self.comboBox_did.setObjectName(u"comboBox_did")
         sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
@@ -1345,7 +1345,7 @@ class Ui_MainWindow(object):
         self.comboBox_did.setMinimumSize(QSize(150, 0))
         self.comboBox_did.setStyleSheet(u" background-color: rgb(27, 29, 35);")
 
-        self.horizontalLayout_6.addWidget(self.comboBox_did)
+        self.horizontalLayout_pannel_top.addWidget(self.comboBox_did)
 
         self.verticalLayout_14 = QVBoxLayout()
         self.verticalLayout_14.setObjectName(u"verticalLayout_14")
@@ -1360,7 +1360,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_14.addWidget(self.radioButton_write)
 
 
-        self.horizontalLayout_6.addLayout(self.verticalLayout_14)
+        self.horizontalLayout_pannel_top.addLayout(self.verticalLayout_14)
 
         self.lineEdit_cancmd = QLineEdit(self.horizontalLayoutWidget)
         self.lineEdit_cancmd.setObjectName(u"lineEdit_cancmd")
@@ -1369,7 +1369,7 @@ class Ui_MainWindow(object):
         self.lineEdit_cancmd.setMinimumSize(QSize(415, 0))
         self.lineEdit_cancmd.setStyleSheet(u" background-color: rgb(27, 29, 35);")
 
-        self.horizontalLayout_6.addWidget(self.lineEdit_cancmd)
+        self.horizontalLayout_pannel_top.addWidget(self.lineEdit_cancmd)
 
         self.btn_send = QPushButton(self.horizontalLayoutWidget)
         self.btn_send.setObjectName(u"btn_send")
@@ -1378,8 +1378,14 @@ class Ui_MainWindow(object):
         self.btn_send.setMinimumSize(QSize(100, 0))
         self.btn_send.setStyleSheet(u" background-color: rgb(27, 29, 35);")
 
-        self.horizontalLayout_6.addWidget(self.btn_send)
+        self.horizontalLayout_pannel_top.addWidget(self.btn_send)
 
+        self.gridLayoutWidget = QWidget(self.groupBox_pannel)
+        self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
+        self.gridLayoutWidget.setGeometry(QRect(0, 80, 751, 411))
+        self.gridLayout_pannel_main = QGridLayout(self.gridLayoutWidget)
+        self.gridLayout_pannel_main.setObjectName(u"gridLayout_pannel_main")
+        self.gridLayout_pannel_main.setContentsMargins(6, 0, 6, 6)
         self.stackedWidget.addWidget(self.widgets_workspace)
 
         self.verticalLayout_15.addWidget(self.stackedWidget)

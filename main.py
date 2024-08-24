@@ -18,6 +18,7 @@
 import sys
 import os
 import platform
+import importlib
 
 # IMPORT / GUI AND MODULES AND WIDGETS
 # ///////////////////////////////////////////////////////////////
@@ -49,9 +50,6 @@ class MainWindow(QMainWindow):
         title = "UTree"
         description = "UTree APP - GUI Program for UDS Management."
 
-        # Initialize ErrorHandler
-        self.error_handler = ErrorHandler(log_widget=widgets.plainTextEdit_log)
-
         # APPLY TEXTS
         self.setWindowTitle(title)
         widgets.titleRightInfo.setText(description)
@@ -66,7 +64,7 @@ class MainWindow(QMainWindow):
 
         # LOAD YML FILES
         # ///////////////////////////////////////////////////////////////
-        self.populateComboBoxes()
+        
         
         # BUTTONS CLICK
         # ///////////////////////////////////////////////////////////////
@@ -81,17 +79,16 @@ class MainWindow(QMainWindow):
         widgets.toggleLeftBox.clicked.connect(openCloseLeftBox)
         widgets.extraCloseColumnBtn.clicked.connect(openCloseLeftBox)
 
-        
+        # Initialize Modules
+        self.error_handler = ErrorHandler(log_widget=widgets.plainTextEdit_log)
+        self.can_manager = CanManager('./config_can', self.error_handler)
 
         # SHOW APP
         # ///////////////////////////////////////////////////////////////
         self.show()
         widgets.stackedWidget.setCurrentWidget(widgets.widgets_workspace)
         widgets.groupBox_pannel.setVisible(False)
-        
-        
-
-
+        self.populateComboBoxes()
 
     # BUTTONS CLICK
     # ///////////////////////////////////////////////////////////////
@@ -112,11 +109,8 @@ class MainWindow(QMainWindow):
         else:
             # CHECK 시: CAN 통신 시작
             try:
-                selected_can_file = widgets.comboBox_can.currentText()
-                can_data = self.loader.get_selected_can_yml(selected_can_file)
-
-                # Initialize and set up CAN communication
-                self.can_manager = CanManager(can_data, self.error_handler)
+                selected_can_file = widgets.comboBox_can.currentText()               
+                self.can_manager.get_selected_can_yml(selected_can_file)
                 self.can_manager.setup_can()
                 self.can_manager.start_communication()
 
@@ -138,17 +132,15 @@ class MainWindow(QMainWindow):
     # INIT YML
     # ///////////////////////////////////////////////////////////////
     def populateComboBoxes(self):
-        # Create YmlLoader instance and load files
-        self.loader = YmlLoader('./config_can', './config_project_uds', self.error_handler)
-        self.loader.load_yml_files()
-
+        self.can_manager.load_yml_files()
+        
         # Populate comboBox_can with CAN YML file names
-        can_file_names = self.loader.get_can_file_names()
+        can_file_names = self.can_manager.get_can_file_names()
         widgets.comboBox_can.clear()
         widgets.comboBox_can.addItems(can_file_names)
 
         # 필요에 따라 UDS 관련 comboBox도 추가 가능
-        # uds_file_names = loader.get_uds_file_names()
+        # uds_file_names = self.loader.get_uds_file_names()
         # widgets.comboBox_uds.clear()
         # widgets.comboBox_uds.addItems(uds_file_names)
 
