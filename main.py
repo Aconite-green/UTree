@@ -86,7 +86,8 @@ class MainWindow(QMainWindow):
         # SHOW APP
         # ///////////////////////////////////////////////////////////////
         self.show()
-        widgets.stackedWidget.setCurrentWidget(widgets.widgets_landing)
+        widgets.stackedWidget.setCurrentWidget(widgets.widgets_workspace)
+        widgets.groupBox_pannel.setVisible(False)
         
         
 
@@ -102,7 +103,9 @@ class MainWindow(QMainWindow):
                 if hasattr(self, 'can_manager'):
                     self.error_handler.clear_log()
                     self.can_manager.stop_communication()
-                    widgets.stackedWidget.setCurrentWidget(widgets.widgets_landing)
+
+                    widgets.groupBox_pannel.setVisible(False)
+                    widgets.stackedWidget.setCurrentWidget(widgets.widgets_workspace)
                     widgets.pagesContainer.setStyleSheet(UIFunctions.show_utree_logo())
             except Exception as e:
                 self.error_handler.handle_error(str(e))
@@ -116,7 +119,9 @@ class MainWindow(QMainWindow):
                 self.can_manager = CanManager(can_data, self.error_handler)
                 self.can_manager.setup_can()
                 self.can_manager.start_communication()
+
                 widgets.stackedWidget.setCurrentWidget(widgets.widgets_workspace)
+                widgets.groupBox_pannel.setVisible(True)
                 widgets.pagesContainer.setStyleSheet(UIFunctions.erase_background())
             except Exception as e:
                 self.error_handler.handle_error(str(e))

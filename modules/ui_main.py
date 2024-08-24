@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainNvjleq.ui'
+## Form generated from reading UI file 'mainFMcwSI.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.7.2
 ##
@@ -1116,7 +1116,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 218, 218))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 263, 218))
         self.scrollAreaWidgetContents.setStyleSheet(u" QScrollBar:vertical {\n"
 "	border: none;\n"
 "    background: rgb(52, 59, 72);\n"
@@ -1314,9 +1314,6 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.project_row_3)
 
         self.stackedWidget.addWidget(self.widgets_test)
-        self.widgets_landing = QWidget()
-        self.widgets_landing.setObjectName(u"widgets_landing")
-        self.stackedWidget.addWidget(self.widgets_landing)
         self.widgets_workspace = QWidget()
         self.widgets_workspace.setObjectName(u"widgets_workspace")
         self.widgets_workspace.setStyleSheet(u"")
@@ -1328,10 +1325,10 @@ class Ui_MainWindow(object):
         self.comboBox_can.setObjectName(u"comboBox_can")
         self.comboBox_can.setGeometry(QRect(220, 0, 211, 41))
         self.comboBox_can.setStyleSheet(u" background-color: rgb(27, 29, 35);")
-        self.groupBox = QGroupBox(self.widgets_workspace)
-        self.groupBox.setObjectName(u"groupBox")
-        self.groupBox.setGeometry(QRect(0, 50, 751, 491))
-        self.horizontalLayoutWidget = QWidget(self.groupBox)
+        self.groupBox_pannel = QGroupBox(self.widgets_workspace)
+        self.groupBox_pannel.setObjectName(u"groupBox_pannel")
+        self.groupBox_pannel.setGeometry(QRect(0, 50, 751, 491))
+        self.horizontalLayoutWidget = QWidget(self.groupBox_pannel)
         self.horizontalLayoutWidget.setObjectName(u"horizontalLayoutWidget")
         self.horizontalLayoutWidget.setGeometry(QRect(0, 20, 751, 52))
         self.horizontalLayout_6 = QHBoxLayout(self.horizontalLayoutWidget)
@@ -1530,7 +1527,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(2)
+        self.stackedWidget.setCurrentIndex(1)
         self.btn_connect.setDefault(False)
 
 
@@ -1644,7 +1641,7 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem23.setText(QCoreApplication.translate("MainWindow", u"Line", None));
         self.tableWidget.setSortingEnabled(__sortingEnabled)
 
-        self.groupBox.setTitle(QCoreApplication.translate("MainWindow", u"PANNEL", None))
+        self.groupBox_pannel.setTitle(QCoreApplication.translate("MainWindow", u"PANNEL", None))
         self.radioButton_read.setText(QCoreApplication.translate("MainWindow", u"Read", None))
         self.radioButton_write.setText(QCoreApplication.translate("MainWindow", u"Write", None))
         self.btn_send.setText(QCoreApplication.translate("MainWindow", u"SEND", None))
