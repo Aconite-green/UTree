@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainoeRUns.ui'
+## Form generated from reading UI file 'mainBxEEDz.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.7.2
 ##
@@ -599,25 +599,6 @@ class Ui_MainWindow(object):
 "    border-bottom: none;\n"
 "}\n"
 "\n"
-"#gridLayout_pannel_main QPushButton {\n"
-"        border: 2px solid rgb(52, 59, 72);\n"
-"        border-radius: 5px;	\n"
-"        background-color: rgb(52, 59, 72);\n"
-"        max-height: 30px;\n"
-""
-                        "    }\n"
-"#gridLayout_pannel_main QPushButton:hover {\n"
-"    background-color: rgb(57, 65, 80);\n"
-"    border: 2px solid rgb(61, 70, 86);\n"
-"}\n"
-"#gridLayout_pannel_main QPushButton:pressed {	\n"
-"    background-color: rgb(35, 40, 49);\n"
-"    border: 2px solid rgb(43, 50, 61);\n"
-"}\n"
-"#gridLayout_pannel_main QPushButton:checked {\n"
-"    background-color: rgb(102, 163, 255);\n"
-"    border: 2px solid rgb(61, 70, 86);\n"
-"}\n"
 "\n"
 "\n"
 "")
@@ -656,7 +637,7 @@ class Ui_MainWindow(object):
         self.topLogo.setMinimumSize(QSize(42, 42))
         self.topLogo.setMaximumSize(QSize(42, 42))
         self.topLogo.setAutoFillBackground(False)
-        self.topLogo.setStyleSheet(u"background-image: url(:/images/images/images/UTree.png);")
+        self.topLogo.setStyleSheet(u"background-image: url(:/images/images/images/UTree_40.png);")
         self.topLogo.setFrameShape(QFrame.Shape.NoFrame)
         self.topLogo.setFrameShadow(QFrame.Shadow.Raised)
         self.titleLeftApp = QLabel(self.topLogoInfo)
@@ -975,7 +956,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_4.setContentsMargins(0, 0, 0, 0)
         self.pagesContainer = QFrame(self.content)
         self.pagesContainer.setObjectName(u"pagesContainer")
-        self.pagesContainer.setStyleSheet(u"background-image: url(:/images/images/images/UTree_vertical.png);\n"
+        self.pagesContainer.setStyleSheet(u"background-image: url(:/images/images/images/UTree_1024.png);\n"
 "background-position: center;\n"
 "background-repeat: no-repeat;")
         self.pagesContainer.setFrameShape(QFrame.Shape.NoFrame)
@@ -1387,6 +1368,7 @@ class Ui_MainWindow(object):
         self.lineEdit_cancmd.setSizePolicy(sizePolicy4)
         self.lineEdit_cancmd.setMinimumSize(QSize(415, 0))
         self.lineEdit_cancmd.setStyleSheet(u" background-color: rgb(27, 29, 35);")
+        self.lineEdit_cancmd.setReadOnly(True)
 
         self.horizontalLayout_pannel_top.addWidget(self.lineEdit_cancmd)
 

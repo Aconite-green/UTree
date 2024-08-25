@@ -705,7 +705,7 @@ User Define */
               <bool>false</bool>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-image: url(:/images/images/images/UTree.png);</string>
+              <string notr="true">background-image: url(:/images/images/images/UTree_40.png);</string>
              </property>
              <property name="frameShape">
               <enum>QFrame::Shape::NoFrame</enum>
@@ -1524,7 +1524,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
                 <item>
                  <widget class="QFrame" name="pagesContainer">
                   <property name="styleSheet">
-                   <string notr="true">background-image: url(:/images/images/images/UTree_vertical.png);
+                   <string notr="true">background-image: url(:/images/images/images/UTree_1024.png);
 background-position: center;
 background-repeat: no-repeat;</string>
                   </property>
@@ -2526,6 +2526,9 @@ background-repeat: no-repeat;</string>
                            </property>
                            <property name="styleSheet">
                             <string notr="true"> background-color: rgb(27, 29, 35);</string>
+                           </property>
+                           <property name="readOnly">
+                            <bool>true</bool>
                            </property>
                           </widget>
                          </item>

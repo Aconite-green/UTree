@@ -27,7 +27,7 @@ from . app_settings import Settings
 from . ui_functions import *
 
 # APP FUNCTIONS
-from . resource_rc import *
+from . resources_rc import *
 
 # USER DEFINE
 from . can_manager import *

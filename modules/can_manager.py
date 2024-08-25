@@ -11,6 +11,7 @@ class CanManager:
         
         self.can_directory = os.path.abspath(can_directory)
         self.can_data = {}
+        self.can_config = None
         self.error_handler = error_handler
 
         # CAN configuration
@@ -75,7 +76,7 @@ class CanManager:
             filename += '.yml'
         try:
             if filename in self.can_data.keys():
-                self.can_data = self.can_data[filename]
+                self.can_config = self.can_data[filename]
             else:
                 raise KeyError(f"Filename '{filename}' not found in CAN data.")
         except KeyError as e:
@@ -98,7 +99,7 @@ class CanManager:
     def setup_can(self):
         
         # APP CONFIG
-        app_config = self.can_data['AppConfig']
+        app_config = self.can_config['AppConfig']
         self.send_id = app_config['SendID']
         self.recv_id = app_config['RecvID']
         self.interface = self._get_device_type(app_config['CanTargetDevice'])
@@ -106,27 +107,27 @@ class CanManager:
         self.is_fd = self._get_fd_info(app_config['Interface'])
 
         # BASIC CAN
-        basic_can = self.can_data['Basic_CAN']
+        basic_can = self.can_config['Basic_CAN']
         self.bitrate_abr = basic_can['bitrateAbr']
         self.sjw_abr = basic_can['sjwAbr']
         self.tseg1_abr = basic_can['tseg1Abr']
         self.tseg2_abr = basic_can['tseg2Abr']
 
         # FD ONLY
-        fd_only = self.can_data['FD_only']
+        fd_only = self.can_config['FD_only']
         self.bitrate_dbr = fd_only['bitrateDbr']
         self.sjw_dbr = fd_only['sjwDbr']
         self.tseg1_dbr = fd_only['tseg1Dbr']
         self.tseg2_dbr = fd_only['tseg2Dbr']
 
         # ISOTP
-        isotp_data = self.can_data['ISOTP']
+        isotp_data = self.can_config['ISOTP']
         self.bs = isotp_data['BS']
         self.padding = isotp_data['Padding']
         self.stmin = isotp_data['STmin']
         
         # ASK
-        ask = self.can_data['ASK']
+        ask = self.can_config['ASK']
         self.lib_file_name = ask['LibFileName']
 
         # Layer Params

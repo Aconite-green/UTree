@@ -254,7 +254,7 @@ class UIFunctions(MainWindow):
         return result
     
     def show_utree_logo():
-        result = "background-image: url(:/images/images/images/UTree_vertical.png); background-position: center; background-repeat: no-repeat;"
+        result = "background-image: url(:/images/images/images/UTree_1024.png); background-position: center; background-repeat: no-repeat;"
         return result
     # ///////////////////////////////////////////////////////////////
     # END - GUI DEFINITIONS
