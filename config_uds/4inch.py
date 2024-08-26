@@ -6,14 +6,14 @@ class EOLCoding(UDSBase):
         write_service_id = [0x2E]
         identifier = [0x00, 0x60]
         record_values = {
-            'data1': {'a': {'r':0x00, 'w':0x00}, 'b': {'r':0x00, 'w':0x00}, 'c': {'r':0x00, 'w':0x00}, 'd': {'r':0x00, 'w':0x00},'e': {'r':0x00, 'w':0x00}, 'f': {'r':0x00, 'w':0x00},'g': {'r':0x00, 'w':0x00}, 'h': {'r':0x00, 'w':0x00}},
-            'data2': {'a': {'r':0x00, 'w':0x00}, 'b': {'r':0x00, 'w':0x00}, 'c': {'r':0x00, 'w':0x00}, 'd': {'r':0x00, 'w':0x00},'e': {'r':0x00, 'w':0x00}, 'f': {'r':0x00, 'w':0x00},'g': {'r':0x00, 'w':0x00}, 'h': {'r':0x00, 'w':0x00}},
-            'data3': {'a': {'r':0x00, 'w':0x00}, 'b': {'r':0x00, 'w':0x00}, 'c': {'r':0x00, 'w':0x00}, 'd': {'r':0x00, 'w':0x00},'e': {'r':0x00, 'w':0x00}, 'f': {'r':0x00, 'w':0x00},'g': {'r':0x00, 'w':0x00}, 'h': {'r':0x00, 'w':0x00}},
-            'data4': {'a': {'r':0x00, 'w':0x00}, 'b': {'r':0x00, 'w':0x00}, 'c': {'r':0x00, 'w':0x00}, 'd': {'r':0x00, 'w':0x00},'e': {'r':0x00, 'w':0x00}, 'f': {'r':0x00, 'w':0x00},'g': {'r':0x00, 'w':0x00}, 'h': {'r':0x00, 'w':0x00}},
-            'data5': {'a': {'r':0x00, 'w':0x00}, 'b': {'r':0x00, 'w':0x00}, 'c': {'r':0x00, 'w':0x00}, 'd': {'r':0x00, 'w':0x00},'e': {'r':0x00, 'w':0x00}, 'f': {'r':0x00, 'w':0x00},'g': {'r':0x00, 'w':0x00}, 'h': {'r':0x00, 'w':0x00}},
-            'data6': {'a': {'r':0x00, 'w':0x00}, 'b': {'r':0x00, 'w':0x00}, 'c': {'r':0x00, 'w':0x00}, 'd': {'r':0x00, 'w':0x00},'e': {'r':0x00, 'w':0x00}, 'f': {'r':0x00, 'w':0x00},'g': {'r':0x00, 'w':0x00}, 'h': {'r':0x00, 'w':0x00}},
-            'data7': {'a': {'r':0x00, 'w':0x00}, 'b': {'r':0x00, 'w':0x00}, 'c': {'r':0x00, 'w':0x00}, 'd': {'r':0x00, 'w':0x00},'e': {'r':0x00, 'w':0x00}, 'f': {'r':0x00, 'w':0x00},'g': {'r':0x00, 'w':0x00}, 'h': {'r':0x00, 'w':0x00}},
-            'data8': {'a': {'r':0x00, 'w':0x00}, 'b': {'r':0x00, 'w':0x00}, 'c': {'r':0x00, 'w':0x00}, 'd': {'r':0x00, 'w':0x00},'e': {'r':0x00, 'w':0x00}, 'f': {'r':0x00, 'w':0x00},'g': {'r':0x00, 'w':0x00}, 'h': {'r':0x00, 'w':0x00}}
+            'data1': {'ECO': {'r':0x00, 'w':0x00}, 'EPB': {'r':0x00, 'w':0x00}, 'AHLS': {'r':0x00, 'w':0x00}, 'MDPS': {'r':0x00, 'w':0x00},'ESC': {'r':0x00, 'w':0x00}, 'TPMS': {'r':0x00, 'w':0x00},'NORMAL': {'r':0x00, 'w':0x00}, 'ECS': {'r':0x00, 'w':0x00}},
+            'data2': {'ABS': {'r':0x00, 'w':0x00}, 'AIR BAG': {'r':0x00, 'w':0x00}, 'PSB': {'r':0x00, 'w':0x00}, 'AFL': {'r':0x00, 'w':0x00},'4WD': {'r':0x00, 'w':0x00}, 'AT': {'r':0x00, 'w':0x00},'SPORT': {'r':0x00, 'w':0x00}, 'eCall': {'r':0x00, 'w':0x00}},
+            'data3': {'Fuel Type ': {'r':0x00, 'w':0x00}, 'Speedometer Type': {'r':0x00, 'w':0x00}, 'Area': {'r':0x00, 'w':0x00}},
+            'data4': {'Multifunction ': {'r':0x00, 'w':0x00}, 'Power Type': {'r':0x00, 'w':0x00}, 'High Performance Type': {'r':0x00, 'w':0x00}, '??': {'r':0x00, 'w':0x00},'Autolight': {'r':0x00, 'w':0x00}},
+            'data5': {'Multifunction Type': {'r':0x00, 'w':0x00}, 'Maximum Indicated Speed': {'r':0x00, 'w':0x00}, 'HUD': {'r':0x00, 'w':0x00}, 'Fuel Tank Type': {'r':0x00, 'w':0x00},'ICC': {'r':0x00, 'w':0x00}},
+            'data6': {'RSBR': {'r':0x00, 'w':0x00}, 'Body Type': {'r':0x00, 'w':0x00}},
+            'data7': {'FCA': {'r':0x00, 'w':0x00}, 'FCA2': {'r':0x00, 'w':0x00}, 'LKA': {'r':0x00, 'w':0x00}, 'ISLA': {'r':0x00, 'w':0x00},'DAW': {'r':0x00, 'w':0x00}, 'SOC': {'r':0x00, 'w':0x00},'LFA': {'r':0x00, 'w':0x00}, 'HDA': {'r':0x00, 'w':0x00}},
+            'data8': {'HDA2': {'r':0x00, 'w':0x00}, 'HDP': {'r':0x00, 'w':0x00}, 'Emergency Stop': {'r':0x00, 'w':0x00}, 'PDW': {'r':0x00, 'w':0x00}}
         }
         super().__init__(read_service_id, write_service_id, identifier, record_values)
 
@@ -30,9 +30,30 @@ class CarInfo(UDSBase):
         }
         super().__init__(read_service_id, write_service_id, identifier, record_values,)
 
+class Test(UDSBase):
+    def __init__(self):
+        read_service_id = [0x22]
+        write_service_id = [0x2E]
+        identifier = [0x00, 0x80]
+        record_values = {
+            'r': {
+                   'data1': {'byte': 1, 'coloms':{ 'a':{'bit':1,'val': ('bool',None)}, 'b':{'bit': 7, 'val':('hex',None)}}},
+                   'data2': {'byte':5,'coloms':{ 'a':{'bit':40,'val': ('bool',0x01)}}}
+                 },
+
+            'w': {
+                   'data1': {'byte': 1,  'coloms':{ 'a':{'bit':1, 'type':'button', 'val':None}, 'b':{'bit': 7, 'type':'combobox', 'val':None,'menu':{'menu1': 1, 'menu2':2}}}},
+                   'data2': {'byte':5, 'coloms':{'e': {'bit':40, 'type':'edit', 'val':None}}}
+                 }
+                        }
+        super().__init__(read_service_id, write_service_id, identifier, record_values,)
+
+
+
 
 # 클래스 이름과 실제 클래스를 매핑하는 딕셔너리
 did_map = {
-    "EOLCoding": EOLCoding,
-    "CarInfo": CarInfo
+    # "EOLCoding": EOLCoding,
+    # "CarInfo": CarInfo,
+    "Test": Test
 }

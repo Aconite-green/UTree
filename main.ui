@@ -7,8 +7,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1096</width>
-    <height>666</height>
+    <width>1285</width>
+    <height>773</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -2447,8 +2447,8 @@ background-repeat: no-repeat;</string>
                         <rect>
                          <x>0</x>
                          <y>50</y>
-                         <width>751</width>
-                         <height>491</height>
+                         <width>941</width>
+                         <height>601</height>
                         </rect>
                        </property>
                        <property name="title">
@@ -2459,7 +2459,7 @@ background-repeat: no-repeat;</string>
                          <rect>
                           <x>0</x>
                           <y>20</y>
-                          <width>751</width>
+                          <width>941</width>
                           <height>52</height>
                          </rect>
                         </property>
@@ -2561,8 +2561,8 @@ background-repeat: no-repeat;</string>
                          <rect>
                           <x>0</x>
                           <y>80</y>
-                          <width>751</width>
-                          <height>411</height>
+                          <width>941</width>
+                          <height>521</height>
                          </rect>
                         </property>
                         <layout class="QGridLayout" name="gridLayout_pannel_main">
@@ -2574,6 +2574,9 @@ background-repeat: no-repeat;</string>
                          </property>
                          <property name="bottomMargin">
                           <number>6</number>
+                         </property>
+                         <property name="spacing">
+                          <number>0</number>
                          </property>
                         </layout>
                        </widget>

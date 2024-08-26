@@ -106,12 +106,38 @@ class MainWindow(QMainWindow):
                     widgets.groupBox_pannel.setVisible(False)
                     widgets.stackedWidget.setCurrentWidget(widgets.widgets_workspace)
                     widgets.pagesContainer.setStyleSheet(UIFunctions.show_utree_logo())
+                     # ComboBox 활성화 및 스타일 복구
+                    widgets.comboBox_uds.setEnabled(True)
+                    widgets.comboBox_can.setEnabled(True)
+
+                    widgets.comboBox_uds.setStyleSheet("""
+                        QComboBox {
+                            color: rgb(221, 221, 221);
+                            background-color: rgb(33, 37, 43);
+                        }
+                        QComboBox QAbstractItemView {
+                            color: rgb(135, 206, 250);
+                            background-color: rgb(33, 37, 43);
+                        }
+                    """)
+
+                    widgets.comboBox_can.setStyleSheet("""
+                        QComboBox {
+                            color: rgb(221, 221, 221);
+                            background-color: rgb(33, 37, 43);
+                        }
+                        QComboBox QAbstractItemView {
+                            color: rgb(135, 206, 250);
+                            background-color: rgb(33, 37, 43);
+                        }
+                    """)
             except Exception as e:
                 self.error_handler.handle_error(str(e))
         else:
             # CHECK 시: CAN 통신 시작
             try:
                 # CAN MANAGEMENT
+                self.error_handler.clear_log()
                 selected_can_file = widgets.comboBox_can.currentText()               
                 self.can_manager.get_selected_can_yml(selected_can_file)
                 self.can_manager.setup_can()
@@ -129,6 +155,31 @@ class MainWindow(QMainWindow):
                 widgets.stackedWidget.setCurrentWidget(widgets.widgets_workspace)
                 widgets.groupBox_pannel.setVisible(True)
                 widgets.pagesContainer.setStyleSheet(UIFunctions.erase_background())
+                 # ComboBox 비활성화 및 스타일 변경
+                widgets.comboBox_uds.setEnabled(False)
+                widgets.comboBox_can.setEnabled(False)
+
+                widgets.comboBox_uds.setStyleSheet("""
+                    QComboBox {
+                        color: rgb(135, 206, 250);
+                        background-color: rgb(33, 37, 43);
+                    }
+                    QComboBox QAbstractItemView {
+                        color: rgb(135, 206, 250);
+                        background-color: rgb(33, 37, 43);
+                    }
+                """)
+
+                widgets.comboBox_can.setStyleSheet("""
+                    QComboBox {
+                        color: rgb(135, 206, 250);
+                        background-color: rgb(33, 37, 43);
+                    }
+                    QComboBox QAbstractItemView {
+                        color: rgb(135, 206, 250);
+                        background-color: rgb(33, 37, 43);
+                    }
+                """)
             except Exception as e:
                 self.error_handler.handle_error(str(e))
     
@@ -144,11 +195,32 @@ class MainWindow(QMainWindow):
     def handle_read(self, checked):
         if checked:
             widgets.radioButton_write.setChecked(False)
+            widgets.comboBox_did.setStyleSheet("""
+                    QComboBox {
+                        color: rgb(135, 206, 250);
+                        background-color: rgb(33, 37, 43);
+                    }
+                    QComboBox QAbstractItemView {
+                        color: rgb(135, 206, 250);
+                        background-color: rgb(33, 37, 43);
+                    }
+                """)
+            
             self.update_grid_based_on_selection(is_read=True)
 
     def handle_write(self, checked):
         if checked:
             widgets.radioButton_read.setChecked(False)
+            widgets.comboBox_did.setStyleSheet("""
+                    QComboBox {
+                        color: rgb(135, 206, 250);
+                        background-color: rgb(33, 37, 43);
+                    }
+                    QComboBox QAbstractItemView {
+                        color: rgb(135, 206, 250);
+                        background-color: rgb(33, 37, 43);
+                    }
+                """)
             self.update_grid_based_on_selection(is_read=False)
     
     def update_grid_based_on_selection(self, is_read):
@@ -163,109 +235,178 @@ class MainWindow(QMainWindow):
             self.populate_grid_with_buttons(record_values, is_read)
 
     def populate_grid_with_buttons(self, record_values, is_read):
+
         # 기존 버튼들 삭제
         while widgets.gridLayout_pannel_main.count():
             child = widgets.gridLayout_pannel_main.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
-        for row_index, (key, sub_items) in enumerate(record_values.items()):
-            # 각 행의 맨 왼쪽에 Label 추가
-            label = QLabel(key)
-            label.setStyleSheet("font-size: 12pt; font-weight: bold;")
-            widgets.gridLayout_pannel_main.addWidget(label, row_index, 0)
+        
+        if is_read:
+            selected_data = record_values['r']
 
-            if isinstance(sub_items, dict) and isinstance(list(sub_items.values())[0], dict):
-                # 1번 형태의 데이터 처리
-                for col_index, sub_key in enumerate(sub_items.keys(), start=1):
-                    button = QPushButton(sub_key)
+            for row_index, (key, data_info) in enumerate(selected_data.items()):
+                # 1. 행의 이름을 나타내는 Label 추가
+                label = QLabel(key)
+                label.setStyleSheet("font-size: 12pt; font-weight: bold;border: 2px solid rgb(61, 70, 86);")
+                widgets.gridLayout_pannel_main.addWidget(label, row_index, 0)
 
-                    # 버튼 스타일 설정
-                    button.setStyleSheet(f"""
-                        QPushButton {{
-                            border: 2px solid rgb(52, 59, 72);
-                            border-radius: 5px;
-                            background-color: rgb(52, 59, 72);
-                            font-weight: bold;
-                            font-size: 15pt;
-                        }}
-                        QPushButton:hover {{
-                            background-color: rgb(57, 65, 80);
-                            border: 2px solid rgb(61, 70, 86);
-                        }}
-                        QPushButton:pressed {{
-                            background-color: rgb(35, 40, 49);
-                            border: 2px solid rgb(43, 50, 61);
-                        }}
-                        QPushButton:checked {{
-                            background-color: rgb(35, 40, 49);
-                            border: 2px solid rgb(61, 70, 86);
-                        }}
+                # 전체 비트수 계산
+                total_bits = sum(col['bit'] for col in data_info['coloms'].values())
+
+                col_start_index = 1  # 첫 번째 열 인덱스 (0은 행의 이름이 들어감)
+                for col_key, col_info in data_info['coloms'].items():
+                    bit_size = col_info['bit']
+                    val_type, val_value = col_info['val']
+
+                    # 2. 메인 키 이름을 표시하는 Label 생성 (위쪽)
+                    name_label = QLabel(col_key)
+                    name_label.setStyleSheet("""
+                        font-size: 12pt; 
+                        padding: 5px;
+                        color: rgb(221, 221, 221);
+                        border: 2px solid rgb(61, 70, 86);
+                        background-color: transparent;
                     """)
-                    # rgb(35, 40, 49) : button pressend collor
-                    # rgb(102, 163, 255) : sky color
-
-                    size_policy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-                    button.setSizePolicy(size_policy)
-
-                    # 버튼이 체크 가능하게 설정
-                    
-
-                    # is_read 값에 따라 체크된 상태 설정
-                    if is_read:
-                        if sub_items[sub_key]['r'] != 0:
-                            button.setChecked(True)
-                        button.setCheckable(False)
+                    name_label.setAlignment(Qt.AlignCenter)
+                    name_label.setFixedHeight(35)
+                    # 3. val 값을 표시하는 Label 생성 (아래쪽)
+                    if val_value is not None:
+                        value_label = QLabel(f"{val_value}")
                     else:
-                        button.setCheckable(True)
-                        if sub_items[sub_key]['w'] != 0:
-                            button.setChecked(True)
+                        value_label = QLabel("")  # val_value가 None인 경우 비워둠
 
-                    # 버튼을 그리드 레이아웃에 추가
-                    widgets.gridLayout_pannel_main.addWidget(button, row_index, col_index)
-                    
-            else:
-                # 2번 형태의 데이터 처리
-                if is_read:
-                    # is_read가 True인 경우 값을 표시할 라벨을 추가
-                    value_label = QLabel(f"{sub_items['r']:02X}")
                     value_label.setStyleSheet("""
-                        font-size: 20pt; 
+                        font-size: 10pt; 
                         font-weight: bold;
-                        border-radius: 10px;
                         border: 2px solid rgb(61, 70, 86);
                         background-color: rgb(35, 40, 49);
+                        margin-top: 0px;  
+                        padding: 2px; 
                     """)
                     value_label.setAlignment(Qt.AlignCenter)
 
-                    size_policy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-                    value_label.setSizePolicy(size_policy)
-                    widgets.gridLayout_pannel_main.addWidget(value_label, row_index, 1)
-                else:
-                    # is_read가 False인 경우, "w" 값을 표시할 라벨 추가
-                    value_label = QLabel(f"{sub_items['w']:02X}")
-                    value_label.setStyleSheet("""
-                        font-size: 20pt; 
-                        font-weight: bold;
-                        border-radius: 10px;
-                        border: 2px solid rgb(61, 70, 86);
-                        background-color: rgb(35, 40, 49);
-                    """)
-                    value_label.setAlignment(Qt.AlignCenter)
-                    size_policy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-                    value_label.setSizePolicy(size_policy)
-                    #
-                    #  값을 입력할 수 있는 LineEdit 추가
-                    line_edit = QLineEdit()
-                    size_policy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-                    line_edit.setSizePolicy(size_policy)
-                    line_edit.setStyleSheet("font-size: 20pt;")
-                    
-                    # 레이아웃에 추가
-                    widgets.gridLayout_pannel_main.addWidget(value_label, row_index, 1)
-                    widgets.gridLayout_pannel_main.addWidget(line_edit, row_index, 2)
+                    # 각 열의 비율에 따른 너비 설정
+                    bit_ratio = bit_size / total_bits
+                    col_span = max(1, int(bit_ratio * 7))  # 최소 1, 최대 7의 크기
 
+                    # 수직 레이아웃을 사용하여 두 Label을 합침
+                    vertical_layout = QVBoxLayout()
+                    vertical_layout.setSpacing(0)  # 위젯 간의 간격 최소화
+                    vertical_layout.setContentsMargins(0, 0, 0, 0)  # 레이아웃의 여백 제거
+                    vertical_layout.addWidget(name_label)
+                    vertical_layout.addWidget(value_label)
+
+                    # QWidget을 사용하여 레이아웃을 담음
+                    container_widget = QWidget()
+                    container_widget.setLayout(vertical_layout)
+
+                    # 컨테이너 위젯을 그리드 레이아웃에 추가
+                    widgets.gridLayout_pannel_main.addWidget(container_widget, row_index, col_start_index, 1, col_span)
+                    col_start_index += col_span  # 다음 열의 시작 위치 업데이트
+
+        else:
+            selected_data = record_values['w']
+            for row_index, (key, data_info) in enumerate(selected_data.items()):
+                # 1. 행의 이름을 나타내는 Label 추가
+                label = QLabel(key)
+                label.setStyleSheet("font-size: 12pt; font-weight: bold;border: 2px solid rgb(61, 70, 86);")
+                widgets.gridLayout_pannel_main.addWidget(label, row_index, 0)
+
+                # 전체 비트수 계산
+                total_bits = sum(col['bit'] for col in data_info['coloms'].values())
+
+                col_start_index = 1  # 첫 번째 열 인덱스 (0은 행의 이름이 들어감)
+                for col_key, col_info in data_info['coloms'].items():
+                    bit_size = col_info['bit']
+                    col_type = col_info['type']
+                    val_value = col_info['val']
+
+                    # 2. 메인 키 이름을 표시하는 Label 생성 (위쪽)
+                    name_label = QLabel(col_key)
+                    name_label.setStyleSheet("""
+                        font-size: 12pt; 
+                        padding: 5px;
+                        color: rgb(221, 221, 221);
+                        border: 2px solid rgb(61, 70, 86);
+                        background-color: transparent;
+                    """)
+                    name_label.setAlignment(Qt.AlignCenter)
+                    name_label.setFixedHeight(35)
+                   
+                    # 3. 각 유형에 따른 위젯 생성
+                    if col_type == 'button':
+                        widget = QPushButton(val_value or "")
+                        widget.setStyleSheet("""
+                            QPushButton {
+                                font-size: 10pt;
+                                font-weight: bold;
+                                border: 2px solid rgb(61, 70, 86);
+                                background-color: rgb(52, 59, 72);
+                                padding:2px;
+                            }
+                            QPushButton:hover {
+                                background-color: rgb(57, 65, 80);
+                            }
+                        """)
+                        widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+                    elif col_type == 'combobox':
+                        widget = QComboBox()
+                        widget.addItems(col_info.get('menu', {}).keys())
+                        widget.setStyleSheet("""
+                            QComboBox {
+                                font-size: 10pt;
+                                border: 2px solid rgb(61, 70, 86);
+                                background-color: rgb(52, 59, 72);
+                                padding: 2px;
+                            }
+                            QComboBox QAbstractItemView {
+                                background-color: rgb(52, 59, 72);
+                                selection-background-color: rgb(57, 65, 80);
+                            }
+                        """)
+                        widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+                    elif col_type == 'edit':
+                        widget = QLineEdit()
+                        widget.setText(val_value or "")
+                        widget.setStyleSheet("""
+                            QLineEdit {
+                                font-size: 10pt;
+                                border: 2px solid rgb(61, 70, 86);
+                                background-color: rgb(52, 59, 72);
+                                padding: 2px;
+                            }
+                        """)
+                        widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+                    # 각 열의 비율에 따른 너비 설정
+                    bit_ratio = bit_size / total_bits
+                    col_span = max(1, int(bit_ratio * 7))  # 최소 1, 최대 7의 크기
+
+                    # 수직 레이아웃을 사용하여 두 Label을 합침
+                    vertical_layout = QVBoxLayout()
+                    vertical_layout.addWidget(name_label)
+                    vertical_layout.addWidget(widget)
+
+                    # QWidget을 사용하여 레이아웃을 담음
+                    container_widget = QWidget()
+                    container_widget.setLayout(vertical_layout)
+
+                    # 컨테이너 위젯을 그리드 레이아웃에 추가
+                    widgets.gridLayout_pannel_main.addWidget(container_widget, row_index, col_start_index, 1, col_span)
+                    col_start_index += col_span  # 다음 열의 시작 위치 업데이트
 
     def handle_did_change(self):
+
+        widgets.comboBox_did.setStyleSheet("""
+                        QComboBox {
+                            color: rgb(221, 221, 221);
+                            background-color: rgb(33, 37, 43);
+                        }
+                        QComboBox QAbstractItemView {
+                            color: rgb(135, 206, 250);
+                            background-color: rgb(33, 37, 43);
+                        }
+                    """)
         # 라디오 버튼의 autoExclusive 속성 비활성화
         widgets.radioButton_read.setAutoExclusive(False)
         widgets.radioButton_write.setAutoExclusive(False)

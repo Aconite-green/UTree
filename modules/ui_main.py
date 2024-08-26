@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainBxEEDz.ui'
+## Form generated from reading UI file 'mainACCsUs.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.7.2
 ##
@@ -28,7 +28,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1096, 666)
+        MainWindow.resize(1285, 773)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -1327,10 +1327,10 @@ class Ui_MainWindow(object):
         self.comboBox_can.setStyleSheet(u" background-color: rgb(27, 29, 35);")
         self.groupBox_pannel = QGroupBox(self.widgets_workspace)
         self.groupBox_pannel.setObjectName(u"groupBox_pannel")
-        self.groupBox_pannel.setGeometry(QRect(0, 50, 751, 491))
+        self.groupBox_pannel.setGeometry(QRect(0, 50, 941, 601))
         self.horizontalLayoutWidget = QWidget(self.groupBox_pannel)
         self.horizontalLayoutWidget.setObjectName(u"horizontalLayoutWidget")
-        self.horizontalLayoutWidget.setGeometry(QRect(0, 20, 751, 52))
+        self.horizontalLayoutWidget.setGeometry(QRect(0, 20, 941, 52))
         self.horizontalLayout_pannel_top = QHBoxLayout(self.horizontalLayoutWidget)
         self.horizontalLayout_pannel_top.setSpacing(3)
         self.horizontalLayout_pannel_top.setObjectName(u"horizontalLayout_pannel_top")
@@ -1383,8 +1383,9 @@ class Ui_MainWindow(object):
 
         self.gridLayoutWidget = QWidget(self.groupBox_pannel)
         self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
-        self.gridLayoutWidget.setGeometry(QRect(0, 80, 751, 411))
+        self.gridLayoutWidget.setGeometry(QRect(0, 80, 941, 521))
         self.gridLayout_pannel_main = QGridLayout(self.gridLayoutWidget)
+        self.gridLayout_pannel_main.setSpacing(0)
         self.gridLayout_pannel_main.setObjectName(u"gridLayout_pannel_main")
         self.gridLayout_pannel_main.setContentsMargins(6, 0, 6, 6)
         self.stackedWidget.addWidget(self.widgets_workspace)
