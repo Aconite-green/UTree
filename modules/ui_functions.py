@@ -256,5 +256,91 @@ class UIFunctions(MainWindow):
     def show_utree_logo():
         result = "background-image: url(:/images/images/images/UTree_1024.png); background-position: center; background-repeat: no-repeat;"
         return result
+
+    def create_widget(col_type, options, is_read, current_val):
+        widget = None
+        style_sheet_deactive = """
+            font-size: 10pt;
+            border: 2px solid rgb(61, 70, 86);
+            background-color: rgb(61, 70, 86);
+            padding: 2px;
+        """
+        style_sheet_active = """
+            font-size: 10pt;
+            border: 2px solid rgb(61, 70, 86);
+            background-color: rgb(27, 29, 35);
+            color: rgb(135, 206, 250); 
+            padding: 2px;
+        """
+
+        pushbutton_style_sheet_active = """
+            QPushButton {
+                font-size: 10pt;
+                border: 2px solid rgb(27, 29, 35);
+                background-color: rgb(61, 70, 86);
+                color: rgb(135, 206, 250); 
+                padding: 2px;
+            }
+            QPushButton:hover {
+                background-color: rgb(27, 29, 35);
+            }
+            QPushButton:pressed {
+                background-color: rgb(27, 29, 35);
+            }
+            QPushButton:checked {
+                background-color: rgb(27, 29, 35);
+                border: 2px solid rgb(135, 206, 250);
+            }
+        """
+        pushbutton_style_sheet_disactive = """
+            QPushButton {
+                font-size: 10pt;
+                border: 2px solid rgb(27, 29, 35);
+                background-color: rgb(61, 70, 86);
+                color: rgb(135, 206, 250); 
+                padding: 2px;
+            }
+            QPushButton:hover {
+                background-color: rgb(27, 29, 35);
+            }
+            QPushButton:pressed {
+                background-color: rgb(27, 29, 35);
+            }
+            QPushButton:checked {
+                background-color: rgb(27, 29, 35);
+                border: 2px solid rgb(221, 221, 221);
+            }
+        """
+
+        if col_type == 'combobox':
+            widget = QComboBox()
+            widget.addItems(map(str, options))
+            widget.setStyleSheet(style_sheet_active if current_val else style_sheet_deactive)
+            if not is_read:
+                widget.setEnabled(True)
+            else:
+                widget.setEnabled(False)
+                widget.setCurrentText(str(current_val))
+
+        elif col_type == 'line_edit':
+            widget = QLineEdit()
+            widget.setText(str(current_val))
+            widget.setStyleSheet(style_sheet_active if current_val else style_sheet_deactive)
+            widget.setEnabled(not is_read)
+        
+        elif col_type == 'button':
+            widget = QPushButton()
+            widget.setChecked(bool(current_val))
+            widget.setEnabled(not is_read)
+
+            widget.setCheckable(True)
+            widget.setMouseTracking(True)  # 마우스 트래킹 활성화
+            widget.setStyleSheet(pushbutton_style_sheet_active if current_val else pushbutton_style_sheet_disactive)
+            
+        
+        if widget:
+            widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+
+        return widget
     # ///////////////////////////////////////////////////////////////
     # END - GUI DEFINITIONS

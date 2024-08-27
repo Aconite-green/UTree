@@ -36,15 +36,10 @@ class Test(UDSBase):
         write_service_id = [0x2E]
         identifier = [0x00, 0x80]
         record_values = {
-            'r': {
-                   'data1': {'byte': 1, 'coloms':{ 'a':{'bit':1,'val': ('bool',None)}, 'b':{'bit': 7, 'val':('hex',None)}}},
-                   'data2': {'byte':5,'coloms':{ 'a':{'bit':40,'val': ('bool',0x01)}}}
-                 },
-
-            'w': {
-                   'data1': {'byte': 1,  'coloms':{ 'a':{'bit':1, 'type':'button', 'val':None}, 'b':{'bit': 7, 'type':'combobox', 'val':None,'menu':{'menu1': 1, 'menu2':2}}}},
-                   'data2': {'byte':5, 'coloms':{'e': {'bit':40, 'type':'edit', 'val':None}}}
-                 }
+            
+            'data1': {'byte': 1, 'coloms':{ 'a':{'bit':1, 'type':['combobox', [0, 1]],'current_val': ['bool',1, 1]}}},
+            'data2': {'byte': 1, 'coloms':{ 'b':{'bit':7, 'type':['line_edit', "default"],'current_val': ['ascii',1, 1]}}},
+            'data3': {'byte': 1, 'coloms':{ 'c':{'bit':1, 'type':['button', 0],'current_val': ['bool',1, 1]}}}  
                         }
         super().__init__(read_service_id, write_service_id, identifier, record_values,)
 
