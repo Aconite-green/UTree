@@ -256,6 +256,8 @@ class UIFunctions(MainWindow):
     def show_utree_logo():
         result = "background-image: url(:/images/images/images/UTree_1024.png); background-position: center; background-repeat: no-repeat;"
         return result
+    
+    
 
     def create_widget(col_type, options, is_read, current_val):
         widget = None
@@ -276,7 +278,7 @@ class UIFunctions(MainWindow):
         pushbutton_style_sheet_active = """
             QPushButton {
                 font-size: 10pt;
-                border: 2px solid rgb(27, 29, 35);
+                border: 2px solid rgb(61, 70, 86);
                 background-color: rgb(61, 70, 86);
                 color: rgb(135, 206, 250); 
                 padding: 2px;
@@ -289,15 +291,26 @@ class UIFunctions(MainWindow):
             }
             QPushButton:checked {
                 background-color: rgb(27, 29, 35);
-                border: 2px solid rgb(135, 206, 250);
+            }
+           
+        """
+        pushbutton_disable_1 = """
+             QPushButton:disabled { 
+                border: 2px solid rgb(61, 70, 86);
+                background-color: rgb(27, 29, 35); 
+            }
+        """
+        pushbutton_disable_0 = """
+             QPushButton:disabled { 
+                border: 2px solid rgb(61, 70, 86);
+                background-color: rgb(61, 70, 86); 
             }
         """
         pushbutton_style_sheet_disactive = """
             QPushButton {
                 font-size: 10pt;
-                border: 2px solid rgb(27, 29, 35);
+                border: 2px solid rgb(61, 70, 86);
                 background-color: rgb(61, 70, 86);
-                color: rgb(135, 206, 250); 
                 padding: 2px;
             }
             QPushButton:hover {
@@ -308,34 +321,50 @@ class UIFunctions(MainWindow):
             }
             QPushButton:checked {
                 background-color: rgb(27, 29, 35);
-                border: 2px solid rgb(221, 221, 221);
             }
         """
 
         if col_type == 'combobox':
             widget = QComboBox()
-            widget.addItems(map(str, options))
-            widget.setStyleSheet(style_sheet_active if current_val else style_sheet_deactive)
-            if not is_read:
-                widget.setEnabled(True)
-            else:
-                widget.setEnabled(False)
-                widget.setCurrentText(str(current_val))
+            widget.addItems(list(options.keys()))
+            widget.setStyleSheet(style_sheet_active if current_val != None else style_sheet_deactive)
+            
+            widget.setEnabled(not is_read)
 
+            if current_val is not None:
+                key = next((k for k, v in options.items() if v == current_val), None)
+                if key:
+                    widget.setCurrentText(key)
+
+            widget.setEditable(True) 
+            widget.lineEdit().setAlignment(Qt.AlignCenter)
+            line_edit = widget.lineEdit()
+            line_edit.setAlignment(Qt.AlignCenter)
+            line_edit.setReadOnly(True)
+        
         elif col_type == 'line_edit':
             widget = QLineEdit()
             widget.setText(str(current_val))
             widget.setStyleSheet(style_sheet_active if current_val else style_sheet_deactive)
             widget.setEnabled(not is_read)
+            widget.setAlignment(Qt.AlignCenter)
         
         elif col_type == 'button':
             widget = QPushButton()
-            widget.setChecked(bool(current_val))
             widget.setEnabled(not is_read)
+            widget.setText('1' if current_val != None and current_val == 1 else '0')
+           
 
             widget.setCheckable(True)
-            widget.setMouseTracking(True)  # 마우스 트래킹 활성화
-            widget.setStyleSheet(pushbutton_style_sheet_active if current_val else pushbutton_style_sheet_disactive)
+            widget.setMouseTracking(False)
+            if current_val != None and current_val == 1:
+                style_sheet = pushbutton_style_sheet_active + pushbutton_disable_1
+            elif current_val != None and current_val == 0:
+                style_sheet = pushbutton_style_sheet_active + pushbutton_disable_0
+            else:
+                style_sheet = pushbutton_style_sheet_disactive
+            widget.setStyleSheet(style_sheet)
+            widget.setChecked(True if current_val != None and current_val == 1 else False)
             
         
         if widget:

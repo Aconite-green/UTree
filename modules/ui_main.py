@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainACCsUs.ui'
+## Form generated from reading UI file 'maingUJiLB.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.7.2
 ##
@@ -1351,11 +1351,13 @@ class Ui_MainWindow(object):
         self.verticalLayout_14.setObjectName(u"verticalLayout_14")
         self.radioButton_read = QRadioButton(self.horizontalLayoutWidget)
         self.radioButton_read.setObjectName(u"radioButton_read")
+        self.radioButton_read.setMaximumSize(QSize(80, 16777215))
 
         self.verticalLayout_14.addWidget(self.radioButton_read)
 
         self.radioButton_write = QRadioButton(self.horizontalLayoutWidget)
         self.radioButton_write.setObjectName(u"radioButton_write")
+        self.radioButton_write.setMaximumSize(QSize(80, 16777215))
 
         self.verticalLayout_14.addWidget(self.radioButton_write)
 
@@ -1366,7 +1368,7 @@ class Ui_MainWindow(object):
         self.lineEdit_cancmd.setObjectName(u"lineEdit_cancmd")
         sizePolicy4.setHeightForWidth(self.lineEdit_cancmd.sizePolicy().hasHeightForWidth())
         self.lineEdit_cancmd.setSizePolicy(sizePolicy4)
-        self.lineEdit_cancmd.setMinimumSize(QSize(415, 0))
+        self.lineEdit_cancmd.setMinimumSize(QSize(590, 0))
         self.lineEdit_cancmd.setStyleSheet(u" background-color: rgb(27, 29, 35);")
         self.lineEdit_cancmd.setReadOnly(True)
 
@@ -1387,7 +1389,7 @@ class Ui_MainWindow(object):
         self.gridLayout_pannel_main = QGridLayout(self.gridLayoutWidget)
         self.gridLayout_pannel_main.setSpacing(0)
         self.gridLayout_pannel_main.setObjectName(u"gridLayout_pannel_main")
-        self.gridLayout_pannel_main.setContentsMargins(6, 0, 6, 6)
+        self.gridLayout_pannel_main.setContentsMargins(3, 0, 3, 6)
         self.stackedWidget.addWidget(self.widgets_workspace)
 
         self.verticalLayout_15.addWidget(self.stackedWidget)

@@ -4,13 +4,28 @@ import os
 import importlib
 import sys
 from . can_manager import *
+from msl.loadlib import Client64, Server32
+
+class MyClient(Client64):
+    def __init__(self):
+        try:
+            print("Initializing MyClient...")
+            super(MyClient, self).__init__(module32='my_server')
+            print("MyClient initialized successfully.")
+        except Exception as e:
+            print(f"An error occurred in MyClient initialization: {e}")
+            raise
+
+    def generate_key(self, seed):
+        return self.request32('generate_key', seed)
 
 class UdsManager:
     def __init__(self ,uds_directory, error_handler, can_manager):
         self.uds_directory = os.path.abspath(uds_directory)
         self.error_handler = error_handler
-        self.did_map = None
         self.can_manager = can_manager
+        self.did_map = None
+        self.process_data = bytearray()
         self.current_instance = None  
 
 
@@ -31,8 +46,16 @@ class UdsManager:
             self.error_handler.handle_error("No DID selected or instance not created.")
             return {}
     
+    def copy_read_to_write(self):
+        if self.current_instance:
+            for data_key, data_info in self.current_instance.record_values.items():
+                for col_key, col_info in data_info['coloms'].items():
+                    read_val = col_info['current_val'][1]  # 읽기 영역 값
+                    col_info['current_val'][2] = read_val  # 쓰기 영역에 복사
+        else:
+            self.error_handler.handle_error("No current_instance available to copy values.")
+
     def update_record_value(self, row, col, value, is_read):
-        """현재 선택된 DID 클래스의 record_values를 업데이트"""
         if self.current_instance:
             try:
                 # record_values의 key와 col에 해당하는 current_val을 업데이트
@@ -47,14 +70,67 @@ class UdsManager:
                     # 쓰기 모드인 경우, current_val의 두 번째 인자(인덱스 2)를 업데이트
                     self.current_instance.record_values[record_key]['coloms'][col_key]['current_val'][2] = value
 
-                print(f"Updated {record_key} - {col_key}: {value} (is_read={is_read})")
+                # print(self.current_instance.record_values[record_key]['coloms'][col_key]['current_val'])
             except KeyError as e:
                 self.error_handler.handle_error(f"Error updating record value: {str(e)}")
         else:
             self.error_handler.handle_error("No DID selected or instance not created.")
 
+    def make_uds_cmd(self, is_read):
+        self.process_data.clear()
 
+        
+        if is_read:
+            self.process_data.extend(self.current_instance.read_service_id)
+            self.process_data.extend(self.current_instance.identifier)
+        else:
+            self.process_data.extend(self.current_instance.write_service_id)
+            self.process_data.extend(self.current_instance.identifier)
+            # 여기에 record_value 추가하는 함수 작성
+        
+        return True
 
+    def _ssesion_change_seed_reaquest(self):
+        
+        # change session
+        session_change_request = bytearray([0x10, 0x03])
+        self.can_manager.send_message(session_change_request)
+        self.can_manager.receive_message()
+
+        # seed request
+        seed_request = bytearray([0x27, 0x11])
+        self.can_manager.send_message(seed_request)
+        msg = self.can_manager.receive_message()
+        response_seed = bytearray(msg[-8:])
+
+        # generate key value using the 32-bit server
+        client = MyClient()
+        response_seed_bytes = bytes.fromhex(response_seed.hex())
+        key = client.generate_key(response_seed_bytes)
+        send_key = bytearray([0x27, 0x12])
+        send_key.extend(key)
+        self.can_manager.send_message(session_change_request)
+        self.can_manager.receive_message()
+        client.shutdown_server32()
+    
+    def process_uds_cmd(self, is_read, record_values):
+        try:
+            
+            self.can_manager.send_message(self.process_data)
+            response = self.can_manager.receive_message()
+            if is_read:
+                self.current_instance.read_parse(response, record_values)
+            return True
+
+        except Exception as e:
+            self.error_handler.handle_error(f"Error processing UDS command: {str(e)}")
+            return False
+    
+    
+    def get_uds_cmd(self):
+        data = [f'0x{b:02x}' for b in self.process_data]
+        formatted_data = ', '.join(data)
+        return formatted_data
     # INIT CONFIG UDS FILES
     # ///////////////////////////////////////////////////////////////
     def load_module_classes(self, module_name):

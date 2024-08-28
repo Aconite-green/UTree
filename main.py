@@ -84,6 +84,8 @@ class MainWindow(QMainWindow):
         self.error_handler = ErrorHandler(log_widget=widgets.plainTextEdit_log)
         self.can_manager = CanManager('./config_can', self.error_handler)
         self.uds_manager = UdsManager('./config_uds', self.error_handler, self.can_manager)
+        self.read_record = False 
+        self.record_values = None
 
         # SHOW APP
         # ///////////////////////////////////////////////////////////////
@@ -183,15 +185,35 @@ class MainWindow(QMainWindow):
             except Exception as e:
                 self.error_handler.handle_error(str(e))
     
+    def print_record_values(self, record_values, is_read):
+        for row_key, data_info in record_values.items():
+            print(f"Row: {row_key}")
+            for col_key, col_info in data_info['coloms'].items():
+                if is_read:
+                    current_val = col_info['current_val'][1]  # 읽기 모드의 current_val
+                    mode = "Read"
+                else:
+                    current_val = col_info['current_val'][2]  # 쓰기 모드의 current_val
+                    mode = "Write"
+
+                print(f"  Column: {col_key} | {mode} Value: {current_val}")
+            print()  # 행 간에 빈 줄 추가
+
     def handle_send(self):
-        # btn = self.sender()
-        try:
-            test_msg = bytearray([0x22, 0x00, 0x80])
-            self.can_manager.send_message(test_msg)
-            self.can_manager.receive_message()
-        except Exception as e:
-                self.error_handler.handle_error(str(e))
-    
+
+        if widgets.radioButton_read.isChecked() or widgets.radioButton_write.isChecked():
+            is_read = widgets.radioButton_read.isChecked()
+            self.uds_manager.process_uds_cmd(is_read, self.record_values)
+            self.populate_grid(self.record_values, is_read=is_read)
+
+            if not is_read:
+                data = self.uds_manager.get_uds_cmd()
+                widgets.lineEdit_cancmd.setText(data)
+            else:
+                self.read_record = True
+        else:
+            self.error_handler.log_message("please select Write or Read Button")
+        
     def handle_read(self, checked):
         if checked:
             widgets.radioButton_write.setChecked(False)
@@ -205,9 +227,17 @@ class MainWindow(QMainWindow):
                         background-color: rgb(33, 37, 43);
                     }
                 """)
-            
-            self.update_grid_based_on_selection(is_read=True)
-
+        if not self.read_record: 
+            selected_did = widgets.comboBox_did.currentText()
+            self.uds_manager.select_did(selected_did)
+            self.record_values = self.uds_manager.get_record_values()
+        
+        if self.record_values is not None:
+            self.populate_grid(self.record_values, is_read=True)
+            self.uds_manager.make_uds_cmd(is_read=True)
+            data = self.uds_manager.get_uds_cmd()
+            widgets.lineEdit_cancmd.setText(data)
+        
     def handle_write(self, checked):
         if checked:
             widgets.radioButton_read.setChecked(False)
@@ -221,16 +251,20 @@ class MainWindow(QMainWindow):
                         background-color: rgb(33, 37, 43);
                     }
                 """)
-            self.update_grid_based_on_selection(is_read=False)
-    
-    def update_grid_based_on_selection(self, is_read):
-        selected_did = widgets.comboBox_did.currentText()
-        self.uds_manager.select_did(selected_did)
-        record_values = self.uds_manager.get_record_values()
-        
-        self.populate_grid_with_buttons(record_values, is_read)
+        if not self.read_record: 
+            selected_did = widgets.comboBox_did.currentText()
+            self.uds_manager.select_did(selected_did)
+            self.record_values = self.uds_manager.get_record_values()
+        else:
+            self.uds_manager.copy_read_to_write()
 
-    def populate_grid_with_buttons(self, record_values, is_read):
+        if self.record_values is not None:
+            self.populate_grid(self.record_values, is_read=False)
+            self.uds_manager.make_uds_cmd(is_read=False)
+            data = self.uds_manager.get_uds_cmd()
+            widgets.lineEdit_cancmd.setText(data)
+
+    def populate_grid(self, record_values, is_read):
         # 기존 버튼들 삭제
         while widgets.gridLayout_pannel_main.count():
             child = widgets.gridLayout_pannel_main.takeAt(0)
@@ -240,6 +274,7 @@ class MainWindow(QMainWindow):
         for row_index, (key, data_info) in enumerate(record_values.items()):
             label = QLabel(key)
             label.setStyleSheet("font-size: 12pt; font-weight: bold;border: 2px solid rgb(61, 70, 86);")
+            label.setAlignment(Qt.AlignCenter)
             widgets.gridLayout_pannel_main.addWidget(label, row_index, 0)
 
             total_bits = sum(col['bit'] for col in data_info['coloms'].values())
@@ -255,19 +290,18 @@ class MainWindow(QMainWindow):
                 # 공통적인 라벨 설정
                 name_label = QLabel(col_key)
                 name_label.setStyleSheet("""
-                    font-size: 12pt; 
-                    padding: 5px;
+                    font-size: 9pt; 
+                    padding: 1px;
                     color: rgb(221, 221, 221);
-                    border: 2px solid rgb(61, 70, 86);
+                    border: 1px solid rgb(61, 70, 86);
                     background-color: transparent;
                 """)
                 name_label.setAlignment(Qt.AlignCenter)
-                name_label.setFixedHeight(35)
-
+                name_label.setFixedHeight(25)
+                
                 # 위젯 생성 및 설정
-
                 widget = UIFunctions.create_widget(col_type, options, is_read, current_val)
-                # 이벤트 연결
+                
                 if widget and not is_read:
                     if col_type == 'combobox':
                         widget.currentIndexChanged.connect(
@@ -282,11 +316,15 @@ class MainWindow(QMainWindow):
                     elif col_type == 'button':
                         widget.clicked.connect(
                             lambda checked, row=row_index, col=col_key, widget=widget: 
-                            self.uds_manager.update_record_value(row, col, '1' if checked else '0', is_read)
+                            (
+                                widget.setText('1' if checked else '0'),  # 버튼의 텍스트를 1 또는 0으로 설정
+                                self.uds_manager.update_record_value(row, col, '1' if checked else '0', is_read)
+                            )
                         )
+
                 if widget:
                     bit_ratio = bit_size / total_bits
-                    col_span = max(1, int(bit_ratio * 7))  # 최소 1, 최대 7의 크기
+                    col_span = max(1, int(bit_ratio * 8))  # 최소 1, 최대 8의 크기
 
                     vertical_layout = QVBoxLayout()
                     vertical_layout.addWidget(name_label)
@@ -298,9 +336,11 @@ class MainWindow(QMainWindow):
                     widgets.gridLayout_pannel_main.addWidget(container_widget, row_index, col_start_index, 1, col_span)
                     col_start_index += col_span
 
+           
 
     def handle_did_change(self):
-
+        
+        self.read_record = False
         widgets.comboBox_did.setStyleSheet("""
                         QComboBox {
                             color: rgb(221, 221, 221);

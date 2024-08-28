@@ -9,9 +9,11 @@ class UDSBase:
     def get_record_values(self):
         return self.record_values
 
-
     def clear_byte_array(self):
         return self.byte_array.clear()
 
     def get_byte_array(self):
         return self.byte_array
+    
+    def get_uds_cmd_by_record_values():
+        pass

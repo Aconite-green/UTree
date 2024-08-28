@@ -264,10 +264,6 @@ class CanManager:
     def receive_message(self):
         try:
             msg = self.layer.recv(block=True, timeout=2.0)
-            if msg:
-                log_message = msg.hex().upper()
-                self.error_handler.log_message(log_message)
-            else:
-                self.error_handler.log_message("No message received within the timeout period.")
+            return msg
         except Exception as e:
             self.error_handler.handle_error(str(e))
