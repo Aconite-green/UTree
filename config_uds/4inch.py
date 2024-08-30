@@ -5,6 +5,7 @@ class EOLCoding(UDSBase):
         read_service_id = [0x22]
         write_service_id = [0x2E]
         identifier = [0x00, 0x60]
+        dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
         record_values = {
             'data1': {'coloms':{'ECO':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
                                 'EPB':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
@@ -64,7 +65,7 @@ class EOLCoding(UDSBase):
             
             }
         
-        super().__init__(read_service_id, write_service_id, identifier, record_values)
+        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path)
 
     def read_parse(self, can_message, record_values):
         if not isinstance(can_message, bytearray) or len(can_message) < 2:
@@ -107,38 +108,164 @@ class EOLCoding(UDSBase):
             if bit_offset > 0:
                 byte_index += 1
                 bit_offset = 0
-
-
-
+    
+    def send_parse(self, record_values):
+        byte_array = bytearray()
+        current_byte = 0
+        bit_offset = 0
+    
+        for data_key, data_info in record_values.items():
+            for col_key, col_info in data_info['coloms'].items():
+                bit_size = col_info['bit']
+                write_val = col_info['current_val'][2]  # 쓰기 영역 값
+                
+                if write_val is None:
+                    write_val = 0  # None이면 0으로 대체
+    
+                # 각 비트별로 값을 byte_array에 저장
+                for i in range(bit_size):
+                    bit = (write_val >> (bit_size - 1 - i)) & 1
+                    current_byte = (current_byte << 1) | bit
+                    bit_offset += 1
+    
+                    # 현재 바이트가 채워졌다면 byte_array에 추가
+                    if bit_offset == 8:
+                        byte_array.append(current_byte)
+                        current_byte = 0
+                        bit_offset = 0
+    
+        # 남아 있는 비트들이 있으면 마지막 바이트에 추가
+        if bit_offset > 0:
+            current_byte = current_byte << (8 - bit_offset)  # 남은 비트들을 0으로 채움
+            byte_array.append(current_byte)
+    
+        return byte_array
 
 class CarInfo(UDSBase):
     def __init__(self):
         read_service_id = [0x22]
         write_service_id = [0x2E]
         identifier = [0x00, 0x80]
+        dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
         record_values = {
-            'dealer_id': {'r':0x00, 'w':0x00},
-            'date' : {'r':0x00, 'w':0x00},
-            'mileage' : {'r':0x00, 'w':0x00},
-            'checksum' : {'r':0x00, 'w':0x00},
+            'data1': { 'coloms':{ 'dealer_id':{'bit':40, 'type':['line_edit', "default"],'current_val': ['ascii',None, None]}}},
+            'data2': { 'coloms':{ 'date':{'bit':32, 'type':['line_edit', "default"],'current_val': ['ascii',None, None]}}},
+            'data3': { 'coloms':{ 'mileage':{'bit':32, 'type':['line_edit', "default"],'current_val': ['ascii',None, None]}}},
+            'data4': { 'coloms':{ 'checksum':{'bit':8, 'type':['line_edit', "default"],'current_val': ['ascii',None, None]}}},
         }
-        super().__init__(read_service_id, write_service_id, identifier, record_values,)
+        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path)
 
-class Test(UDSBase):
-    def __init__(self):
-        read_service_id = [0x22]
-        write_service_id = [0x2E]
-        identifier = [0x00, 0x80]
-        record_values = {
-            
-            'data1': { 'coloms':{ 'a':{'bit':1, 'type':['combobox', {'0':0, '1':1}],'current_val': ['bool',None, None]}}},
-            'data2': { 'coloms':{ 'b':{'bit':7, 'type':['line_edit', "default"],'current_val': ['ascii',1, 1]}}},
-            'btn1': {'coloms':{ 'c':{'bit':1, 'type':['button', 0],'current_val': ['bool',1, 1]}}},
-            'btn0': { 'coloms':{ 'c':{'bit':1, 'type':['button', 0],'current_val': ['bool',0, 0]}}},
-            'btnNone': {'coloms':{ 'c':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]}}}  
-                        }
+
+    def read_parse(self, can_message, record_values):
+        if not isinstance(can_message, bytearray) or len(can_message) < 16:
+            raise ValueError("Invalid CAN message")
+
+        # Service ID와 Identifier 길이를 계산
+        header_length = len(self.read_service_id) + len(self.identifier)
+
+        # 데이터 페이로드 시작 부분을 설정
+        payload_start = header_length
+
+        # 실제 데이터 페이로드 추출
+        data_payload = can_message[payload_start:]
+
+        byte_index = 0
+
+        for data_key, data_info in record_values.items():
+            for col_key, col_info in data_info['coloms'].items():
+                bit_size = col_info['bit']
+                byte_size = bit_size // 8  # bit를 byte로 변환
+
+                # 값을 추출하여 current_val[1]에 업데이트
+                extracted_bytes = data_payload[byte_index:byte_index + byte_size]
+
+                if col_key == 'dealer_id':
+                    try:
+                        # ASCII로 변환
+                        current_value = extracted_bytes.decode('ascii')             
+                        # '\x00\x00\x00\x00\x00'인 경우 None으로 설정
+                        if extracted_bytes == b'\x00\x00\x00\x00\x00':
+                            current_value = None                
+                    except UnicodeDecodeError:
+                        # ASCII로 변환할 수 없는 경우 None으로 설정
+                        current_value = None
+
+                elif col_key == 'date':
+                    if extracted_bytes == b'\x00\x00\x00\x00':
+                        current_value = None
+                    else:
+                        current_value = hex(int.from_bytes(extracted_bytes, byteorder='big'))[2:].upper()
+                elif col_key == 'mileage':
+                    if extracted_bytes == b'\x00\x00\x00\x00':
+                        current_value = None
+                    else:
+                        # 정수형으로 변환
+                        current_value = int.from_bytes(extracted_bytes, byteorder='big')
+                else:
+                    # 기본 정수형 처리
+                    current_value = int.from_bytes(extracted_bytes, byteorder='big')
+
+                col_info['current_val'][1] = current_value
+
+                byte_index += byte_size  # 다음 데이터로 이동
+
+    def send_parse(self, record_values):
+        byte_array = bytearray()
+
+        # 1. 딜러 ID (DealerID, 5Byte, ASCII)
+        dealer_id = record_values['data1']['coloms']['dealer_id']['current_val'][2]
+        if dealer_id is None:
+            dealer_id = ''
+        dealer_id_bytes = dealer_id.encode('ascii')
+        byte_array.extend(dealer_id_bytes.ljust(5, b'\x00'))  # 5바이트로 맞추기 위해 0으로 패딩
+
+        # 2. 수정 날짜 (Date, 4Byte, DEC)
+        date = record_values['data2']['coloms']['date']['current_val'][2]
+
+        try:
+            # date를 문자열로 변환한 후, 각 부분을 분리
+            date_str = str(int(date))  # date가 숫자 형태로 변환 가능한 경우 변환, 그렇지 않으면 예외 처리
+            if len(date_str) == 8:
+                date_str
+
+                # 각각의 값을 바이트로 변환하여 결합
+                date_bytes = bytes([int(date_str[:2], 16), int(date_str[2:4], 16), int(date_str[4:6], 16), int(date_str[6:], 16)])
+            else:
+                raise ValueError("Invalid date format")
+        except (ValueError, TypeError):
+            # 변환이 불가능한 경우 0x00000000으로 설정
+            date_bytes = b'\x00\x00\x00\x00'
+
+        byte_array.extend(date_bytes)
+
         
-        super().__init__(read_service_id, write_service_id, identifier, record_values,)
+
+        # 3. 오도미터 (Mileage, 4Byte, HEX → DEC 변환)
+        mileage_bytes = b'\x00\x00\x00\x00'  # 기본값 초기화
+        mileage = record_values['data3']['coloms']['mileage']['current_val'][2]
+        try:
+            mileage = int(mileage)
+            mileage = min(mileage, 1599999)  # km 사양 기준으로 최대 값 제한
+            mileage_bytes = mileage.to_bytes(4, byteorder='big')
+            print(mileage_bytes.hex().upper())
+            
+        except (ValueError, TypeError):
+            mileage_bytes = b'\x00\x00\x00\x00'  # 오류 발생 시 기본값 설정
+
+        byte_array.extend(mileage_bytes)
+
+        # 4. Check Sum (1Byte)
+        # Checksum 계산 방법:
+        # 딜러 ID, 수정 날짜, 오도미터 값의 전체 합을 계산하고, 마지막 2자리의 인버트 값을 계산
+        checksum = 0
+        for byte in byte_array:
+            checksum += byte
+        checksum = checksum & 0xFF  # 전체 합의 마지막 1바이트 추출
+        checksum = ~checksum & 0xFF  # Invert (보수 계산)
+        byte_array.append(checksum)
+
+        return byte_array
+
 
 
 
@@ -146,6 +273,5 @@ class Test(UDSBase):
 # 클래스 이름과 실제 클래스를 매핑하는 딕셔너리
 did_map = {
     "EOLCoding": EOLCoding,
-    # "CarInfo": CarInfo,
-    "Test": Test
+    "CarInfo": CarInfo,
 }

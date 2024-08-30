@@ -4,8 +4,9 @@ import os
 import importlib
 import sys
 from . can_manager import *
+from . my_server import *
 from msl.loadlib import Client64, Server32
-
+import atexit
 class MyClient(Client64):
     def __init__(self):
         try:
@@ -19,6 +20,7 @@ class MyClient(Client64):
     def generate_key(self, seed):
         return self.request32('generate_key', seed)
 
+
 class UdsManager:
     def __init__(self ,uds_directory, error_handler, can_manager):
         self.uds_directory = os.path.abspath(uds_directory)
@@ -27,7 +29,8 @@ class UdsManager:
         self.did_map = None
         self.process_data = bytearray()
         self.current_instance = None  
-
+        self.client = MyClient()
+        atexit.register(self.client.shutdown_server32)
 
 
     # DID Utility
@@ -55,28 +58,58 @@ class UdsManager:
         else:
             self.error_handler.handle_error("No current_instance available to copy values.")
 
-    def update_record_value(self, row, col, value, is_read):
+    def copy_write_to_read(self):
+        if self.current_instance:
+            for data_key, data_info in self.current_instance.record_values.items():
+                for col_key, col_info in data_info['coloms'].items():
+                    write_val = col_info['current_val'][2]  # 쓰기 영역 값
+                    col_info['current_val'][1] = write_val  # 읽기 영역에 복사
+        else:
+            self.error_handler.handle_error("No current_instance available to copy values.")
+
+    def update_record_value(self, record_values, row, col, value):
         if self.current_instance:
             try:
                 # record_values의 key와 col에 해당하는 current_val을 업데이트
-                record_key = list(self.current_instance.record_values.keys())[row]
+                record_key = list(record_values.keys())[row]
                 col_key = col
 
-                # 읽기 모드인지 쓰기 모드인지에 따라 current_val의 위치를 변경
-                if is_read:
-                    # 읽기 모드인 경우, current_val의 첫 번째 인자(인덱스 1)를 업데이트
-                    self.current_instance.record_values[record_key]['coloms'][col_key]['current_val'][1] = value
-                else:
-                    # 쓰기 모드인 경우, current_val의 두 번째 인자(인덱스 2)를 업데이트
-                    self.current_instance.record_values[record_key]['coloms'][col_key]['current_val'][2] = value
+                
+                record_values[record_key]['coloms'][col_key]['current_val'][2] = value[0]
 
-                # print(self.current_instance.record_values[record_key]['coloms'][col_key]['current_val'])
+                print(record_values[record_key]['coloms'][col_key]['current_val'][2])
             except KeyError as e:
                 self.error_handler.handle_error(f"Error updating record value: {str(e)}")
         else:
             self.error_handler.handle_error("No DID selected or instance not created.")
 
-    def make_uds_cmd(self, is_read):
+        return record_values
+    
+    def get_val_for_style_sheet(self, record_values, row, col, value, col_type):
+        if not record_values:
+            self.error_handler.handle_error("Record values are empty or None.")
+            return None
+
+        try:
+            # record_values의 key와 col에 해당하는 current_val을 업데이트
+            record_key = list(record_values.keys())[row]
+            col_key = col
+            if col_type == "combobox":
+                col_info = record_values.get(record_key, {}).get('coloms', {}).get(col_key, None)
+                options_dict = col_info.get('type', [None, {}])[1]
+                val = options_dict.get(value, None)
+            else:
+                val = value
+            
+            read_val = record_values[record_key]['coloms'][col_key]['current_val'][1]
+            
+            return [val, read_val]
+
+        except Exception as e:
+            self.error_handler.handle_error(f"An unexpected error occurred: {str(e)}")
+            return None
+
+    def make_uds_cmd(self, is_read, record_values):
         self.process_data.clear()
 
         
@@ -86,7 +119,7 @@ class UdsManager:
         else:
             self.process_data.extend(self.current_instance.write_service_id)
             self.process_data.extend(self.current_instance.identifier)
-            # 여기에 record_value 추가하는 함수 작성
+            self.process_data.extend(self.current_instance.send_parse(record_values))
         
         return True
 
@@ -95,42 +128,66 @@ class UdsManager:
         # change session
         session_change_request = bytearray([0x10, 0x03])
         self.can_manager.send_message(session_change_request)
-        self.can_manager.receive_message()
-
+        msg = self.can_manager.receive_message()
+        print(msg.hex().upper())
+        
+        
+        
         # seed request
         seed_request = bytearray([0x27, 0x11])
         self.can_manager.send_message(seed_request)
         msg = self.can_manager.receive_message()
+        print(msg.hex().upper())
         response_seed = bytearray(msg[-8:])
 
         # generate key value using the 32-bit server
-        client = MyClient()
+          # MyClient를 DLL 경로와 함께 초기화 
+        
         response_seed_bytes = bytes.fromhex(response_seed.hex())
-        key = client.generate_key(response_seed_bytes)
+        key = self.client.generate_key(response_seed_bytes)
         send_key = bytearray([0x27, 0x12])
         send_key.extend(key)
-        self.can_manager.send_message(session_change_request)
-        self.can_manager.receive_message()
-        client.shutdown_server32()
-    
+        self.can_manager.send_message(send_key)
+        msg = self.can_manager.receive_message() 
+        print(f"end of session and seed request: {msg.hex().upper()}")
+
+
     def process_uds_cmd(self, is_read, record_values):
         try:
-            
-            self.can_manager.send_message(self.process_data)
-            response = self.can_manager.receive_message()
             if is_read:
+                self.can_manager.send_message(self.process_data)
+                response = self.can_manager.receive_message()
+                print(response.hex().upper())
                 self.current_instance.read_parse(response, record_values)
+                self.error_handler.log_message(response.hex().upper())
+            else:
+                self._ssesion_change_seed_reaquest()
+                self.can_manager.send_message(self.process_data)
+                response = self.can_manager.receive_message()
+                self.error_handler.log_message(response.hex().upper())
+                
             return True
 
         except Exception as e:
             self.error_handler.handle_error(f"Error processing UDS command: {str(e)}")
             return False
     
-    
     def get_uds_cmd(self):
+        print(self.process_data.hex().upper())
         data = [f'0x{b:02x}' for b in self.process_data]
         formatted_data = ', '.join(data)
         return formatted_data
+    
+    def map_combobox_value(self, widget, record_values,col_key):
+        # 선택된 텍스트에 해당하는 값을 반환하는 함수
+        selected_text = widget.currentText()
+        for data_key, data_info in record_values.items():
+            if col_key in data_info['coloms']:
+                col_info = data_info['coloms'][col_key]
+                if col_info['type'][0] == 'combobox':
+                    options = col_info['type'][1]
+                    return options.get(selected_text, None)
+        return None
     # INIT CONFIG UDS FILES
     # ///////////////////////////////////////////////////////////////
     def load_module_classes(self, module_name):
@@ -170,3 +227,5 @@ class UdsManager:
         except Exception as e:
             self.error_handler.handle_error(f"Error getting UDS file names: {str(e)}")
             return []
+
+        

@@ -23,6 +23,70 @@ from main import *
 GLOBAL_STATE = False
 GLOBAL_TITLE_BAR = True
 
+class StyleSheets:
+    STYLE_SHEET_DEACTIVE = """
+        font-size: 10pt;
+        border: 2px solid rgb(61, 70, 86);
+        background-color: rgb(61, 70, 86);
+        padding: 2px;
+    """
+    STYLE_SHEET_ACTIVE = """
+        font-size: 10pt;
+        border: 2px solid rgb(61, 70, 86);
+        background-color: rgb(27, 29, 35);
+        color: rgb(135, 206, 250); 
+        padding: 2px;
+    """
+
+    PUSHBUTTON_STYLE_SHEET_ACTIVE = """
+        QPushButton {
+            font-size: 10pt;
+            border: 2px solid rgb(61, 70, 86);
+            background-color: rgb(61, 70, 86);
+            color: rgb(135, 206, 250); 
+            padding: 2px;
+        }
+        QPushButton:hover {
+            background-color: rgb(27, 29, 35);
+        }
+        QPushButton:pressed {
+            background-color: rgb(27, 29, 35);
+        }
+        QPushButton:checked {
+            background-color: rgb(27, 29, 35);
+        }
+    """
+
+    PUSHBUTTON_DISABLE_1 = """
+        QPushButton:disabled { 
+            border: 2px solid rgb(61, 70, 86);
+            background-color: rgb(27, 29, 35); 
+        }
+    """
+    PUSHBUTTON_DISABLE_0 = """
+        QPushButton:disabled { 
+            border: 2px solid rgb(61, 70, 86);
+            background-color: rgb(61, 70, 86); 
+        }
+    """
+    PUSHBUTTON_STYLE_SHEET_DEACTIVE = """
+        QPushButton {
+            font-size: 10pt;
+            border: 2px solid rgb(61, 70, 86);
+            background-color: rgb(61, 70, 86);
+            padding: 2px;
+        }
+        QPushButton:hover {
+            background-color: rgb(27, 29, 35);
+        }
+        QPushButton:pressed {
+            background-color: rgb(27, 29, 35);
+        }
+        QPushButton:checked {
+            background-color: rgb(27, 29, 35);
+        }
+    """
+
 class UIFunctions(MainWindow):
     # MAXIMIZE/RESTORE
     # ///////////////////////////////////////////////////////////////
@@ -257,78 +321,16 @@ class UIFunctions(MainWindow):
         result = "background-image: url(:/images/images/images/UTree_1024.png); background-position: center; background-repeat: no-repeat;"
         return result
     
-    
-
+    # ///////////////////////////////////////////////////////////////
+    # END - GUI DEFINITIONS
     def create_widget(col_type, options, is_read, current_val):
         widget = None
-        style_sheet_deactive = """
-            font-size: 10pt;
-            border: 2px solid rgb(61, 70, 86);
-            background-color: rgb(61, 70, 86);
-            padding: 2px;
-        """
-        style_sheet_active = """
-            font-size: 10pt;
-            border: 2px solid rgb(61, 70, 86);
-            background-color: rgb(27, 29, 35);
-            color: rgb(135, 206, 250); 
-            padding: 2px;
-        """
-
-        pushbutton_style_sheet_active = """
-            QPushButton {
-                font-size: 10pt;
-                border: 2px solid rgb(61, 70, 86);
-                background-color: rgb(61, 70, 86);
-                color: rgb(135, 206, 250); 
-                padding: 2px;
-            }
-            QPushButton:hover {
-                background-color: rgb(27, 29, 35);
-            }
-            QPushButton:pressed {
-                background-color: rgb(27, 29, 35);
-            }
-            QPushButton:checked {
-                background-color: rgb(27, 29, 35);
-            }
-           
-        """
-        pushbutton_disable_1 = """
-             QPushButton:disabled { 
-                border: 2px solid rgb(61, 70, 86);
-                background-color: rgb(27, 29, 35); 
-            }
-        """
-        pushbutton_disable_0 = """
-             QPushButton:disabled { 
-                border: 2px solid rgb(61, 70, 86);
-                background-color: rgb(61, 70, 86); 
-            }
-        """
-        pushbutton_style_sheet_disactive = """
-            QPushButton {
-                font-size: 10pt;
-                border: 2px solid rgb(61, 70, 86);
-                background-color: rgb(61, 70, 86);
-                padding: 2px;
-            }
-            QPushButton:hover {
-                background-color: rgb(27, 29, 35);
-            }
-            QPushButton:pressed {
-                background-color: rgb(27, 29, 35);
-            }
-            QPushButton:checked {
-                background-color: rgb(27, 29, 35);
-            }
-        """
 
         if col_type == 'combobox':
             widget = QComboBox()
             widget.addItems(list(options.keys()))
-            widget.setStyleSheet(style_sheet_active if current_val != None else style_sheet_deactive)
-            
+            widget.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE if current_val is not None else StyleSheets.STYLE_SHEET_DEACTIVE)
+
             widget.setEnabled(not is_read)
 
             if current_val is not None:
@@ -341,35 +343,32 @@ class UIFunctions(MainWindow):
             line_edit = widget.lineEdit()
             line_edit.setAlignment(Qt.AlignCenter)
             line_edit.setReadOnly(True)
-        
+
         elif col_type == 'line_edit':
             widget = QLineEdit()
             widget.setText(str(current_val))
-            widget.setStyleSheet(style_sheet_active if current_val else style_sheet_deactive)
+            widget.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE if current_val else StyleSheets.STYLE_SHEET_DEACTIVE)
             widget.setEnabled(not is_read)
             widget.setAlignment(Qt.AlignCenter)
-        
+
         elif col_type == 'button':
             widget = QPushButton()
             widget.setEnabled(not is_read)
-            widget.setText('1' if current_val != None and current_val == 1 else '0')
-           
+            widget.setText('1' if current_val is not None and current_val == 1 else '0')
 
             widget.setCheckable(True)
             widget.setMouseTracking(False)
-            if current_val != None and current_val == 1:
-                style_sheet = pushbutton_style_sheet_active + pushbutton_disable_1
-            elif current_val != None and current_val == 0:
-                style_sheet = pushbutton_style_sheet_active + pushbutton_disable_0
+            if current_val is not None and current_val == 1:
+                style_sheet = StyleSheets.PUSHBUTTON_STYLE_SHEET_ACTIVE + StyleSheets.PUSHBUTTON_DISABLE_1
+            elif current_val is not None and current_val == 0:
+                style_sheet = StyleSheets.PUSHBUTTON_STYLE_SHEET_ACTIVE + StyleSheets.PUSHBUTTON_DISABLE_0
             else:
-                style_sheet = pushbutton_style_sheet_disactive
+                style_sheet = StyleSheets.PUSHBUTTON_STYLE_SHEET_DEACTIVE
             widget.setStyleSheet(style_sheet)
-            widget.setChecked(True if current_val != None and current_val == 1 else False)
-            
-        
+            widget.setChecked(True if current_val is not None and current_val == 1 else False)
+
+
         if widget:
             widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
 
         return widget
-    # ///////////////////////////////////////////////////////////////
-    # END - GUI DEFINITIONS

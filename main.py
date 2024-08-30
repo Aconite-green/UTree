@@ -26,6 +26,9 @@ from modules import *
 from widgets import *
 os.environ["QT_FONT_DPI"] = "96" # FIX Problem for High DPI and Scale above 100%
 
+modules_path = r'D:\tool\common\UTree\modules'
+if modules_path not in sys.path:
+    sys.path.append(modules_path)
 # SET AS GLOBAL WIDGETS
 # ///////////////////////////////////////////////////////////////
 widgets = None
@@ -207,8 +210,7 @@ class MainWindow(QMainWindow):
             self.populate_grid(self.record_values, is_read=is_read)
 
             if not is_read:
-                data = self.uds_manager.get_uds_cmd()
-                widgets.lineEdit_cancmd.setText(data)
+                self.uds_manager.copy_write_to_read()
             else:
                 self.read_record = True
         else:
@@ -227,16 +229,15 @@ class MainWindow(QMainWindow):
                         background-color: rgb(33, 37, 43);
                     }
                 """)
-        if not self.read_record: 
             selected_did = widgets.comboBox_did.currentText()
             self.uds_manager.select_did(selected_did)
             self.record_values = self.uds_manager.get_record_values()
         
-        if self.record_values is not None:
-            self.populate_grid(self.record_values, is_read=True)
-            self.uds_manager.make_uds_cmd(is_read=True)
-            data = self.uds_manager.get_uds_cmd()
-            widgets.lineEdit_cancmd.setText(data)
+            if self.record_values is not None:
+                self.populate_grid(self.record_values, is_read=True)
+                self.uds_manager.make_uds_cmd(is_read=True, record_values=self.record_values)
+                data = self.uds_manager.get_uds_cmd()
+                widgets.lineEdit_cancmd.setText(data)
         
     def handle_write(self, checked):
         if checked:
@@ -251,18 +252,18 @@ class MainWindow(QMainWindow):
                         background-color: rgb(33, 37, 43);
                     }
                 """)
-        if not self.read_record: 
-            selected_did = widgets.comboBox_did.currentText()
-            self.uds_manager.select_did(selected_did)
-            self.record_values = self.uds_manager.get_record_values()
-        else:
-            self.uds_manager.copy_read_to_write()
+            if not self.read_record: 
+                selected_did = widgets.comboBox_did.currentText()
+                self.uds_manager.select_did(selected_did)
+                self.record_values = self.uds_manager.get_record_values()
+            else:
+                self.uds_manager.copy_read_to_write()
 
-        if self.record_values is not None:
-            self.populate_grid(self.record_values, is_read=False)
-            self.uds_manager.make_uds_cmd(is_read=False)
-            data = self.uds_manager.get_uds_cmd()
-            widgets.lineEdit_cancmd.setText(data)
+            if self.record_values is not None:
+                self.populate_grid(self.record_values, is_read=False)
+                self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values)
+                data = self.uds_manager.get_uds_cmd()
+                widgets.lineEdit_cancmd.setText(data)
 
     def populate_grid(self, record_values, is_read):
         # 기존 버튼들 삭제
@@ -303,22 +304,46 @@ class MainWindow(QMainWindow):
                 widget = UIFunctions.create_widget(col_type, options, is_read, current_val)
                 
                 if widget and not is_read:
+                    def apply_styles(widget, val, col_type):
+                        new_value, read_value = val[0], val[1]
+                        if new_value != read_value:
+                            if col_type == 'button':
+                                widget.setStyleSheet(StyleSheets.PUSHBUTTON_STYLE_SHEET_DEACTIVE)
+                            elif col_type == 'combobox':
+                                widget.setStyleSheet(StyleSheets.STYLE_SHEET_DEACTIVE)
+                        else:
+                            if col_type == 'button':
+                                widget.setStyleSheet(StyleSheets.PUSHBUTTON_STYLE_SHEET_ACTIVE)
+                            else:
+                                widget.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE)
+                    
                     if col_type == 'combobox':
                         widget.currentIndexChanged.connect(
-                            lambda idx, row=row_index, col=col_key, widget=widget: 
-                            self.uds_manager.update_record_value(row, col, widget.currentText(), is_read)
+                            lambda idx, row=row_index, col=col_key, col_type=col_type,widget=widget: (
+        
+                                self.uds_manager.update_record_value(self.record_values, row, col,self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.currentText(), col_type)),
+                                apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.currentText(), col_type), col_type),
+                                self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values), 
+                                widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
+                            )
                         )
                     elif col_type == 'line_edit':
                         widget.textChanged.connect(
-                            lambda text, row=row_index, col=col_key, widget=widget: 
-                            self.uds_manager.update_record_value(row, col, text, is_read)
+                            lambda text, row=row_index, col=col_key, col_type=col_type, widget=widget: (
+                            apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.text(), col_type), col_type),
+                            self.uds_manager.update_record_value(self.record_values, row, col, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.text(), col_type)),
+                            self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values), 
+                            widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
+                            )
                         )
                     elif col_type == 'button':
                         widget.clicked.connect(
-                            lambda checked, row=row_index, col=col_key, widget=widget: 
-                            (
-                                widget.setText('1' if checked else '0'),  # 버튼의 텍스트를 1 또는 0으로 설정
-                                self.uds_manager.update_record_value(row, col, '1' if checked else '0', is_read)
+                            lambda checked, row=row_index, col=col_key,col_type=col_type, widget=widget: 
+                            (   apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, 1 if checked else 0, col_type), col_type),
+                                widget.setText('1' if checked else '0'),  
+                                self.uds_manager.update_record_value(self.record_values, row, col, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, 1 if checked else 0, col_type)),
+                                self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values), 
+                                widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
                             )
                         )
 
@@ -335,8 +360,6 @@ class MainWindow(QMainWindow):
 
                     widgets.gridLayout_pannel_main.addWidget(container_widget, row_index, col_start_index, 1, col_span)
                     col_start_index += col_span
-
-           
 
     def handle_did_change(self):
         
@@ -368,8 +391,14 @@ class MainWindow(QMainWindow):
             child = widgets.gridLayout_pannel_main.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
-
     
+    def print_record_values(self, record_values, is_read):
+        for row_key, data_info in record_values.items():
+            print(f"Row: {row_key}")
+            for col_key, col_info in data_info['coloms'].items():
+                current_val = col_info['current_val'][1] if is_read else col_info['current_val'][2]
+                print(f"  Column: {col_key} | Current Value: {current_val}")
+            print()  # 행 간에 빈 줄 추가
     # INIT CONFIG COMBOBOX
     # ///////////////////////////////////////////////////////////////
     def populateComboBoxes(self):
@@ -385,8 +414,6 @@ class MainWindow(QMainWindow):
         widgets.comboBox_uds.clear()
         widgets.comboBox_uds.addItems(uds_file_names)
     
-       
-
     # RESIZE EVENTS
     # ///////////////////////////////////////////////////////////////
     def resizeEvent(self, event):

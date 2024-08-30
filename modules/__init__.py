@@ -33,3 +33,4 @@ from . resources_rc import *
 from . can_manager import *
 from . error_handler import *
 from . uds_manager import *
+from . my_server import *
