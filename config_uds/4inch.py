@@ -5,6 +5,7 @@ class EOLCoding(UDSBase):
         read_service_id = [0x22]
         write_service_id = [0x2E]
         identifier = [0x00, 0x60]
+        method = ('r', 'w')
         dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
         record_values = {
             'data1': {'coloms':{'ECO':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
@@ -65,7 +66,7 @@ class EOLCoding(UDSBase):
             
             }
         
-        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path)
+        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
 
     def read_parse(self, can_message, record_values):
         if not isinstance(can_message, bytearray) or len(can_message) < 2:
@@ -146,6 +147,7 @@ class CarInfo(UDSBase):
         read_service_id = [0x22]
         write_service_id = [0x2E]
         identifier = [0x00, 0x80]
+        method = ('r', 'w')
         dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
         record_values = {
             'data1': { 'coloms':{ 'dealer_id':{'bit':40, 'type':['line_edit', "default"],'current_val': ['ascii',None, None]}}},
@@ -153,8 +155,7 @@ class CarInfo(UDSBase):
             'data3': { 'coloms':{ 'mileage':{'bit':32, 'type':['line_edit', "default"],'current_val': ['ascii',None, None]}}},
             'data4': { 'coloms':{ 'checksum':{'bit':8, 'type':['line_edit', "default"],'current_val': ['ascii',None, None]}}},
         }
-        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path)
-
+        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
 
     def read_parse(self, can_message, record_values):
         if not isinstance(can_message, bytearray) or len(can_message) < 16:
@@ -266,12 +267,305 @@ class CarInfo(UDSBase):
 
         return byte_array
 
+class ECUReset(UDSBase):
+    def __init__(self):
+        read_service_id = [None]
+        write_service_id = [0x11]
+        identifier = [0x01]
+        method = ('w')
+        dll_path = None
+        record_values = {
+            'data1': { 'coloms':{ 'ECU_reset':{'bit':8, 'type':['line_edit', "default"],'current_val': ['ascii',"press send", "press send"]}}}
+        }
+        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
+    
+    def read_parse(self, can_message, record_values):
+        if not isinstance(can_message, bytearray) or len(can_message) < 16:
+            raise ValueError("Invalid CAN message")
+    
+    def send_parse(self, record_values):
+        byte_array = bytearray()
+        return byte_array
+
+class UnlockNotCoded(UDSBase):
+    def __init__(self):
+        read_service_id = [None]
+        write_service_id = [0x3D]
+        identifier = [0x24,0x50, 0x00, 0x10, 0x36, 0x00, 0x01, 0x00]
+        method = ('w')
+        dll_path = None
+        record_values = {
+            'data1': { 'coloms':{ 'Unlock Not Coded':{'bit':8, 'type':['line_edit', "default"],'current_val': ['ascii',None, "Un Lock Not Coded Addr : 0x1036"]}}}
+        }
+        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
+    
+    def read_parse(self, can_message, record_values):
+        if not isinstance(can_message, bytearray) or len(can_message) < 16:
+            raise ValueError("Invalid CAN message")
+    
+    def send_parse(self, record_values):
+        byte_array = bytearray()
+        return byte_array
+
+class LockNotCoded(UDSBase):
+    def __init__(self):
+        read_service_id = [None]
+        write_service_id = [0x3D]
+        identifier = [0x24,0x50, 0x00, 0x10, 0x36, 0x00, 0x01, 0x01]
+        method = ('w')
+        dll_path = None
+        record_values = {
+            'data1': { 'coloms':{ 'Lock Not Coded':{'bit':8, 'type':['line_edit', "default"],'current_val': ['ascii',None, "Lock Not Coded Addr : 0x1036"]}}}
+        }
+        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
+    
+    def read_parse(self, can_message, record_values):
+        if not isinstance(can_message, bytearray) or len(can_message) < 16:
+            raise ValueError("Invalid CAN message")
+    
+    def send_parse(self, record_values):
+        byte_array = bytearray()
+        return byte_array
+
+class InitVIN(UDSBase):
+    def __init__(self):
+        read_service_id = [None]
+        write_service_id = [0x2E]
+        identifier = [0xF1, 0x10]
+        method = ('w')
+        dll_path = None
+        record_values = {
+            'data1': { 'coloms':{ 'Lock Not Coded':{'bit':8, 'type':['line_edit', "default"],'current_val': ['ascii',None, "Initialize VIN"]}}}
+        }
+        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
+    
+    def read_parse(self, can_message, record_values):
+        if not isinstance(can_message, bytearray) or len(can_message) < 16:
+            raise ValueError("Invalid CAN message")
+    
+    def send_parse(self, record_values):
+        byte_array = bytearray()
+        byte_array.extend([0x00])
+        return byte_array
+
+class VIN(UDSBase):
+    def __init__(self):
+        read_service_id = [0x22]
+        write_service_id = [0x2E]
+        identifier = [0xF1, 0x90]
+        method = ('w', 'r')
+        dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
+        record_values = {
+            'data1': { 'coloms':{ 'VIN':{'bit':136, 'type':['line_edit', "default"],'current_val': ['ascii',None, None]}}}
+        }
+        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
+
+    def read_parse(self, can_message, record_values):
+        if not isinstance(can_message, bytearray) or len(can_message) < 16:
+            raise ValueError("Invalid CAN message")
+
+        # Service ID와 Identifier 길이를 계산
+        header_length = len(self.read_service_id) + len(self.identifier)
+
+        # 데이터 페이로드 시작 부분을 설정
+        payload_start = header_length
+
+        # 실제 데이터 페이로드 추출
+        data_payload = can_message[payload_start:]
+
+        byte_index = 0
+
+        for data_key, data_info in record_values.items():
+            for col_key, col_info in data_info['coloms'].items():
+                bit_size = col_info['bit']
+                byte_size = bit_size // 8  # bit를 byte로 변환
+
+                # 값을 추출하여 current_val[1]에 업데이트
+                extracted_bytes = data_payload[byte_index:byte_index + byte_size]
+                if col_key == 'VIN':
+                    try:
+                        # ASCII로 변환
+                        current_value = extracted_bytes.decode('ascii')             
+                        # '\x00\x00\x00\x00\x00'인 경우 None으로 설정
+                        if extracted_bytes == b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00':
+                            current_value = None                
+                    except UnicodeDecodeError:
+                        # ASCII로 변환할 수 없는 경우 None으로 설정
+                        current_value = None
+                else:
+                    # 기본 정수형 처리
+                    current_value = int.from_bytes(extracted_bytes, byteorder='big')
+
+                col_info['current_val'][1] = current_value
+
+                byte_index += byte_size  # 다음 데이터로 이동
+
+    def send_parse(self, record_values):
+        byte_array = bytearray()
+
+        # 1. 딜러 ID (DealerID, 5Byte, ASCII)
+        vin_num = record_values['data1']['coloms']['VIN']['current_val'][2]
+        if vin_num is None:
+            vin_num = ''
+        vin_bytes = vin_num.encode('ascii')
+        byte_array.extend(vin_bytes.ljust(17, b'\x00'))  # 5바이트로 맞추기 위해 0으로 패딩
 
 
+        return byte_array
+
+class SetServiceType(UDSBase):
+    def __init__(self):
+        read_service_id = [None]
+        write_service_id = [0x2E]
+        identifier = [0x00, 0x70]
+        method = ('w')
+        dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
+        record_values = {
+           
+            'data1': {'coloms':{'Service Type':{'bit':8, 'type':['combobox', {'Set by Customer':0b00,'Set by Workshop':0b01}],'current_val': ['bool',None, None]}
+            
+            }
+            }
+            }
+        
+        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
+
+    def read_parse(self, can_message, record_values):
+        if not isinstance(can_message, bytearray) or len(can_message) < 2:
+            raise ValueError("Invalid CAN message")
+    
+    def send_parse(self, record_values):
+        byte_array = bytearray()
+        current_byte = 0
+        bit_offset = 0
+    
+        for data_key, data_info in record_values.items():
+            for col_key, col_info in data_info['coloms'].items():
+                bit_size = col_info['bit']
+                write_val = col_info['current_val'][2]  # 쓰기 영역 값
+                
+                if write_val is None:
+                    write_val = 0  # None이면 0으로 대체
+    
+                # 각 비트별로 값을 byte_array에 저장
+                for i in range(bit_size):
+                    bit = (write_val >> (bit_size - 1 - i)) & 1
+                    current_byte = (current_byte << 1) | bit
+                    bit_offset += 1
+    
+                    # 현재 바이트가 채워졌다면 byte_array에 추가
+                    if bit_offset == 8:
+                        byte_array.append(current_byte)
+                        current_byte = 0
+                        bit_offset = 0
+    
+        # 남아 있는 비트들이 있으면 마지막 바이트에 추가
+        if bit_offset > 0:
+            current_byte = current_byte << (8 - bit_offset)  # 남은 비트들을 0으로 채움
+            byte_array.append(current_byte)
+    
+        return byte_array
+
+class InitService(UDSBase):
+    def __init__(self):
+        read_service_id = [None]
+        write_service_id = [0x2E]
+        identifier = [0x00, 0x71]
+        method = ('w')
+        dll_path = None
+        record_values = {
+            'data1': { 'coloms':{ 'Lock Not Coded':{'bit':8, 'type':['line_edit', "default"],'current_val': ['ascii',None, "Press Send to Reset Service distance/time"]}}}
+        }
+        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
+    
+    def read_parse(self, can_message, record_values):
+        if not isinstance(can_message, bytearray) or len(can_message) < 16:
+            raise ValueError("Invalid CAN message")
+    
+    def send_parse(self, record_values):
+        byte_array = bytearray([0x00])
+        return byte_array
+
+class SetServiceDistance(UDSBase):
+    def __init__(self):
+        read_service_id = [None]
+        write_service_id = [0x2E]
+        identifier = [0x00, 0x72]
+        method = ('w')
+        dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
+        record_values = {
+            'data1': { 'coloms':{ 'Service_Distance':{'bit':24, 'type':['line_edit', "default"],'current_val': ['ascii',None, None]}}}
+        }
+        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
+
+    def read_parse(self, can_message, record_values):
+        if not isinstance(can_message, bytearray) or len(can_message) < 16:
+            raise ValueError("Invalid CAN message")
 
 
-# 클래스 이름과 실제 클래스를 매핑하는 딕셔너리
+    def send_parse(self, record_values):
+        byte_array = bytearray()
+
+        service_dis = record_values['data1']['coloms']['Service_Distance']['current_val'][2]
+        service_dis_bytes = b'\x00\x00\x00'
+        try:
+            service_dis = int(service_dis)
+            service_dis = min(service_dis, 99999)  # km 사양 기준으로 최대 값 제한
+            service_dis_bytes = service_dis.to_bytes(3, byteorder='big')
+            print(service_dis_bytes.hex().upper())
+            
+        except (ValueError, TypeError):
+            service_dis_bytes = b'\x00\x00\x00'  # 오류 발생 시 기본값 설정
+
+        byte_array.extend(service_dis_bytes)
+
+        return byte_array
+
+class SetServiceTerm(UDSBase):
+    def __init__(self):
+        read_service_id = [None]
+        write_service_id = [0x2E]
+        identifier = [0x00, 0x73]
+        method = ('w')
+        dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
+        record_values = {
+            'data1': { 'coloms':{ 'Service_Term':{'bit':16, 'type':['line_edit', "default"],'current_val': ['ascii',None, None]}}}
+        }
+        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
+
+    def read_parse(self, can_message, record_values):
+        if not isinstance(can_message, bytearray) or len(can_message) < 16:
+            raise ValueError("Invalid CAN message")
+
+
+    def send_parse(self, record_values):
+        byte_array = bytearray()
+
+        service_term = record_values['data1']['coloms']['Service_Term']['current_val'][2]
+        service_term_bytes = b'\x00\x00'
+        try:
+            service_term = int(service_term)
+            service_term = min(service_term, 99)  # km 사양 기준으로 최대 값 제한
+            service_term_bytes = service_term.to_bytes(2, byteorder='big')
+            print(service_term_bytes.hex().upper())
+            
+        except (ValueError, TypeError):
+            service_term_bytes = b'\x00\x00'  # 오류 발생 시 기본값 설정
+
+        byte_array.extend(service_term_bytes)
+
+        return byte_array
+
 did_map = {
     "EOLCoding": EOLCoding,
     "CarInfo": CarInfo,
+    "ECUReset":ECUReset,
+    "InitVIN":InitVIN,
+    "VIN":VIN,
+    "UnlockNotCoded":UnlockNotCoded,
+    "LockNotCoded":LockNotCoded,
+    "SetServiceType":SetServiceType,
+    "InitService":InitService,
+    "SetServiceTerm":SetServiceTerm,
+    "SetServiceDistance":SetServiceDistance
 }

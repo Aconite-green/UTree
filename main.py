@@ -217,48 +217,45 @@ class MainWindow(QMainWindow):
             self.error_handler.log_message("please select Write or Read Button")
         
     def handle_read(self, checked):
+        
         if checked:
-            widgets.radioButton_write.setChecked(False)
-            widgets.comboBox_did.setStyleSheet("""
-                    QComboBox {
-                        color: rgb(135, 206, 250);
-                        background-color: rgb(33, 37, 43);
-                    }
-                    QComboBox QAbstractItemView {
-                        color: rgb(135, 206, 250);
-                        background-color: rgb(33, 37, 43);
-                    }
-                """)
             selected_did = widgets.comboBox_did.currentText()
             self.uds_manager.select_did(selected_did)
             self.record_values = self.uds_manager.get_record_values()
-        
+            widgets.comboBox_did.setStyleSheet("""
+                QComboBox {
+                    color: rgb(135, 206, 250);
+                    background-color: rgb(33, 37, 43);
+                }
+                QComboBox QAbstractItemView {
+                    color: rgb(135, 206, 250);
+                    background-color: rgb(33, 37, 43);
+                }
+            """)
             if self.record_values is not None:
                 self.populate_grid(self.record_values, is_read=True)
                 self.uds_manager.make_uds_cmd(is_read=True, record_values=self.record_values)
                 data = self.uds_manager.get_uds_cmd()
                 widgets.lineEdit_cancmd.setText(data)
-        
+    
     def handle_write(self, checked):
-        if checked:
-            widgets.radioButton_read.setChecked(False)
-            widgets.comboBox_did.setStyleSheet("""
-                    QComboBox {
-                        color: rgb(135, 206, 250);
-                        background-color: rgb(33, 37, 43);
-                    }
-                    QComboBox QAbstractItemView {
-                        color: rgb(135, 206, 250);
-                        background-color: rgb(33, 37, 43);
-                    }
-                """)
-            if not self.read_record: 
-                selected_did = widgets.comboBox_did.currentText()
-                self.uds_manager.select_did(selected_did)
-                self.record_values = self.uds_manager.get_record_values()
-            else:
-                self.uds_manager.copy_read_to_write()
 
+        if self.read_record: 
+                self.uds_manager.copy_read_to_write()
+        else:
+            pass  
+
+        if checked:
+            widgets.comboBox_did.setStyleSheet("""
+                                    QComboBox {
+                                        color: rgb(135, 206, 250);
+                                        background-color: rgb(33, 37, 43);
+                                    }
+                                    QComboBox QAbstractItemView {
+                                        color: rgb(135, 206, 250);
+                                        background-color: rgb(33, 37, 43);
+                                    }
+                                """)
             if self.record_values is not None:
                 self.populate_grid(self.record_values, is_read=False)
                 self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values)
@@ -382,7 +379,20 @@ class MainWindow(QMainWindow):
         widgets.radioButton_read.setChecked(False)
         widgets.radioButton_write.setChecked(False)
 
-        # 다시 autoExclusive 활성화
+        selected_did = widgets.comboBox_did.currentText()
+        self.uds_manager.select_did(selected_did)
+        self.record_values = self.uds_manager.get_record_values()
+
+        if 'r' not in self.uds_manager.get_method():
+            widgets.radioButton_read.setEnabled(False)
+        else:
+            widgets.radioButton_read.setEnabled(True)
+        
+        if 'w' not in self.uds_manager.get_method():
+            widgets.radioButton_write.setEnabled(False)
+        else:
+            widgets.radioButton_write.setEnabled(True)
+
         widgets.radioButton_read.setAutoExclusive(True)
         widgets.radioButton_write.setAutoExclusive(True)
 
@@ -391,6 +401,8 @@ class MainWindow(QMainWindow):
             child = widgets.gridLayout_pannel_main.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
+
+        widgets.lineEdit_cancmd.clear()
     
     def print_record_values(self, record_values, is_read):
         for row_key, data_info in record_values.items():

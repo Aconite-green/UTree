@@ -2505,6 +2505,9 @@ background-repeat: no-repeat;</string>
                              <property name="text">
                               <string>Read</string>
                              </property>
+                             <property name="autoExclusive">
+                              <bool>false</bool>
+                             </property>
                             </widget>
                            </item>
                            <item>
@@ -2517,6 +2520,9 @@ background-repeat: no-repeat;</string>
                              </property>
                              <property name="text">
                               <string>Write</string>
+                             </property>
+                             <property name="autoExclusive">
+                              <bool>false</bool>
                              </property>
                             </widget>
                            </item>

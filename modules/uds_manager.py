@@ -35,6 +35,9 @@ class UdsManager:
 
     # DID Utility
     # ///////////////////////////////////////////////////////////////
+    def get_method(self):
+        return self.current_instance.get_method()
+
     def select_did(self, did_name):
         if self.did_map and did_name in self.did_map:
             cls = self.did_map[did_name]
@@ -174,8 +177,8 @@ class UdsManager:
     
     def get_uds_cmd(self):
         print(self.process_data.hex().upper())
-        data = [f'0x{b:02x}' for b in self.process_data]
-        formatted_data = ', '.join(data)
+        data = [f'{b:02X}' for b in self.process_data]
+        formatted_data = '-'.join(data)
         return formatted_data
     
     def map_combobox_value(self, widget, record_values,col_key):

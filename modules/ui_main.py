@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'maingUJiLB.ui'
+## Form generated from reading UI file 'mainlRCNsc.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.7.2
 ##
@@ -1352,12 +1352,14 @@ class Ui_MainWindow(object):
         self.radioButton_read = QRadioButton(self.horizontalLayoutWidget)
         self.radioButton_read.setObjectName(u"radioButton_read")
         self.radioButton_read.setMaximumSize(QSize(80, 16777215))
+        self.radioButton_read.setAutoExclusive(False)
 
         self.verticalLayout_14.addWidget(self.radioButton_read)
 
         self.radioButton_write = QRadioButton(self.horizontalLayoutWidget)
         self.radioButton_write.setObjectName(u"radioButton_write")
         self.radioButton_write.setMaximumSize(QSize(80, 16777215))
+        self.radioButton_write.setAutoExclusive(False)
 
         self.verticalLayout_14.addWidget(self.radioButton_write)
 
