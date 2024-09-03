@@ -556,6 +556,7 @@ class SetServiceTerm(UDSBase):
 
         return byte_array
 
+
 did_map = {
     "EOLCoding": EOLCoding,
     "CarInfo": CarInfo,
