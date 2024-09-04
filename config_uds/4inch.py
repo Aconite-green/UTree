@@ -150,10 +150,10 @@ class CarInfo(UDSBase):
         method = ('r', 'w')
         dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
         record_values = {
-            'data1': { 'coloms':{ 'dealer_id':{'bit':40, 'type':['line_edit', "default"],'current_val': [5,None, None]}}},
-            'data2': { 'coloms':{ 'date':{'bit':32, 'type':['line_edit', "default"],'current_val': [8,None, None]}}},
-            'data3': { 'coloms':{ 'mileage':{'bit':32, 'type':['line_edit', "default"],'current_val': [6,None, None]}}},
-            'data4': { 'coloms':{ 'checksum':{'bit':8, 'type':['line_edit', "default"],'current_val': [27,None, None]}}},
+            'data1': { 'coloms':{ 'dealer_id':{'bit':40, 'type':['line_edit', "default"],'current_val': [5,"", ""]}}},
+            'data2': { 'coloms':{ 'date':{'bit':32, 'type':['line_edit', "default"],'current_val': [8,"", ""]}}},
+            'data3': { 'coloms':{ 'mileage':{'bit':32, 'type':['line_edit', "default"],'current_val': [6,"", ""]}}},
+            'data4': { 'coloms':{ 'checksum':{'bit':8, 'type':['line_edit', "default"],'current_val': [27,"", ""]}}},
         }
         super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
 
