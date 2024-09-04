@@ -17,7 +17,7 @@
 # MAIN FILE
 # ///////////////////////////////////////////////////////////////
 from main import *
-
+import math
 # GLOBALS
 # ///////////////////////////////////////////////////////////////
 GLOBAL_STATE = False
@@ -29,6 +29,8 @@ class StyleSheets:
         border: 2px solid rgb(61, 70, 86);
         background-color: rgb(61, 70, 86);
         padding: 2px;
+        text-align: center;  /* 가로 중앙 정렬 */
+        vertical-align: middle;
     """
     STYLE_SHEET_ACTIVE = """
         font-size: 10pt;
@@ -36,6 +38,8 @@ class StyleSheets:
         background-color: rgb(27, 29, 35);
         color: rgb(135, 206, 250); 
         padding: 2px;
+        text-align: center;  /* 가로 중앙 정렬 */
+        vertical-align: middle;
     """
 
     PUSHBUTTON_STYLE_SHEET_ACTIVE = """
@@ -323,7 +327,7 @@ class UIFunctions(MainWindow):
     
     # ///////////////////////////////////////////////////////////////
     # END - GUI DEFINITIONS
-    def create_widget(col_type, options, is_read, current_val):
+    def create_widget(col_type, options, is_read, current_val, max_digits):
         widget = None
 
         if col_type == 'combobox':
@@ -347,10 +351,17 @@ class UIFunctions(MainWindow):
         elif col_type == 'line_edit':
             widget = QLineEdit()
             widget.setText(str(current_val))
+            widget.setMaxLength(max_digits)
             widget.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE if current_val else StyleSheets.STYLE_SHEET_DEACTIVE)
             widget.setEnabled(not is_read)
             widget.setAlignment(Qt.AlignCenter)
-
+        elif col_type == 'text_edit':
+            widget = QTextEdit()
+            widget.setText(str(current_val))
+            widget.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE if current_val else StyleSheets.STYLE_SHEET_DEACTIVE)
+            widget.setEnabled(not is_read)
+            # widget.setAlignment(Qt.AlignCenter)
+        
         elif col_type == 'button':
             widget = QPushButton()
             widget.setEnabled(not is_read)

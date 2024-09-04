@@ -150,10 +150,10 @@ class CarInfo(UDSBase):
         method = ('r', 'w')
         dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
         record_values = {
-            'data1': { 'coloms':{ 'dealer_id':{'bit':40, 'type':['line_edit', "default"],'current_val': ['ascii',None, None]}}},
-            'data2': { 'coloms':{ 'date':{'bit':32, 'type':['line_edit', "default"],'current_val': ['ascii',None, None]}}},
-            'data3': { 'coloms':{ 'mileage':{'bit':32, 'type':['line_edit', "default"],'current_val': ['ascii',None, None]}}},
-            'data4': { 'coloms':{ 'checksum':{'bit':8, 'type':['line_edit', "default"],'current_val': ['ascii',None, None]}}},
+            'data1': { 'coloms':{ 'dealer_id':{'bit':40, 'type':['line_edit', "default"],'current_val': [5,None, None]}}},
+            'data2': { 'coloms':{ 'date':{'bit':32, 'type':['line_edit', "default"],'current_val': [8,None, None]}}},
+            'data3': { 'coloms':{ 'mileage':{'bit':32, 'type':['line_edit', "default"],'current_val': [6,None, None]}}},
+            'data4': { 'coloms':{ 'checksum':{'bit':8, 'type':['line_edit', "default"],'current_val': [27,None, None]}}},
         }
         super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
 
@@ -186,22 +186,24 @@ class CarInfo(UDSBase):
                         current_value = extracted_bytes.decode('ascii')             
                         # '\x00\x00\x00\x00\x00'인 경우 None으로 설정
                         if extracted_bytes == b'\x00\x00\x00\x00\x00':
-                            current_value = None                
+                            current_value = "Not Set"                
                     except UnicodeDecodeError:
                         # ASCII로 변환할 수 없는 경우 None으로 설정
-                        current_value = None
+                        current_value = "Not Set"
 
                 elif col_key == 'date':
                     if extracted_bytes == b'\x00\x00\x00\x00':
-                        current_value = None
+                        current_value = "Not Set"
                     else:
                         current_value = hex(int.from_bytes(extracted_bytes, byteorder='big'))[2:].upper()
                 elif col_key == 'mileage':
                     if extracted_bytes == b'\x00\x00\x00\x00':
-                        current_value = None
+                        current_value = "Not Set"
                     else:
                         # 정수형으로 변환
                         current_value = int.from_bytes(extracted_bytes, byteorder='big')
+                elif col_key == 'checksum':
+                    current_value = "For Write Method (Auto Set)"
                 else:
                     # 기본 정수형 처리
                     current_value = int.from_bytes(extracted_bytes, byteorder='big')
@@ -275,7 +277,7 @@ class ECUReset(UDSBase):
         method = ('w')
         dll_path = None
         record_values = {
-            'data1': { 'coloms':{ 'ECU_reset':{'bit':8, 'type':['line_edit', "default"],'current_val': ['ascii',"press send", "press send"]}}}
+            'data1': { 'coloms':{ 'ECU_reset':{'bit':8, 'type':['line_edit', "default"],'current_val': [10,"press send", "press send"]}}}
         }
         super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
     
@@ -285,6 +287,8 @@ class ECUReset(UDSBase):
     
     def send_parse(self, record_values):
         byte_array = bytearray()
+
+        
         return byte_array
 
 class UnlockNotCoded(UDSBase):
@@ -295,7 +299,7 @@ class UnlockNotCoded(UDSBase):
         method = ('w')
         dll_path = None
         record_values = {
-            'data1': { 'coloms':{ 'Unlock Not Coded':{'bit':8, 'type':['line_edit', "default"],'current_val': ['ascii',None, "Un Lock Not Coded Addr : 0x1036"]}}}
+            'data1': { 'coloms':{ 'Unlock Not Coded':{'bit':8, 'type':['line_edit', "default"],'current_val': [10,"press send", "press send"]}}}
         }
         super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
     
@@ -315,7 +319,7 @@ class LockNotCoded(UDSBase):
         method = ('w')
         dll_path = None
         record_values = {
-            'data1': { 'coloms':{ 'Lock Not Coded':{'bit':8, 'type':['line_edit', "default"],'current_val': ['ascii',None, "Lock Not Coded Addr : 0x1036"]}}}
+            'data1': { 'coloms':{ 'Lock Not Coded':{'bit':8, 'type':['line_edit', "default"],'current_val': [10,"press send", "press send"]}}}
         }
         super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
     
@@ -335,7 +339,7 @@ class InitVIN(UDSBase):
         method = ('w')
         dll_path = None
         record_values = {
-            'data1': { 'coloms':{ 'Lock Not Coded':{'bit':8, 'type':['line_edit', "default"],'current_val': ['ascii',None, "Initialize VIN"]}}}
+            'data1': { 'coloms':{ 'InitVIN':{'bit':8, 'type':['line_edit', "default"],'current_val': [10,"press send", "press send"]}}}
         }
         super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
     
@@ -356,7 +360,7 @@ class VIN(UDSBase):
         method = ('w', 'r')
         dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
         record_values = {
-            'data1': { 'coloms':{ 'VIN':{'bit':136, 'type':['line_edit', "default"],'current_val': ['ascii',None, None]}}}
+            'data1': { 'coloms':{ 'VIN':{'bit':136, 'type':['line_edit', "default"],'current_val': [17,None, None]}}}
         }
         super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
 
@@ -388,10 +392,10 @@ class VIN(UDSBase):
                         current_value = extracted_bytes.decode('ascii')             
                         # '\x00\x00\x00\x00\x00'인 경우 None으로 설정
                         if extracted_bytes == b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00':
-                            current_value = None                
+                            current_value = "Not Set"                
                     except UnicodeDecodeError:
                         # ASCII로 변환할 수 없는 경우 None으로 설정
-                        current_value = None
+                        current_value = "Not Set"
                 else:
                     # 기본 정수형 처리
                     current_value = int.from_bytes(extracted_bytes, byteorder='big')
@@ -474,7 +478,7 @@ class InitService(UDSBase):
         method = ('w')
         dll_path = None
         record_values = {
-            'data1': { 'coloms':{ 'Lock Not Coded':{'bit':8, 'type':['line_edit', "default"],'current_val': ['ascii',None, "Press Send to Reset Service distance/time"]}}}
+            'data1': { 'coloms':{ 'Lock Not Coded':{'bit':8, 'type':['line_edit', "default"],'current_val': [43,None, "Press Send to Reset Service distance/time"]}}}
         }
         super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
     
@@ -494,7 +498,7 @@ class SetServiceDistance(UDSBase):
         method = ('w')
         dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
         record_values = {
-            'data1': { 'coloms':{ 'Service_Distance':{'bit':24, 'type':['line_edit', "default"],'current_val': ['ascii',None, None]}}}
+            'data1': { 'coloms':{ 'Service_Distance':{'bit':24, 'type':['line_edit', "default"],'current_val': [5,None, None]}}}
         }
         super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
 
@@ -529,7 +533,7 @@ class SetServiceTerm(UDSBase):
         method = ('w')
         dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
         record_values = {
-            'data1': { 'coloms':{ 'Service_Term':{'bit':16, 'type':['line_edit', "default"],'current_val': ['ascii',None, None]}}}
+            'data1': { 'coloms':{ 'Service_Term':{'bit':16, 'type':['line_edit', "default"],'current_val': [2,None, ""]}}}
         }
         super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
 
@@ -556,6 +560,704 @@ class SetServiceTerm(UDSBase):
 
         return byte_array
 
+class CANDBVer(UDSBase):
+    def __init__(self):
+        read_service_id = [0x22]
+        write_service_id = [None]
+        identifier = [0xF1, 0x00]
+        method = ('r')
+        dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
+        record_values = {
+            'data1': { 'coloms':{ 'Data_Record':{'bit':24, 'type':['line_edit', "default"],'current_val': [5,None, ""]}}}
+        }
+        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
+
+    def read_parse(self, can_message, record_values):
+        
+        if not isinstance(can_message, bytearray):
+            raise ValueError("Invalid CAN message")
+
+        # Service ID와 Identifier 길이를 계산
+        header_length = len(self.read_service_id) + len(self.identifier)
+
+        # 데이터 페이로드 시작 부분을 설정
+        payload_start = header_length
+
+        # 실제 데이터 페이로드 추출
+        data_payload = can_message[payload_start:]
+
+        byte_index = 0
+
+        for data_key, data_info in record_values.items():
+            for col_key, col_info in data_info['coloms'].items():
+                bit_size = col_info['bit']
+                byte_size = bit_size // 8  # bit를 byte로 변환
+
+                # 값을 추출하여 current_val[1]에 업데이트
+                extracted_bytes = data_payload[byte_index:byte_index + byte_size]
+
+                if col_key == 'Data_Record':
+                    try:
+                        # ASCII로 변환
+                        ascii_value = extracted_bytes.decode('ascii')
+                        current_value = '.'.join(ascii_value)
+                    except UnicodeDecodeError:
+                        # ASCII로 변환할 수 없는 경우 None으로 설정
+                        current_value = None
+                    else:
+                        # '\x00\x00\x00'인 경우 None으로 설정
+                        if extracted_bytes == b'\x00\x00\x00':
+                            current_value = None
+                    finally:
+                        # current_value를 그대로 저장 (이미 ASCII로 변환된 상태)
+                        col_info['current_val'][1] = current_value
+                else:
+                    # 기본 정수형 처리
+                    current_value = int.from_bytes(extracted_bytes, byteorder='big')
+                    col_info['current_val'][1] = current_value
+
+                byte_index += byte_size  # 다음 데이터로 이동
+
+
+    def send_parse(self, record_values):
+        byte_array = bytearray()
+        return byte_array
+
+class EtherDBVer(UDSBase):
+    def __init__(self):
+        read_service_id = [0x22]
+        write_service_id = [None]
+        identifier = [0xF1, 0x01]
+        method = ('r')
+        dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
+        record_values = {
+            'data1': { 'coloms':{ 'Data_Record':{'bit':24, 'type':['line_edit', "default"],'current_val': [8,"", ""]}}}
+        }
+        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
+
+    def read_parse(self, can_message, record_values):
+        if not isinstance(can_message, bytearray):
+            raise ValueError("Invalid CAN message")
+
+        # Service ID와 Identifier 길이를 계산
+        header_length = len(self.read_service_id) + len(self.identifier)
+
+        # 데이터 페이로드 시작 부분을 설정
+        payload_start = header_length
+
+        # 실제 데이터 페이로드 추출
+        data_payload = can_message[payload_start:]
+
+        byte_index = 0
+
+        for data_key, data_info in record_values.items():
+            for col_key, col_info in data_info['coloms'].items():
+                bit_size = col_info['bit']
+                byte_size = bit_size // 8  # bit를 byte로 변환
+
+                # 값을 추출하여 current_val[1]에 업데이트
+                extracted_bytes = data_payload[byte_index:byte_index + byte_size]
+
+                if col_key == 'Data_Record':
+                    try:
+                        # DEC 포맷으로 변환
+                        current_value = f"{int(extracted_bytes[0]):02}.{int(extracted_bytes[1]):02}.{int(extracted_bytes[2]):02}"
+                    except (ValueError, IndexError):
+                        # 변환에 실패한 경우 None으로 설정
+                        current_value = None
+                    finally:
+                        # 변환된 값을 저장
+                        col_info['current_val'][1] = current_value
+                else:
+                    # 기본 정수형 처리
+                    current_value = int.from_bytes(extracted_bytes, byteorder='big')
+                    col_info['current_val'][1] = current_value
+
+                byte_index += byte_size  # 다음 데이터로 이동
+
+
+    def send_parse(self, record_values):
+        byte_array = bytearray()
+        return byte_array
+
+class ClusterProductionCode(UDSBase):
+    def __init__(self):
+        read_service_id = [0x22]
+        write_service_id = [None]
+        identifier = [0xF1, 0xA1]
+        method = ('r')
+        dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
+        record_values = {
+            'data1': { 'coloms':{ 'Data_Record':{'bit':32, 'type':['line_edit', "default"],'current_val': [4,"", None]}}}
+        }
+        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
+
+    def read_parse(self, can_message, record_values):
+        
+        if not isinstance(can_message, bytearray):
+            raise ValueError("Invalid CAN message")
+
+        # Service ID와 Identifier 길이를 계산
+        header_length = len(self.read_service_id) + len(self.identifier)
+
+        # 데이터 페이로드 시작 부분을 설정
+        payload_start = header_length
+
+        # 실제 데이터 페이로드 추출
+        data_payload = can_message[payload_start:]
+
+        byte_index = 0
+
+        for data_key, data_info in record_values.items():
+            for col_key, col_info in data_info['coloms'].items():
+                bit_size = col_info['bit']
+                byte_size = bit_size // 8  # bit를 byte로 변환
+
+                # 값을 추출하여 current_val[1]에 업데이트
+                extracted_bytes = data_payload[byte_index:byte_index + byte_size]
+
+                if col_key == 'Data_Record':
+                    try:
+                        # ASCII로 변환
+                        current_value = extracted_bytes.decode('ascii')
+                    except UnicodeDecodeError:
+                        # ASCII로 변환할 수 없는 경우 None으로 설정
+                        current_value = None
+                    else:
+                        # '\x00\x00\x00'인 경우 None으로 설정
+                        if extracted_bytes == b'\x00\x00\x00\x00':
+                            current_value = None
+                    finally:
+                        # current_value를 그대로 저장 (이미 ASCII로 변환된 상태)
+                        col_info['current_val'][1] = current_value
+                else:
+                    # 기본 정수형 처리
+                    current_value = int.from_bytes(extracted_bytes, byteorder='big')
+                    col_info['current_val'][1] = current_value
+
+                byte_index += byte_size  # 다음 데이터로 이동
+
+
+    def send_parse(self, record_values):
+        byte_array = bytearray()
+        return byte_array
+
+class ClusterOEMHWVer(UDSBase):
+    def __init__(self):
+        read_service_id = [0x22]
+        write_service_id = [None]
+        identifier = [0xF1, 0x91]
+        method = ('r')
+        dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
+        record_values = {
+            'data1': { 'coloms':{ 'Data_Record':{'bit':32, 'type':['line_edit', "default"],'current_val': [4,"", None]}}}
+        }
+        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
+
+    def read_parse(self, can_message, record_values):
+        
+        if not isinstance(can_message, bytearray):
+            raise ValueError("Invalid CAN message")
+
+        # Service ID와 Identifier 길이를 계산
+        header_length = len(self.read_service_id) + len(self.identifier)
+
+        # 데이터 페이로드 시작 부분을 설정
+        payload_start = header_length
+
+        # 실제 데이터 페이로드 추출
+        data_payload = can_message[payload_start:]
+
+        byte_index = 0
+
+        for data_key, data_info in record_values.items():
+            for col_key, col_info in data_info['coloms'].items():
+                bit_size = col_info['bit']
+                byte_size = bit_size // 8  # bit를 byte로 변환
+
+                # 값을 추출하여 current_val[1]에 업데이트
+                extracted_bytes = data_payload[byte_index:byte_index + byte_size]
+
+                if col_key == 'Data_Record':
+                    try:
+                        # ASCII로 변환
+                        current_value = extracted_bytes.decode('ascii')
+                    except UnicodeDecodeError:
+                        # ASCII로 변환할 수 없는 경우 None으로 설정
+                        current_value = None
+                    else:
+                        # '\x00\x00\x00'인 경우 None으로 설정
+                        if extracted_bytes == b'\x00\x00\x00\x00':
+                            current_value = None
+                    finally:
+                        # current_value를 그대로 저장 (이미 ASCII로 변환된 상태)
+                        col_info['current_val'][1] = current_value
+                else:
+                    # 기본 정수형 처리
+                    current_value = int.from_bytes(extracted_bytes, byteorder='big')
+                    col_info['current_val'][1] = current_value
+
+                byte_index += byte_size  # 다음 데이터로 이동
+
+
+    def send_parse(self, record_values):
+        byte_array = bytearray()
+        return byte_array
+
+class OEMSWVer(UDSBase):
+    def __init__(self):
+        read_service_id = [0x22]
+        write_service_id = [None]
+        identifier = [0xF1, 0xA0]
+        method = ('r')
+        dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
+        record_values = {
+            'data1': { 'coloms':{ 'Data_Record':{'bit':32, 'type':['line_edit', "default"],'current_val': [4,"", None]}}}
+        }
+        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
+
+    def read_parse(self, can_message, record_values):
+        
+        if not isinstance(can_message, bytearray):
+            raise ValueError("Invalid CAN message")
+
+        # Service ID와 Identifier 길이를 계산
+        header_length = len(self.read_service_id) + len(self.identifier)
+
+        # 데이터 페이로드 시작 부분을 설정
+        payload_start = header_length
+
+        # 실제 데이터 페이로드 추출
+        data_payload = can_message[payload_start:]
+
+        byte_index = 0
+
+        for data_key, data_info in record_values.items():
+            for col_key, col_info in data_info['coloms'].items():
+                bit_size = col_info['bit']
+                byte_size = bit_size // 8  # bit를 byte로 변환
+
+                # 값을 추출하여 current_val[1]에 업데이트
+                extracted_bytes = data_payload[byte_index:byte_index + byte_size]
+
+                if col_key == 'Data_Record':
+                    try:
+                        # ASCII로 변환
+                        current_value = extracted_bytes.decode('ascii')
+                    except UnicodeDecodeError:
+                        # ASCII로 변환할 수 없는 경우 None으로 설정
+                        current_value = None
+                    else:
+                        # '\x00\x00\x00'인 경우 None으로 설정
+                        if extracted_bytes == b'\x00\x00\x00\x00':
+                            current_value = None
+                    finally:
+                        # current_value를 그대로 저장 (이미 ASCII로 변환된 상태)
+                        col_info['current_val'][1] = current_value
+                else:
+                    # 기본 정수형 처리
+                    current_value = int.from_bytes(extracted_bytes, byteorder='big')
+                    col_info['current_val'][1] = current_value
+
+                byte_index += byte_size  # 다음 데이터로 이동
+
+
+    def send_parse(self, record_values):
+        byte_array = bytearray()
+        return byte_array
+
+class AVNUpdateType(UDSBase):
+    def __init__(self):
+        read_service_id = [0x22]
+        write_service_id = [None]
+        identifier = [0xF1, 0xB1]
+        method = ('r')
+        dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
+        record_values = {
+            'data1': { 'coloms':{ 'Data_Record':{'bit':312, 'type':['line_edit', "default"],'current_val': [39,"", None]}}}
+        }
+        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
+
+    def read_parse(self, can_message, record_values):
+        
+        if not isinstance(can_message, bytearray):
+            raise ValueError("Invalid CAN message")
+
+        # Service ID와 Identifier 길이를 계산
+        header_length = len(self.read_service_id) + len(self.identifier)
+
+        # 데이터 페이로드 시작 부분을 설정
+        payload_start = header_length
+
+        # 실제 데이터 페이로드 추출
+        data_payload = can_message[payload_start:]
+
+        byte_index = 0
+
+        for data_key, data_info in record_values.items():
+            for col_key, col_info in data_info['coloms'].items():
+                bit_size = col_info['bit']
+                byte_size = bit_size // 8  # bit를 byte로 변환
+
+                # 값을 추출하여 current_val[1]에 업데이트
+                extracted_bytes = data_payload[byte_index:byte_index + byte_size]
+
+                if col_key == 'Data_Record':
+                    try:
+                        # ASCII로 변환
+                        current_value = extracted_bytes.decode('ascii')
+                    except UnicodeDecodeError:
+                        # ASCII로 변환할 수 없는 경우 None으로 설정
+                        current_value = None
+                    else:
+                        # '\x00\x00\x00'인 경우 None으로 설정
+                        if extracted_bytes == b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00':
+                            current_value = None
+                    finally:
+                        # current_value를 그대로 저장 (이미 ASCII로 변환된 상태)
+                        col_info['current_val'][1] = current_value
+                else:
+                    # 기본 정수형 처리
+                    current_value = int.from_bytes(extracted_bytes, byteorder='big')
+                    col_info['current_val'][1] = current_value
+
+                byte_index += byte_size  # 다음 데이터로 이동
+
+
+    def send_parse(self, record_values):
+        byte_array = bytearray()
+        return byte_array
+
+class RxSWIN(UDSBase):
+    def __init__(self):
+        read_service_id = [0x22]
+        write_service_id = [None]
+        identifier = [0xF1, 0xEF]
+        method = ('r')
+        dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
+        record_values = {
+            'data1': { 
+                'coloms': {
+                    'CAN_Request_ID': {'bit': 16, 'type': ['line_edit', "default"], 'current_val': [4, "", None]},
+                    'Data_Record': {'bit': 48, 'type': ['text_edit', "default"], 'current_val': [6, "", None]}
+                }
+            }
+        }
+        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
+
+    def read_parse(self, can_message, record_values):
+        if not isinstance(can_message, bytearray):
+            raise ValueError("Invalid CAN message")
+
+        # Service ID와 Identifier 길이를 계산
+        header_length = len(self.read_service_id) + len(self.identifier)
+
+        # 데이터 페이로드 시작 부분을 설정
+        payload_start = header_length
+
+        # 실제 데이터 페이로드 추출
+        data_payload = can_message[payload_start:]
+
+        byte_index = 0
+
+        for data_key, data_info in record_values.items():
+            for col_key, col_info in data_info['coloms'].items():
+                bit_size = col_info['bit']
+
+                if col_key == 'CAN_Request_ID':
+                    # CAN Request ID는 3바이트 고정
+                    byte_size = 2
+                    extracted_bytes = data_payload[byte_index:byte_index + byte_size]
+                    current_value = extracted_bytes.hex().upper()
+                    col_info['current_val'][1] = current_value
+                    byte_index += byte_size
+
+                elif col_key == 'Data_Record':
+                    # 나머지 데이터는 ASCII 형식의 가변 길이로 처리
+                    remaining_bytes = data_payload[byte_index:]
+                    decoded_value = ""
+
+                    while byte_index < len(data_payload):
+                        # 첫 바이트는 뒤에 올 바이트 개수
+                        byte_count = data_payload[byte_index]
+                        byte_index += 1  # 첫 바이트는 개수이므로 넘어감
+
+                        # 남은 데이터가 충분한지 확인
+                        if byte_index + byte_count > len(data_payload):
+                            raise ValueError("Not enough data in CAN message to process")
+
+                        # 해당 개수만큼 데이터를 추출
+                        segment = data_payload[byte_index:byte_index + byte_count]
+                        try:
+                            # ASCII로 변환
+                            segment_value = segment.decode('ascii')
+                        except UnicodeDecodeError:
+                            segment_value = None
+                        finally:
+                            # 줄바꿈 추가하여 값을 이어붙임
+                            if segment_value is not None:
+                                decoded_value += segment_value + "\n"
+                            else:
+                                decoded_value += "[Invalid ASCII]" + "\n"
+
+                        # 다음 데이터로 넘어감
+                        byte_index += byte_count
+
+                    # 마지막으로 추출된 값 저장
+                    col_info['current_val'][1] = decoded_value.strip()
+
+
+
+    def send_parse(self, record_values):
+        byte_array = bytearray()
+        return byte_array
+
+class InternalSWVer(UDSBase):
+    def __init__(self):
+        read_service_id = [0x22]
+        write_service_id = [None]
+        identifier = [0x00, 0x21]
+        method = ('r')
+        dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
+        record_values = {
+            'data1': { 'coloms':{ 'SW_ver':{'bit':48, 'type':['line_edit', "default"],'current_val': [12,"", None]}}},
+            'data2': { 'coloms':{ 'SNAND_ver':{'bit':32, 'type':['line_edit', "default"],'current_val': [8,"", None]}}},
+            'data3': { 'coloms':{ 'NOR_ver':{'bit':32, 'type':['line_edit', "default"],'current_val': [8,"", None]}}},
+            'data4': { 'coloms':{ 'ASK_ver':{'bit':24, 'type':['line_edit', "default"],'current_val': [6,"", None]}}},
+        }
+        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
+
+    def read_parse(self, can_message, record_values):
+        if not isinstance(can_message, bytearray) or len(can_message) < 16:
+            raise ValueError("Invalid CAN message")
+
+        # Service ID와 Identifier 길이를 계산
+        header_length = len(self.read_service_id) + len(self.identifier)
+
+        # 데이터 페이로드 시작 부분을 설정
+        payload_start = header_length
+
+        # 실제 데이터 페이로드 추출
+        data_payload = can_message[payload_start:]
+
+        byte_index = 0
+
+        for data_key, data_info in record_values.items():
+            for col_key, col_info in data_info['coloms'].items():
+                bit_size = col_info['bit']
+                byte_size = bit_size // 8  # bit를 byte로 변환
+
+                # 값을 추출하여 current_val[1]에 업데이트
+                extracted_bytes = data_payload[byte_index:byte_index + byte_size]
+
+                if col_key == 'SW_ver':
+                    current_value = extracted_bytes.hex().upper()           
+                    if extracted_bytes == b'\x00\x00\x00\x00\x00\x00':
+                        current_value = None
+                              
+                elif col_key == 'SNAND_ver':
+                    current_value = extracted_bytes.hex().upper()           
+                    if extracted_bytes == b'\x00\x00\x00\x00\x00\x00':
+                        current_value = None
+                elif col_key == 'NOR_ver':
+                    current_value = extracted_bytes.hex().upper()           
+                    if extracted_bytes == b'\x00\x00\x00\x00\x00\x00':
+                        current_value = None
+                elif col_key == 'ASK_ver':
+                    current_value = extracted_bytes.hex().upper()           
+                    if extracted_bytes == b'\x00\x00\x00\x00\x00\x00':
+                        current_value = None
+                else:
+                    # 기본 정수형 처리
+                    current_value = int.from_bytes(extracted_bytes, byteorder='big')
+
+                col_info['current_val'][1] = current_value
+
+                byte_index += byte_size  # 다음 데이터로 이동
+
+    def send_parse(self, record_values):
+        byte_array = bytearray()
+        return byte_array
+
+class DIDB002(UDSBase):
+    def __init__(self):
+        read_service_id = [0x22]
+        write_service_id = [None]
+        identifier = [0xB0, 0x02]
+        method = ('r')
+        dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
+        record_values = {
+            'data1': {'coloms': {'Supported_PID': {'bit': 32, 'type': ['line_edit', "default"], 'current_val': [100, "", None]}}},
+            'data2': {'coloms': {'Fuel_Input': {'bit': 8, 'type': ['line_edit', "default"], 'current_val': [4, "", None]}}},
+            'data3': {'coloms': {'Battery Voltage on CLU': {'bit': 8, 'type': ['line_edit', "default"], 'current_val': [5, "", None]}}},
+            'data4': {'coloms': {'Odometer(km)': {'bit': 24, 'type': ['line_edit', "default"], 'current_val': [5, "", None]}}},
+            'data5': {'coloms': {'Odometer(mile)': {'bit': 24, 'type': ['line_edit', "default"], 'current_val': [5, "", None]}}},
+        }
+        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
+
+    def read_parse(self, can_message, record_values):
+        if not isinstance(can_message, bytearray):
+            raise ValueError("Invalid CAN message")
+
+        # Service ID와 Identifier 길이를 계산
+        header_length = len(self.read_service_id) + len(self.identifier)
+
+        # 데이터 페이로드 시작 부분을 설정
+        payload_start = header_length
+
+        # 실제 데이터 페이로드 추출
+        data_payload = can_message[payload_start:]
+
+        byte_index = 0  # 실제 데이터를 처리하는 바이트 인덱스
+
+        for data_key, data_info in record_values.items():
+            for col_key, col_info in data_info['coloms'].items():
+                bit_size = col_info['bit']
+                byte_size = bit_size // 8  # bit를 byte로 변환
+
+                # 값을 추출하여 current_val[1]에 업데이트
+                extracted_bytes = data_payload[byte_index:byte_index + byte_size]
+
+                if col_key == 'Supported_PID':
+                    supported_pids = []
+                    # 각 바이트를 순차적으로 처리
+                    for i, byte_value in enumerate(extracted_bytes):
+                        for bit_position in range(8):
+                            # 각 비트를 확인하여 1인 경우 PID 추가
+                            if byte_value & (1 << (7 - bit_position)):
+                                pid_number = i * 8 + (bit_position + 1)
+                                supported_pids.append(f'0x{pid_number:02X}')  # hex로 PID 추가
+
+                    current_value = ', '.join(supported_pids) if supported_pids else 'None'
+
+                elif col_key == 'Fuel_Input':
+                    # 연료 입력은 1바이트(8비트)이며 0x00부터 0xFE까지는 0.5리터 단위로 표현
+                    fuel_value = int.from_bytes(extracted_bytes, byteorder='big')
+                    if fuel_value == 0xFF:
+                        current_value = 0.5
+                    else:
+                        current_value = fuel_value  # 리터 단위로 변환
+
+                elif col_key == 'Battery Voltage on CLU':
+                    # 배터리 전압은 0.08 * X 로 계산
+                    voltage_value = int.from_bytes(extracted_bytes, byteorder='big')
+                    current_value = voltage_value * 0.08  # 전압 계산
+
+                elif col_key == 'Odometer(km)':
+                    # 주행거리 (km 사양)
+                    current_value = int.from_bytes(extracted_bytes, byteorder='big')  # km로 변환
+
+                elif col_key == 'Odometer(mile)':
+                    # 주행거리 (mile 사양)
+                    current_value = int.from_bytes(extracted_bytes, byteorder='big')  # mile로 변환
+
+                else:
+                    # 기본 정수형 처리
+                    current_value = int.from_bytes(extracted_bytes, byteorder='big')
+
+                # 추출한 값을 record_values의 current_val에 업데이트
+                col_info['current_val'][1] = current_value
+
+                byte_index += byte_size  # 다음 데이터로 이동
+
+
+
+    def send_parse(self, record_values):
+        byte_array = bytearray()
+        return byte_array
+
+class DIDB003(UDSBase):
+    def __init__(self):
+        read_service_id = [0x22]
+        write_service_id = [None]
+        identifier = [0xB0, 0x03]
+        method = ('r')
+        dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
+        record_values = {
+            'data1': {'coloms': {'Supported_PID': {'bit': 32, 'type': ['line_edit', "default"], 'current_val':[100, "", None]}}},
+            'data2': {'coloms':{'L_IGN1':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
+                                'resv1':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
+                                'resv2':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
+                                'resv3':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
+                                'resv4':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
+                                'resv5':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
+                                'resv6':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
+                                'PARKING BRAKE SWITCH':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]}}}
+        }
+        
+        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
+
+    def read_parse(self, can_message, record_values):
+        if not isinstance(can_message, bytearray):
+            raise ValueError("Invalid CAN message")
+
+        # Service ID와 Identifier 길이를 계산
+        header_length = len(self.read_service_id) + len(self.identifier)
+
+        # 데이터 페이로드 시작 부분을 설정
+        payload_start = header_length
+
+        # 실제 데이터 페이로드 추출
+        data_payload = can_message[payload_start:]
+
+        # 데이터가 충분한지 확인
+        if len(data_payload) == 0:
+            raise ValueError("No data payload in CAN message")
+
+        byte_index = 0  # 바이트 단위의 데이터 인덱스
+        bit_offset = 0  # 비트 단위로 처리할 때 필요한 오프셋
+
+        for data_key, data_info in record_values.items():
+            for col_key, col_info in data_info['coloms'].items():
+                bit_size = col_info['bit']
+
+                # 필요한 비트 수만큼 값을 추출
+                current_value = 0
+                for _ in range(bit_size):
+                    if bit_offset == 8:
+                        byte_index += 1  # 다음 바이트로 이동
+                        bit_offset = 0
+
+                    byte_value = data_payload[byte_index]  # 현재 바이트 값을 읽음
+                    bit = (byte_value >> (7 - bit_offset)) & 1  # 현재 비트 추출
+                    current_value = (current_value << 1) | bit  # 추출한 비트를 current_value에 추가
+                    bit_offset += 1  # 다음 비트로 이동
+
+                # 추출한 값을 처리
+                if col_key == 'Supported_PID':
+                    supported_pids = []
+                    for i in range(32):  # Supported PID는 4바이트 (32비트)
+                        if (current_value >> (31 - i)) & 1:
+                            pid_number = i + 1
+                            supported_pids.append(f'0x{pid_number:02X}')
+                    current_value = ', '.join(supported_pids) if supported_pids else 'None'
+
+                elif col_key == 'L_IGN1':
+                    current_value = current_value  # 이미 처리된 값
+
+                elif 'resv' in col_key:
+                    current_value = current_value  # 예약된 비트이므로 값을 유지
+
+                elif col_key == 'PARKING BRAKE SWITCH':
+                    current_value = current_value  # 이미 처리된 값
+
+                else:
+                    # 기본 정수형 처리
+                    current_value = current_value
+
+                # 추출한 값을 record_values의 current_val에 업데이트
+                col_info['current_val'][1] = current_value
+
+            # 모든 비트를 사용한 후, byte_index를 다음 바이트로 이동
+            if bit_offset > 0:
+                byte_index += 1
+                bit_offset = 0
+
+    def send_parse(self, record_values):
+        byte_array = bytearray()
+        return byte_array
+
+
 
 did_map = {
     "EOLCoding": EOLCoding,
@@ -568,5 +1270,15 @@ did_map = {
     "SetServiceType":SetServiceType,
     "InitService":InitService,
     "SetServiceTerm":SetServiceTerm,
-    "SetServiceDistance":SetServiceDistance
+    "SetServiceDistance":SetServiceDistance,
+    "CANDBVer":CANDBVer,
+    "EtherDBVer":EtherDBVer,
+    "ClusterProductionCode":ClusterProductionCode,
+    "ClusterOEMHWVer":ClusterOEMHWVer,
+    "OEMSWVer":OEMSWVer,
+    "AVNUpdateType":AVNUpdateType,
+    "RxSWIN":RxSWIN,
+    "InternalSWVer":InternalSWVer,
+    "DIDB002":DIDB002,
+    "DIDB003":DIDB003
 }

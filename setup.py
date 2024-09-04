@@ -3,22 +3,22 @@ import os
 from cx_Freeze import setup, Executable
 
 # ADD FILES
-files = ['icon.ico','themes/']
+# 프로젝트 루트에 있는 중요한 파일들을 포함
+files = ['UTree_80.ico', 'main.ui', 'resources.qrc', 'images/', 'modules/', 'config_can/', 'config_uds/']
 
 # TARGET
 target = Executable(
-    script="main.py",
-    base="Win32GUI",
-    icon="icon.ico"
+    script="main.py",  # main.py가 실행 파일 대상
+    base="Win32GUI",   # GUI 프로그램인 경우 Win32GUI를 사용
+    icon="UTree_80.ico"  # 아이콘 파일 경로 지정
 )
 
 # SETUP CX FREEZE
 setup(
-    name = "PyDracula",
+    name = "UTree Tool",
     version = "1.0",
-    description = "Modern GUI for Python applications",
-    author = "Wanderson M. Pimenta",
-    options = {'build_exe' : {'include_files' : files}},
+    description = "Diagnostic Tool for UTree",
+    author = "Your Name",
+    options = {'build_exe' : {'include_files' : files}},  # 추가 파일 설정
     executables = [target]
-    
 )

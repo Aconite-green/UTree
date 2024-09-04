@@ -281,7 +281,7 @@ class MainWindow(QMainWindow):
             for col_key, col_info in data_info['coloms'].items():
                 bit_size = col_info['bit']
                 col_type, options = col_info['type']
-                _, read_val, write_val = col_info['current_val']
+                max_digit, read_val, write_val = col_info['current_val']
 
                 current_val = read_val if is_read else write_val
 
@@ -298,7 +298,7 @@ class MainWindow(QMainWindow):
                 name_label.setFixedHeight(25)
                 
                 # 위젯 생성 및 설정
-                widget = UIFunctions.create_widget(col_type, options, is_read, current_val)
+                widget = UIFunctions.create_widget(col_type, options, is_read, current_val, max_digit)
                 
                 if widget and not is_read:
                     def apply_styles(widget, val, col_type):
@@ -307,6 +307,8 @@ class MainWindow(QMainWindow):
                             if col_type == 'button':
                                 widget.setStyleSheet(StyleSheets.PUSHBUTTON_STYLE_SHEET_DEACTIVE)
                             elif col_type == 'combobox':
+                                widget.setStyleSheet(StyleSheets.STYLE_SHEET_DEACTIVE)
+                            elif col_type == "line_edit":
                                 widget.setStyleSheet(StyleSheets.STYLE_SHEET_DEACTIVE)
                         else:
                             if col_type == 'button':
