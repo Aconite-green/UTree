@@ -55,6 +55,7 @@ class CanManager:
                 raise FileNotFoundError(f"Directory not found: {directory}")
             
             yml_files = [f for f in os.listdir(directory) if f.endswith('.yml')]
+            
             if not yml_files:
                 self.error_handler.handle_error(f"No YML files found in directory: {directory}")
 

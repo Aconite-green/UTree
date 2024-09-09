@@ -1030,31 +1030,31 @@ class InternalSWVer(UDSBase):
     def read_parse(self, can_message, record_values):
         if not isinstance(can_message, bytearray) or len(can_message) < 16:
             raise ValueError("Invalid CAN message")
-    
+
         # Service ID와 Identifier 길이를 계산
         header_length = len(self.read_service_id) + len(self.identifier)
-    
+
         # 데이터 페이로드 시작 부분을 설정
         payload_start = header_length
-    
+
         # 실제 데이터 페이로드 추출
         data_payload = can_message[payload_start:]
-    
+
         byte_index = 0
-    
+
         for data_key, data_info in record_values.items():
             for col_key, col_info in data_info['coloms'].items():
                 bit_size = col_info['bit']
                 byte_size = bit_size // 8  # bit를 byte로 변환
-    
+
                 # 값을 추출하여 current_val[1]에 업데이트
                 extracted_bytes = data_payload[byte_index:byte_index + byte_size]
-    
+
                 # 두 자리씩 끊어서 . 으로 연결
                 def format_bytes_as_dotted_string(byte_data):
                     hex_string = byte_data.hex().upper()  # 16진수 대문자로 변환
                     return '.'.join([hex_string[i:i+2] for i in range(0, len(hex_string), 2)])  # 두 자리씩 끊어서 '.'으로 연결
-    
+
                 if col_key == 'SW_ver':
                     current_value = format_bytes_as_dotted_string(extracted_bytes)
                     if extracted_bytes == b'\x00\x00\x00\x00\x00\x00':
@@ -1074,12 +1074,12 @@ class InternalSWVer(UDSBase):
                 else:
                     # 기본 정수형 처리
                     current_value = int.from_bytes(extracted_bytes, byteorder='big')
-    
+
                 col_info['current_val'][1] = current_value
-    
+
                 byte_index += byte_size  # 다음 데이터로 이동
-    
-    
+
+
     def send_parse(self, record_values):
         byte_array = bytearray()
         return byte_array
