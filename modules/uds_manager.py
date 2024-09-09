@@ -7,6 +7,8 @@ from . can_manager import *
 from . my_server import *
 from msl.loadlib import Client64, Server32
 import atexit
+import threading
+
 class MyClient(Client64):
     def __init__(self):
         try:
@@ -29,10 +31,35 @@ class UdsManager:
         self.did_map = None
         self.process_data = bytearray()
         self.current_instance = None  
-        self.client = MyClient()
-        atexit.register(self.client.shutdown_server32)
+        # self.client = MyClient()
+        
+        self.client = None
+        self.initialized = False
+        self.server_thread = threading.Thread(target=self.initialize_client)
+        self.server_thread.start()
+        
+        # atexit.register(self.client.shutdown_server32)
 
+    # Seed Server
+    # ///////////////////////////////////////////////////////////////
+    def initialize_client(self):
+        try:
+            self.client = MyClient()
+            self.initialized = True
+            atexit.register(self.shutdown)
+        except Exception as e:
+            self.error_handler.handle_error(f"Failed to initialize MyClient: {str(e)}")
 
+    def shutdown(self):
+        if self.client:
+            self.client.shutdown_server32()
+        if self.server_thread.is_alive():
+            self.server_thread.join()
+
+    def generate_key_with_background_init(self, seed):
+        if not self.initialized:
+            self.server_thread.join()  # 초기화가 끝날 때까지 기다림
+        return self.client.generate_key(seed)
     # DID Utility
     # ///////////////////////////////////////////////////////////////
     def get_method(self):
@@ -132,7 +159,6 @@ class UdsManager:
         session_change_request = bytearray([0x10, 0x03])
         self.can_manager.send_message(session_change_request)
         msg = self.can_manager.receive_message()
-        print(msg.hex().upper())
         
         
         
@@ -140,14 +166,13 @@ class UdsManager:
         seed_request = bytearray([0x27, 0x11])
         self.can_manager.send_message(seed_request)
         msg = self.can_manager.receive_message()
-        print(msg.hex().upper())
         response_seed = bytearray(msg[-8:])
 
         # generate key value using the 32-bit server
           # MyClient를 DLL 경로와 함께 초기화 
         
         response_seed_bytes = bytes.fromhex(response_seed.hex())
-        key = self.client.generate_key(response_seed_bytes)
+        key = self.generate_key_with_background_init(response_seed_bytes)
         send_key = bytearray([0x27, 0x12])
         send_key.extend(key)
         self.can_manager.send_message(send_key)

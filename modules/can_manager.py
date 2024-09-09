@@ -5,6 +5,7 @@ import can
 import isotp.errors
 import os
 import yaml
+import can.interfaces.vector
 
 class CanManager:
     def __init__(self, can_directory, error_handler):

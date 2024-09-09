@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainlRCNsc.ui'
+## Form generated from reading UI file 'mainMHoqyH.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.7.2
 ##
@@ -28,7 +28,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1285, 773)
+        MainWindow.resize(1286, 773)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -1330,7 +1330,7 @@ class Ui_MainWindow(object):
         self.groupBox_pannel.setGeometry(QRect(0, 50, 941, 601))
         self.horizontalLayoutWidget = QWidget(self.groupBox_pannel)
         self.horizontalLayoutWidget.setObjectName(u"horizontalLayoutWidget")
-        self.horizontalLayoutWidget.setGeometry(QRect(0, 20, 941, 52))
+        self.horizontalLayoutWidget.setGeometry(QRect(0, 20, 943, 52))
         self.horizontalLayout_pannel_top = QHBoxLayout(self.horizontalLayoutWidget)
         self.horizontalLayout_pannel_top.setSpacing(3)
         self.horizontalLayout_pannel_top.setObjectName(u"horizontalLayout_pannel_top")
@@ -1342,15 +1342,22 @@ class Ui_MainWindow(object):
         sizePolicy4.setVerticalStretch(0)
         sizePolicy4.setHeightForWidth(self.comboBox_did.sizePolicy().hasHeightForWidth())
         self.comboBox_did.setSizePolicy(sizePolicy4)
-        self.comboBox_did.setMinimumSize(QSize(150, 0))
+        self.comboBox_did.setMinimumSize(QSize(220, 0))
         self.comboBox_did.setStyleSheet(u" background-color: rgb(27, 29, 35);")
 
         self.horizontalLayout_pannel_top.addWidget(self.comboBox_did)
 
         self.verticalLayout_14 = QVBoxLayout()
+        self.verticalLayout_14.setSpacing(3)
         self.verticalLayout_14.setObjectName(u"verticalLayout_14")
         self.radioButton_read = QRadioButton(self.horizontalLayoutWidget)
         self.radioButton_read.setObjectName(u"radioButton_read")
+        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy5.setHorizontalStretch(0)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(self.radioButton_read.sizePolicy().hasHeightForWidth())
+        self.radioButton_read.setSizePolicy(sizePolicy5)
+        self.radioButton_read.setMinimumSize(QSize(40, 0))
         self.radioButton_read.setMaximumSize(QSize(80, 16777215))
         self.radioButton_read.setAutoExclusive(False)
 
@@ -1358,6 +1365,9 @@ class Ui_MainWindow(object):
 
         self.radioButton_write = QRadioButton(self.horizontalLayoutWidget)
         self.radioButton_write.setObjectName(u"radioButton_write")
+        sizePolicy5.setHeightForWidth(self.radioButton_write.sizePolicy().hasHeightForWidth())
+        self.radioButton_write.setSizePolicy(sizePolicy5)
+        self.radioButton_write.setMinimumSize(QSize(40, 0))
         self.radioButton_write.setMaximumSize(QSize(80, 16777215))
         self.radioButton_write.setAutoExclusive(False)
 
@@ -1370,7 +1380,7 @@ class Ui_MainWindow(object):
         self.lineEdit_cancmd.setObjectName(u"lineEdit_cancmd")
         sizePolicy4.setHeightForWidth(self.lineEdit_cancmd.sizePolicy().hasHeightForWidth())
         self.lineEdit_cancmd.setSizePolicy(sizePolicy4)
-        self.lineEdit_cancmd.setMinimumSize(QSize(590, 0))
+        self.lineEdit_cancmd.setMinimumSize(QSize(500, 0))
         self.lineEdit_cancmd.setStyleSheet(u" background-color: rgb(27, 29, 35);")
         self.lineEdit_cancmd.setReadOnly(True)
 

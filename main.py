@@ -26,9 +26,11 @@ from modules import *
 from widgets import *
 os.environ["QT_FONT_DPI"] = "96" # FIX Problem for High DPI and Scale above 100%
 
-modules_path = r'D:\tool\common\UTree\modules'
+root_dir = os.path.dirname(os.path.abspath(__file__))
+modules_path = os.path.join(root_dir, 'modules')
 if modules_path not in sys.path:
     sys.path.append(modules_path)
+
 # SET AS GLOBAL WIDGETS
 # ///////////////////////////////////////////////////////////////
 widgets = None
@@ -338,9 +340,9 @@ class MainWindow(QMainWindow):
                     elif col_type == 'button':
                         widget.clicked.connect(
                             lambda checked, row=row_index, col=col_key,col_type=col_type, widget=widget: 
-                            (   apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, 1 if checked else 0, col_type), col_type),
-                                widget.setText('1' if checked else '0'),  
-                                self.uds_manager.update_record_value(self.record_values, row, col, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, 1 if checked else 0, col_type)),
+                            (   apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, 0 if checked else 1, col_type), col_type),
+                                widget.setText('0' if checked else '1'),  
+                                self.uds_manager.update_record_value(self.record_values, row, col, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, 0 if checked else 1, col_type)),
                                 self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values), 
                                 widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
                             )
@@ -453,10 +455,15 @@ class MainWindow(QMainWindow):
             if hasattr(self, 'can_manager'):
                 self.can_manager.stop_communication()
                 self.error_handler.log_message("CAN bus and layer were successfully shut down before closing.")
+
+            if hasattr(self, 'uds_manager'):
+                self.uds_manager.shutdown()  # UdsManager 자원 해제
+
+            self.error_handler.log_message("Application resources were successfully cleaned up.")
         except Exception as e:
             self.error_handler.handle_error(f"Error during application shutdown: {str(e)}")
-        # Accept the event to close the application
-        event.accept()
+        
+        event.accept()  # 프로그램 종료 허용
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

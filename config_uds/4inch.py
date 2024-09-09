@@ -18,7 +18,7 @@ class EOLCoding(UDSBase):
                                 'ECS':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]}}
             },
             'data2': {'coloms':{'ABS':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
-                                'ARIBAG':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
+                                'AIRBAG':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
                                 'PSB':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
                                 'AFL':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
                                 '4WD':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
@@ -35,7 +35,7 @@ class EOLCoding(UDSBase):
             'data4': {'coloms':{'Multifunction Type2':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
                                 'Power Type': {'bit': 3, 'type': ['combobox', {'ICV': 0b000, 'HEV': 0b001, 'PHEV': 0b010, 'EV': 0b011, 'FCEV': 0b100}], 'current_val': ['bool', None, None]},
                                 'High Performance Type':{'bit':2, 'type':['combobox', {'OFF': 0b00, 'HIGH_PERFORMANCE': 0b01, 'N': 0b10}],'current_val': ['bool',None, None]},
-                                '#resv#':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
+                                'reserved':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
                                 'Autolight':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]}}
             },
             'data5': {'coloms':{'Multifunction Type':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
@@ -46,7 +46,7 @@ class EOLCoding(UDSBase):
             },
             'data6': {'coloms':{'RSBR': {'bit': 3, 'type': ['combobox', {'NONE': 0b000, 'R2_P2': 0b001, 'R2_P3': 0b010, 'R2_P2_R3_P2': 0b011, 'R2_P3_R3_P2': 0b100,'R2_P2_R3_P3': 0b101, 'R2_P3_R3_P3': 0b110}], 'current_val': ['bool', None, None]},
                                 'Body Type': {'bit': 3, 'type': ['combobox', {'SEDAN': 0b000, 'SUV': 0b001, 'MPV': 0b010, 'WAGON': 0b011, 'HATCHBACK': 0b100, 'PICKUP_TRUCK': 0b101, 'TYPE_G': 0b110, 'TYPE_H': 0b111}], 'current_val': ['bool', None, None]},
-                                '#resv#':{'bit':2, 'type':['button', 0],'current_val': ['bool',None, None]}}
+                                'reserved':{'bit':2, 'type':['button', 0],'current_val': ['bool',None, None]}}
             },
             'data7': {'coloms':{'FCA':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
                                 'FCA2':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
@@ -61,7 +61,7 @@ class EOLCoding(UDSBase):
                                 'HDP':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
                                 'Emergency Stop':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
                                 'PDW':{'bit':1, 'type':['button', 0],'current_val': ['bool',None, None]},
-                                '#resv#':{'bit':4, 'type':['button', 0],'current_val': ['bool',None, None]}}        
+                                'reserved':{'bit':4, 'type':['button', 0],'current_val': ['bool',None, None]}}        
             }
             
             }
@@ -150,9 +150,9 @@ class CarInfo(UDSBase):
         method = ('r', 'w')
         dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
         record_values = {
-            'data1': { 'coloms':{ 'dealer_id':{'bit':40, 'type':['line_edit', "default"],'current_val': [5,"", ""]}}},
-            'data2': { 'coloms':{ 'date':{'bit':32, 'type':['line_edit', "default"],'current_val': [8,"", ""]}}},
-            'data3': { 'coloms':{ 'mileage':{'bit':32, 'type':['line_edit', "default"],'current_val': [6,"", ""]}}},
+            'data1': { 'coloms':{ 'dealer_id(ASCII 5byte)':{'bit':40, 'type':['line_edit', "default"],'current_val': [5,"", ""]}}},
+            'data2': { 'coloms':{ 'date(DEC 4byte, YYYYMMDD)':{'bit':32, 'type':['line_edit', "default"],'current_val': [8,"", ""]}}},
+            'data3': { 'coloms':{ 'milage(DEC)':{'bit':32, 'type':['line_edit', "default"],'current_val': [6,"", ""]}}},
             'data4': { 'coloms':{ 'checksum':{'bit':8, 'type':['line_edit', "default"],'current_val': [27,"", ""]}}},
         }
         super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
@@ -180,7 +180,7 @@ class CarInfo(UDSBase):
                 # 값을 추출하여 current_val[1]에 업데이트
                 extracted_bytes = data_payload[byte_index:byte_index + byte_size]
 
-                if col_key == 'dealer_id':
+                if col_key == 'dealer_id(ASCII 5byte)':
                     try:
                         # ASCII로 변환
                         current_value = extracted_bytes.decode('ascii')             
@@ -191,12 +191,12 @@ class CarInfo(UDSBase):
                         # ASCII로 변환할 수 없는 경우 None으로 설정
                         current_value = "Not Set"
 
-                elif col_key == 'date':
+                elif col_key == 'date(DEC 4byte, YYYYMMDD)':
                     if extracted_bytes == b'\x00\x00\x00\x00':
                         current_value = "Not Set"
                     else:
                         current_value = hex(int.from_bytes(extracted_bytes, byteorder='big'))[2:].upper()
-                elif col_key == 'mileage':
+                elif col_key == 'milage(DEC)':
                     if extracted_bytes == b'\x00\x00\x00\x00':
                         current_value = "Not Set"
                     else:
@@ -216,14 +216,14 @@ class CarInfo(UDSBase):
         byte_array = bytearray()
 
         # 1. 딜러 ID (DealerID, 5Byte, ASCII)
-        dealer_id = record_values['data1']['coloms']['dealer_id']['current_val'][2]
+        dealer_id = record_values['data1']['coloms']['dealer_id(ASCII 5byte)']['current_val'][2]
         if dealer_id is None:
             dealer_id = ''
         dealer_id_bytes = dealer_id.encode('ascii')
         byte_array.extend(dealer_id_bytes.ljust(5, b'\x00'))  # 5바이트로 맞추기 위해 0으로 패딩
 
         # 2. 수정 날짜 (Date, 4Byte, DEC)
-        date = record_values['data2']['coloms']['date']['current_val'][2]
+        date = record_values['data2']['coloms']['date(DEC 4byte, YYYYMMDD)']['current_val'][2]
 
         try:
             # date를 문자열로 변환한 후, 각 부분을 분리
@@ -245,7 +245,7 @@ class CarInfo(UDSBase):
 
         # 3. 오도미터 (Mileage, 4Byte, HEX → DEC 변환)
         mileage_bytes = b'\x00\x00\x00\x00'  # 기본값 초기화
-        mileage = record_values['data3']['coloms']['mileage']['current_val'][2]
+        mileage = record_values['data3']['coloms']['milage(DEC)']['current_val'][2]
         try:
             mileage = int(mileage)
             mileage = min(mileage, 1599999)  # km 사양 기준으로 최대 값 제한
@@ -498,7 +498,7 @@ class SetServiceDistance(UDSBase):
         method = ('w')
         dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
         record_values = {
-            'data1': { 'coloms':{ 'Service_Distance':{'bit':24, 'type':['line_edit', "default"],'current_val': [5,None, None]}}}
+            'data1': { 'coloms':{ 'Service_Distance(DEC, 0~99999 Km or Mile)':{'bit':24, 'type':['line_edit', "default"],'current_val': [5,None, None]}}}
         }
         super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
 
@@ -510,7 +510,7 @@ class SetServiceDistance(UDSBase):
     def send_parse(self, record_values):
         byte_array = bytearray()
 
-        service_dis = record_values['data1']['coloms']['Service_Distance']['current_val'][2]
+        service_dis = record_values['data1']['coloms']['Service_Distance(DEC, 0~99999 Km or Mile)']['current_val'][2]
         service_dis_bytes = b'\x00\x00\x00'
         try:
             service_dis = int(service_dis)
@@ -533,7 +533,7 @@ class SetServiceTerm(UDSBase):
         method = ('w')
         dll_path = "HKMC_AdvancedSeedKey_Win32_4inch.dll"
         record_values = {
-            'data1': { 'coloms':{ 'Service_Term':{'bit':16, 'type':['line_edit', "default"],'current_val': [2,None, ""]}}}
+            'data1': { 'coloms':{ 'Service_Term(DEC, 0~99 Month)':{'bit':16, 'type':['line_edit', "default"],'current_val': [2,None, ""]}}}
         }
         super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
 
@@ -545,7 +545,7 @@ class SetServiceTerm(UDSBase):
     def send_parse(self, record_values):
         byte_array = bytearray()
 
-        service_term = record_values['data1']['coloms']['Service_Term']['current_val'][2]
+        service_term = record_values['data1']['coloms']['Service_Term(DEC, 0~99 Month)']['current_val'][2]
         service_term_bytes = b'\x00\x00'
         try:
             service_term = int(service_term)
@@ -1030,51 +1030,56 @@ class InternalSWVer(UDSBase):
     def read_parse(self, can_message, record_values):
         if not isinstance(can_message, bytearray) or len(can_message) < 16:
             raise ValueError("Invalid CAN message")
-
+    
         # Service ID와 Identifier 길이를 계산
         header_length = len(self.read_service_id) + len(self.identifier)
-
+    
         # 데이터 페이로드 시작 부분을 설정
         payload_start = header_length
-
+    
         # 실제 데이터 페이로드 추출
         data_payload = can_message[payload_start:]
-
+    
         byte_index = 0
-
+    
         for data_key, data_info in record_values.items():
             for col_key, col_info in data_info['coloms'].items():
                 bit_size = col_info['bit']
                 byte_size = bit_size // 8  # bit를 byte로 변환
-
+    
                 # 값을 추출하여 current_val[1]에 업데이트
                 extracted_bytes = data_payload[byte_index:byte_index + byte_size]
-
+    
+                # 두 자리씩 끊어서 . 으로 연결
+                def format_bytes_as_dotted_string(byte_data):
+                    hex_string = byte_data.hex().upper()  # 16진수 대문자로 변환
+                    return '.'.join([hex_string[i:i+2] for i in range(0, len(hex_string), 2)])  # 두 자리씩 끊어서 '.'으로 연결
+    
                 if col_key == 'SW_ver':
-                    current_value = extracted_bytes.hex().upper()           
+                    current_value = format_bytes_as_dotted_string(extracted_bytes)
                     if extracted_bytes == b'\x00\x00\x00\x00\x00\x00':
                         current_value = None
-                              
                 elif col_key == 'SNAND_ver':
-                    current_value = extracted_bytes.hex().upper()           
+                    current_value = format_bytes_as_dotted_string(extracted_bytes)
                     if extracted_bytes == b'\x00\x00\x00\x00\x00\x00':
                         current_value = None
                 elif col_key == 'NOR_ver':
-                    current_value = extracted_bytes.hex().upper()           
+                    current_value = format_bytes_as_dotted_string(extracted_bytes)
                     if extracted_bytes == b'\x00\x00\x00\x00\x00\x00':
                         current_value = None
                 elif col_key == 'ASK_ver':
-                    current_value = extracted_bytes.hex().upper()           
+                    current_value = format_bytes_as_dotted_string(extracted_bytes)
                     if extracted_bytes == b'\x00\x00\x00\x00\x00\x00':
                         current_value = None
                 else:
                     # 기본 정수형 처리
                     current_value = int.from_bytes(extracted_bytes, byteorder='big')
-
+    
                 col_info['current_val'][1] = current_value
-
+    
                 byte_index += byte_size  # 다음 데이터로 이동
-
+    
+    
     def send_parse(self, record_values):
         byte_array = bytearray()
         return byte_array
@@ -1260,25 +1265,25 @@ class DIDB003(UDSBase):
 
 
 did_map = {
-    "EOLCoding": EOLCoding,
-    "CarInfo": CarInfo,
+    "EOL_Coding_R/W(0060/C0DE)": EOLCoding,
+    "Vehicle_Odo_R/W(0080)": CarInfo,
     "ECUReset":ECUReset,
-    "InitVIN":InitVIN,
-    "VIN":VIN,
-    "UnlockNotCoded":UnlockNotCoded,
-    "LockNotCoded":LockNotCoded,
-    "SetServiceType":SetServiceType,
-    "InitService":InitService,
-    "SetServiceTerm":SetServiceTerm,
-    "SetServiceDistance":SetServiceDistance,
-    "CANDBVer":CANDBVer,
-    "EtherDBVer":EtherDBVer,
-    "ClusterProductionCode":ClusterProductionCode,
-    "ClusterOEMHWVer":ClusterOEMHWVer,
-    "OEMSWVer":OEMSWVer,
-    "AVNUpdateType":AVNUpdateType,
-    "RxSWIN":RxSWIN,
-    "InternalSWVer":InternalSWVer,
-    "DIDB002":DIDB002,
-    "DIDB003":DIDB003
+    "VIN_Reset_W(F110)":InitVIN,
+    "VIN_R/W(F190)":VIN,
+    "CodingErr_UnLock":UnlockNotCoded,
+    "CodingErr_Lock":LockNotCoded,
+    "ServiceReminder_Type_W(0070)":SetServiceType,
+    "ServiceReminder__W(0071)":InitService,
+    "ServiceReminder_Period_W(0073)":SetServiceTerm,
+    "ServiceReminder_Distance_W(0072)":SetServiceDistance,
+    "CANDBVer_R(F100)":CANDBVer,
+    "EtherDBVer_R(F101)":EtherDBVer,
+    "SupplierCode_R(F1A1)":ClusterProductionCode,
+    "OEM_H/Wver_R(F191)":ClusterOEMHWVer,
+    "OEM_S/Wver_R(F1A0)":OEMSWVer,
+    "Supplier_S/Wver_R(F1B1)":AVNUpdateType,
+    "RxSWIN_R(F1EF)":RxSWIN,
+    "Conti_S/Wver_R(0021)":InternalSWVer,
+    "InOutput_B002_R(B002)":DIDB002,
+    "InOutput_B003_R(B003)":DIDB003
 }

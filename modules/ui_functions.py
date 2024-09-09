@@ -42,12 +42,11 @@ class StyleSheets:
         vertical-align: middle;
     """
 
-    PUSHBUTTON_STYLE_SHEET_ACTIVE = """
+    PUSHBUTTON_STYLE_SHEET_DEACTIVE = """
         QPushButton {
             font-size: 10pt;
             border: 2px solid rgb(61, 70, 86);
             background-color: rgb(61, 70, 86);
-            color: rgb(135, 206, 250); 
             padding: 2px;
         }
         QPushButton:hover {
@@ -61,23 +60,24 @@ class StyleSheets:
         }
     """
 
-    PUSHBUTTON_DISABLE_1 = """
+    PUSHBUTTON_DISABLE_0 = """
         QPushButton:disabled { 
             border: 2px solid rgb(61, 70, 86);
-            background-color: rgb(27, 29, 35); 
+            background-color: rgb(27, 29, 35);
         }
     """
-    PUSHBUTTON_DISABLE_0 = """
+    PUSHBUTTON_DISABLE_1 = """
         QPushButton:disabled { 
             border: 2px solid rgb(61, 70, 86);
             background-color: rgb(61, 70, 86); 
         }
     """
-    PUSHBUTTON_STYLE_SHEET_DEACTIVE = """
+    PUSHBUTTON_STYLE_SHEET_ACTIVE = """
         QPushButton {
             font-size: 10pt;
             border: 2px solid rgb(61, 70, 86);
             background-color: rgb(61, 70, 86);
+            color: rgb(135, 206, 250);
             padding: 2px;
         }
         QPushButton:hover {
@@ -376,7 +376,7 @@ class UIFunctions(MainWindow):
             else:
                 style_sheet = StyleSheets.PUSHBUTTON_STYLE_SHEET_DEACTIVE
             widget.setStyleSheet(style_sheet)
-            widget.setChecked(True if current_val is not None and current_val == 1 else False)
+            widget.setChecked(True if current_val is not None and current_val == 0 else False)
 
 
         if widget:
