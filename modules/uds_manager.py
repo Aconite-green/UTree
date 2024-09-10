@@ -83,8 +83,8 @@ class UdsManager:
         if self.current_instance:
             for data_key, data_info in self.current_instance.record_values.items():
                 for col_key, col_info in data_info['coloms'].items():
-                    read_val = col_info['current_val'][1]  # 읽기 영역 값
-                    col_info['current_val'][2] = read_val  # 쓰기 영역에 복사
+                    read_val = col_info['r_val']  # 읽기 영역 값
+                    col_info['w_val'] = read_val  # 쓰기 영역에 복사
         else:
             self.error_handler.handle_error("No current_instance available to copy values.")
 
@@ -92,8 +92,8 @@ class UdsManager:
         if self.current_instance:
             for data_key, data_info in self.current_instance.record_values.items():
                 for col_key, col_info in data_info['coloms'].items():
-                    write_val = col_info['current_val'][2]  # 쓰기 영역 값
-                    col_info['current_val'][1] = write_val  # 읽기 영역에 복사
+                    write_val = col_info['w_val']  # 쓰기 영역 값
+                    col_info['r_val'] = write_val  # 읽기 영역에 복사
         else:
             self.error_handler.handle_error("No current_instance available to copy values.")
 
@@ -105,9 +105,9 @@ class UdsManager:
                 col_key = col
 
                 
-                record_values[record_key]['coloms'][col_key]['current_val'][2] = value[0]
+                record_values[record_key]['coloms'][col_key]['w_val'] = value[0]
 
-                print(record_values[record_key]['coloms'][col_key]['current_val'][2])
+                print(record_values[record_key]['coloms'][col_key]['w_val'])
             except KeyError as e:
                 self.error_handler.handle_error(f"Error updating record value: {str(e)}")
         else:
@@ -126,12 +126,12 @@ class UdsManager:
             col_key = col
             if col_type == "combobox":
                 col_info = record_values.get(record_key, {}).get('coloms', {}).get(col_key, None)
-                options_dict = col_info.get('type', [None, {}])[1]
+                options_dict = col_info['options']
                 val = options_dict.get(value, None)
             else:
                 val = value
             
-            read_val = record_values[record_key]['coloms'][col_key]['current_val'][1]
+            read_val = record_values[record_key]['coloms'][col_key]['r_val']
             
             return [val, read_val]
 
@@ -212,8 +212,8 @@ class UdsManager:
         for data_key, data_info in record_values.items():
             if col_key in data_info['coloms']:
                 col_info = data_info['coloms'][col_key]
-                if col_info['type'][0] == 'combobox':
-                    options = col_info['type'][1]
+                if col_info['col_type'] == 'combobox':
+                    options = col_info['options']
                     return options.get(selected_text, None)
         return None
     # INIT CONFIG UDS FILES

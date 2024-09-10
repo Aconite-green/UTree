@@ -327,7 +327,7 @@ class UIFunctions(MainWindow):
     
     # ///////////////////////////////////////////////////////////////
     # END - GUI DEFINITIONS
-    def create_widget(col_type, options, is_read, current_val, max_digits):
+    def create_widget(col_type, options, is_read, current_val):
         widget = None
 
         if col_type == 'combobox':
@@ -351,7 +351,6 @@ class UIFunctions(MainWindow):
         elif col_type == 'line_edit':
             widget = QLineEdit()
             widget.setText(str(current_val))
-            widget.setMaxLength(max_digits)
             widget.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE if current_val else StyleSheets.STYLE_SHEET_DEACTIVE)
             widget.setEnabled(not is_read)
             widget.setAlignment(Qt.AlignCenter)
