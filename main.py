@@ -61,6 +61,7 @@ class MainWindow(QMainWindow):
 
         # SET UI DEFINITIONS
         # ///////////////////////////////////////////////////////////////
+        
         UIFunctions.uiDefinitions(self)
 
         # QTableWidget PARAMETERS
