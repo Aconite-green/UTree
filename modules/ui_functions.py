@@ -111,7 +111,7 @@ class StyleSheets:
         QPushButton {
             font-size: 10pt;
             border: 1px solid rgb(220, 220, 220);
-            background-color: rgb(27, 29, 35);
+            background-color: rgb(61, 70, 86);
             padding: 2px;
         }
         QPushButton:hover {
