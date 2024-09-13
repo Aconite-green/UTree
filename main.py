@@ -191,31 +191,21 @@ class MainWindow(QMainWindow):
             except Exception as e:
                 self.error_handler.handle_error(str(e))
     
-    def print_record_values(self, record_values, is_read):
-        for row_key, data_info in record_values.items():
-            print(f"Row: {row_key}")
-            for col_key, col_info in data_info['coloms'].items():
-                if is_read:
-                    current_val = col_info['current_val'][1]  # 읽기 모드의 current_val
-                    mode = "Read"
-                else:
-                    current_val = col_info['current_val'][2]  # 쓰기 모드의 current_val
-                    mode = "Write"
-
-                print(f"  Column: {col_key} | {mode} Value: {current_val}")
-            print()  # 행 간에 빈 줄 추가
-
     def handle_send(self):
-
         if widgets.radioButton_read.isChecked() or widgets.radioButton_write.isChecked():
             is_read = widgets.radioButton_read.isChecked()
-            self.uds_manager.process_uds_cmd(is_read, self.record_values)
-            self.populate_grid(self.record_values, is_read=is_read)
-
-            if not is_read:
-                self.uds_manager.copy_write_to_read()
-            else:
+            if is_read:
+                self.uds_manager.process_uds_cmd(is_read, self.record_values)
+                self.populate_grid(self.record_values, is_read=is_read)
                 self.read_record = True
+            else: # write
+                is_valid = self.uds_manager.validate_value()
+                if is_valid:
+                    self.uds_manager.process_uds_cmd(is_read, self.record_values)
+                    self.populate_grid(self.record_values, is_read=is_read)
+                    self.uds_manager.copy_write_to_read()
+                else:
+                    self.error_handler.log_message("not a valid write value")                
         else:
             self.error_handler.log_message("please select Write or Read Button")
         
@@ -236,14 +226,17 @@ class MainWindow(QMainWindow):
                 }
             """)
             if self.record_values is not None:
+                self.uds_manager.auto_set()
                 self.populate_grid(self.record_values, is_read=True)
                 self.uds_manager.make_uds_cmd(is_read=True, record_values=self.record_values)
                 data = self.uds_manager.get_uds_cmd()
                 widgets.lineEdit_cancmd.setText(data)
+        else:
+            print("not set")
     
     def handle_write(self, checked):
 
-        if self.read_record: 
+        if self.read_record:
                 self.uds_manager.copy_read_to_write()
         else:
             pass  
@@ -260,6 +253,7 @@ class MainWindow(QMainWindow):
                                     }
                                 """)
             if self.record_values is not None:
+                self.uds_manager.auto_set()
                 self.populate_grid(self.record_values, is_read=False)
                 self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values)
                 data = self.uds_manager.get_uds_cmd()
@@ -273,15 +267,25 @@ class MainWindow(QMainWindow):
                 child.widget().deleteLater()
 
         for row_index, (key, data_info) in enumerate(record_values.items()):
-            label = QLabel(key)
+            # coloms 항목을 가져옴
+            coloms = data_info.get('coloms', {})
+
+            # coloms에 key가 1개만 있을 경우, coloms의 key를 label에 표시
+            if len(coloms) == 1:
+                colom_key = next(iter(coloms))  # coloms의 첫 번째(유일한) key 값 가져오기
+                label_text = colom_key
+            else:
+                label_text = key
+
+            label = QLabel(label_text)
             label.setStyleSheet("font-size: 12pt; font-weight: bold;border: 2px solid rgb(61, 70, 86);")
             label.setAlignment(Qt.AlignCenter)
             widgets.gridLayout_pannel_main.addWidget(label, row_index, 0)
 
-            total_bits = sum(col['bit'] for col in data_info['coloms'].values())
+            total_bits = sum(col['bit'] for col in coloms.values())
             col_start_index = 1
 
-            for col_key, col_info in data_info['coloms'].items():
+            for col_key, col_info in coloms.items():
                 bit_size = col_info['bit']
                 col_type = col_info['col_type']
                 options = col_info['options']
@@ -289,42 +293,50 @@ class MainWindow(QMainWindow):
 
                 current_val = read_val if is_read else write_val
 
-                # 공통적인 라벨 설정
-                name_label = QLabel(col_key)
-                name_label.setStyleSheet("""
-                    font-size: 9pt; 
-                    padding: 1px;
-                    color: rgb(221, 221, 221);
-                    border: 1px solid rgb(61, 70, 86);
-                    background-color: transparent;
-                """)
-                name_label.setAlignment(Qt.AlignCenter)
-                name_label.setFixedHeight(25)
-                
+                # coloms의 key가 1개일 경우 name_label을 생략하고 바로 위젯 추가
+                if len(coloms) > 1:
+                    name_label = QLabel(col_key)
+                    name_label.setStyleSheet("""
+                        font-size: 9pt; 
+                        padding: 1px;
+                        color: rgb(221, 221, 221);
+                        border: 1px solid rgb(61, 70, 86);
+                        background-color: transparent;
+                    """)
+                    name_label.setAlignment(Qt.AlignCenter)
+                    name_label.setFixedHeight(25)
+
                 # 위젯 생성 및 설정
                 widget = UIFunctions.create_widget(col_type, options, is_read, current_val)
-                
+
                 if widget and not is_read:
                     def apply_styles(widget, val, col_type):
                         new_value, read_value = val[0], val[1]
+                        print(f"input : {new_value}, read_val : {read_value}")
                         if new_value != read_value:
+                            
                             if col_type == 'button':
                                 widget.setStyleSheet(StyleSheets.PUSHBUTTON_STYLE_SHEET_DEACTIVE)
                             elif col_type == 'combobox':
                                 widget.setStyleSheet(StyleSheets.STYLE_SHEET_DEACTIVE)
                             elif col_type == "line_edit":
                                 widget.setStyleSheet(StyleSheets.STYLE_SHEET_DEACTIVE)
+                            elif col_type == "calendar":
+                                widget.setStyleSheet(StyleSheets.CALENDAR_STYLE_SHEET_DEACTIVE)
+                                widget.set_active(False)
                         else:
                             if col_type == 'button':
                                 widget.setStyleSheet(StyleSheets.PUSHBUTTON_STYLE_SHEET_ACTIVE)
+                            elif col_type == "calendar":
+                                widget.setStyleSheet(StyleSheets.CALENDAR_STYLE_SHEET_ACTIVE)
+                                widget.set_active(True)
                             else:
                                 widget.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE)
-                    
+
                     if col_type == 'combobox':
                         widget.currentIndexChanged.connect(
-                            lambda idx, row=row_index, col=col_key, col_type=col_type,widget=widget: (
-        
-                                self.uds_manager.update_record_value(self.record_values, row, col,self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.currentText(), col_type)),
+                            lambda idx, row=row_index, col=col_key, col_type=col_type, widget=widget: (
+                                self.uds_manager.update_record_value(self.record_values, row, col, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.currentText(), col_type)),
                                 apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.currentText(), col_type), col_type),
                                 self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values), 
                                 widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
@@ -333,29 +345,43 @@ class MainWindow(QMainWindow):
                     elif col_type == 'line_edit':
                         widget.textChanged.connect(
                             lambda text, row=row_index, col=col_key, col_type=col_type, widget=widget: (
-                            apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.text(), col_type), col_type),
-                            self.uds_manager.update_record_value(self.record_values, row, col, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.text(), col_type)),
-                            self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values), 
-                            widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
+                                apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.text(), col_type), col_type),
+                                self.uds_manager.update_record_value(self.record_values, row, col, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.text(), col_type)),
+                                self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values), 
+                                widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
                             )
                         )
                     elif col_type == 'button':
                         widget.clicked.connect(
-                            lambda checked, row=row_index, col=col_key,col_type=col_type, widget=widget: 
-                            (   apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, 0 if checked else 1, col_type), col_type),
+                            lambda checked, row=row_index, col=col_key, col_type=col_type, widget=widget: (
+                                apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, 0 if checked else 1, col_type), col_type),
                                 widget.setText('0' if checked else '1'),  
                                 self.uds_manager.update_record_value(self.record_values, row, col, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, 0 if checked else 1, col_type)),
                                 self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values), 
                                 widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
                             )
                         )
+                    elif col_type == 'calendar':
+                    # calendar 위젯에 selectionChanged 이벤트 연결
+                        widget.selectionChanged.connect(
+                        lambda row=row_index, col=col_key, col_type=col_type, widget=widget: (
+                            apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.handle_date_change(widget), col_type), col_type),
+                            self.uds_manager.update_record_value(self.record_values, row, col, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.handle_date_change(widget), col_type)),
+                            self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values), 
+                            widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
+                        )
+                    )
 
                 if widget:
                     bit_ratio = bit_size / total_bits
                     col_span = max(1, int(bit_ratio * 8))  # 최소 1, 최대 8의 크기
 
                     vertical_layout = QVBoxLayout()
-                    vertical_layout.addWidget(name_label)
+
+                    # coloms의 key가 1개가 아닐 때만 name_label 추가
+                    if len(coloms) > 1:
+                        vertical_layout.addWidget(name_label)
+
                     vertical_layout.addWidget(widget)
 
                     container_widget = QWidget()
@@ -407,8 +433,17 @@ class MainWindow(QMainWindow):
             child = widgets.gridLayout_pannel_main.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
-
         widgets.lineEdit_cancmd.clear()
+        method = self.uds_manager.get_did_method()
+        if len(method) == 2: # both r,w
+            pass
+        else:
+            if 'r' in method:
+                widgets.radioButton_read.click()
+                pass
+            else:
+                widgets.radioButton_write.click()
+                pass
     
     def print_record_values(self, record_values, is_read):
         for row_key, data_info in record_values.items():

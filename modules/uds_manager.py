@@ -31,8 +31,7 @@ class UdsManager:
         self.did_map = None
         self.process_data = bytearray()
         self.current_instance = None  
-        # self.client = MyClient()
-        
+        self.error_codes = None
         self.client = None
         self.initialized = False
         self.server_thread = threading.Thread(target=self.initialize_client)
@@ -96,6 +95,15 @@ class UdsManager:
                     col_info['r_val'] = write_val  # 읽기 영역에 복사
         else:
             self.error_handler.handle_error("No current_instance available to copy values.")
+    
+    def auto_set(self):
+        if self.current_instance:
+            for data_key, data_info in self.current_instance.record_values.items():
+                for col_key, col_info in data_info['coloms'].items():
+                    if not isinstance(col_info['options'], dict) and col_info['options'] == 'auto':
+                        col_info['w_val'], col_info['r_val'] = 'auto', 'auto'
+        else:
+            self.error_handler.handle_error("No current_instance available to set auto.")
 
     def update_record_value(self, record_values, row, col, value):
         if self.current_instance:
@@ -177,20 +185,27 @@ class UdsManager:
         send_key.extend(key)
         self.can_manager.send_message(send_key)
         msg = self.can_manager.receive_message() 
-        print(f"end of session and seed request: {msg.hex().upper()}")
-
-
+       
     def process_uds_cmd(self, is_read, record_values):
+        self.can_manager.clear_can_buffer()
+        is_ok = False
+        send_msg = self.process_data
+        recv_msg = None
+        error_msg = None
+        
         try:
             if is_read:
+                read_id = self.current_instance.read_service_id
                 self.can_manager.send_message(self.process_data)
+                
                 response = self.can_manager.receive_message()
-                print(response.hex().upper())
                 self.current_instance.read_parse(response, record_values)
                 self.error_handler.log_message(response.hex().upper())
             else:
+                write_id = self.current_instance.write_service_id
                 self._ssesion_change_seed_reaquest()
                 self.can_manager.send_message(self.process_data)
+
                 response = self.can_manager.receive_message()
                 self.error_handler.log_message(response.hex().upper())
                 
@@ -216,6 +231,13 @@ class UdsManager:
                     options = col_info['options']
                     return options.get(selected_text, None)
         return None
+    
+    def validate_value(self):
+        return self.current_instance.validate_record_values()
+    
+    def get_did_method(self):
+        return self.current_instance.method
+    
     # INIT CONFIG UDS FILES
     # ///////////////////////////////////////////////////////////////
     def load_module_classes(self, module_name):
@@ -232,10 +254,16 @@ class UdsManager:
                 sys.path.pop(0)  # 로드 후 경로를 제거
                 
                 if hasattr(module, 'did_map'):
-                    self.did_map = module.did_map  # class_map을 UdsManager의 속성으로 설정
+                    self.did_map = module.did_map
                 else:
                     self.error_handler.handle_error(f"Module '{module_name}' does not contain a 'class_map'")
                     self.did_map = None
+                
+                if hasattr(module, 'negative_response_codes'):
+                    self.error_codes = module.negative_response_codes
+                else:
+                    self.error_handler.handle_error(f"Module '{module_name}' does not contain a 'negative_response_codes'")
+                    self.error_codes = None
                 
             except Exception as e:
                 self.error_handler.handle_error(f"Failed to load module: {module_name}, Error: {str(e)}")

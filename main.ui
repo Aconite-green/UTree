@@ -2822,7 +2822,7 @@ font: 600 12pt &quot;Segoe UI Semibold&quot;;</string>
                          <string notr="true">color: rgb(113, 126, 149);</string>
                         </property>
                         <property name="text">
-                         <string>Log</string>
+                         <string>Log Report</string>
                         </property>
                         <property name="margin">
                          <number>5</number>

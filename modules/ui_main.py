@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainMHoqyH.ui'
+## Form generated from reading UI file 'maincVIact.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.7.2
 ##
@@ -1671,7 +1671,7 @@ class Ui_MainWindow(object):
         self.label_search.setText(QCoreApplication.translate("MainWindow", u"Search", None))
         self.lineEdit_search.setText("")
         self.lineEdit_search.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Type here", None))
-        self.label_log.setText(QCoreApplication.translate("MainWindow", u"Log", None))
+        self.label_log.setText(QCoreApplication.translate("MainWindow", u"Log Report", None))
         self.creditsLabel.setText(QCoreApplication.translate("MainWindow", u"By: SeongYong Park", None))
         self.version.setText(QCoreApplication.translate("MainWindow", u"v1.0.0", None))
     # retranslateUi

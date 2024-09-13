@@ -257,6 +257,25 @@ class CanManager:
            return None
     
 
+    def clear_can_buffer(self, timeout=0.1):
+        """CAN 버퍼를 비우는 함수. 메시지가 없을 때까지 계속 recv 호출."""
+        try:
+            self.error_handler.log_message("Clearing CAN buffer...")
+            
+            # 메시지가 없을 때까지 recv 호출
+            while True:
+                msg = self.layer.recv(timeout=timeout)
+                if msg is None:
+                    # 더 이상 읽을 메시지가 없으면 종료
+                    break
+            
+            self.error_handler.log_message("CAN buffer cleared.")
+        
+        except can.CanError as e:
+            self.error_handler.handle_error(f"Error while clearing CAN buffer: {str(e)}")
+        except Exception as e:
+            self.error_handler.handle_error(f"Unexpected error during CAN buffer clearing: {str(e)}")
+
     def send_message(self, message):
         try:
             self.layer.send(message, target_address_type=0, send_timeout=2.0)
