@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'maincVIact.ui'
+## Form generated from reading UI file 'mainsOzhzc.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.7.2
 ##
@@ -1463,6 +1463,7 @@ class Ui_MainWindow(object):
 
         self.lineEdit_search = QLineEdit(self.contentSettings)
         self.lineEdit_search.setObjectName(u"lineEdit_search")
+        self.lineEdit_search.setEnabled(False)
         self.lineEdit_search.setMinimumSize(QSize(0, 30))
 
         self.verticalLayout_13.addWidget(self.lineEdit_search)
@@ -1484,6 +1485,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.plainTextEdit_log.sizePolicy().hasHeightForWidth())
         self.plainTextEdit_log.setSizePolicy(sizePolicy)
         self.plainTextEdit_log.setTabChangesFocus(True)
+        self.plainTextEdit_log.setReadOnly(True)
 
         self.verticalLayout_13.addWidget(self.plainTextEdit_log)
 
@@ -1668,7 +1670,7 @@ class Ui_MainWindow(object):
         self.radioButton_write.setText(QCoreApplication.translate("MainWindow", u"Write", None))
         self.btn_send.setText(QCoreApplication.translate("MainWindow", u"SEND", None))
         self.btn_connect.setText(QCoreApplication.translate("MainWindow", u"Connect", None))
-        self.label_search.setText(QCoreApplication.translate("MainWindow", u"Search", None))
+        self.label_search.setText(QCoreApplication.translate("MainWindow", u"DID Search", None))
         self.lineEdit_search.setText("")
         self.lineEdit_search.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Type here", None))
         self.label_log.setText(QCoreApplication.translate("MainWindow", u"Log Report", None))

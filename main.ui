@@ -2771,7 +2771,7 @@ font: 600 12pt &quot;Segoe UI Semibold&quot;;</string>
                          <string notr="true">color: rgb(113, 126, 149);</string>
                         </property>
                         <property name="text">
-                         <string>Search</string>
+                         <string>DID Search</string>
                         </property>
                         <property name="margin">
                          <number>5</number>
@@ -2780,6 +2780,9 @@ font: 600 12pt &quot;Segoe UI Semibold&quot;;</string>
                       </item>
                       <item>
                        <widget class="QLineEdit" name="lineEdit_search">
+                        <property name="enabled">
+                         <bool>false</bool>
+                        </property>
                         <property name="minimumSize">
                          <size>
                           <width>0</width>
@@ -2838,6 +2841,9 @@ font: 600 12pt &quot;Segoe UI Semibold&quot;;</string>
                          </sizepolicy>
                         </property>
                         <property name="tabChangesFocus">
+                         <bool>true</bool>
+                        </property>
+                        <property name="readOnly">
                          <bool>true</bool>
                         </property>
                        </widget>

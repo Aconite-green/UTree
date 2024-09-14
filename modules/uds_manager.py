@@ -162,59 +162,139 @@ class UdsManager:
         return True
 
     def _ssesion_change_seed_reaquest(self):
-        
         # change session
         session_change_request = bytearray([0x10, 0x03])
         self.can_manager.send_message(session_change_request)
         msg = self.can_manager.receive_message()
-        
-        
-        
+
+        if msg is None:
+            self.error_handler.handle_error("Timeout during session change request.")
+            return False
+
         # seed request
         seed_request = bytearray([0x27, 0x11])
         self.can_manager.send_message(seed_request)
         msg = self.can_manager.receive_message()
+
+        if msg is None:
+            self.error_handler.handle_error("Timeout during seed request.")
+            return False
+
         response_seed = bytearray(msg[-8:])
 
         # generate key value using the 32-bit server
-          # MyClient를 DLL 경로와 함께 초기화 
-        
         response_seed_bytes = bytes.fromhex(response_seed.hex())
         key = self.generate_key_with_background_init(response_seed_bytes)
         send_key = bytearray([0x27, 0x12])
         send_key.extend(key)
         self.can_manager.send_message(send_key)
-        msg = self.can_manager.receive_message() 
-       
-    def process_uds_cmd(self, is_read, record_values):
+        msg = self.can_manager.receive_message()
+
+        if msg is None:
+            self.error_handler.handle_error("Timeout during key send.")
+            return False
+
+        return True
+
+    def process_uds_cmd_read(self, record_values):
+        """
+        UDS command processing function for read operations.
+        """
         self.can_manager.clear_can_buffer()
         is_ok = False
-        send_msg = self.process_data
         recv_msg = None
         error_msg = None
-        
-        try:
-            if is_read:
-                read_id = self.current_instance.read_service_id
-                self.can_manager.send_message(self.process_data)
-                
-                response = self.can_manager.receive_message()
-                self.current_instance.read_parse(response, record_values)
-                self.error_handler.log_message(response.hex().upper())
-            else:
-                write_id = self.current_instance.write_service_id
-                self._ssesion_change_seed_reaquest()
-                self.can_manager.send_message(self.process_data)
 
-                response = self.can_manager.receive_message()
-                self.error_handler.log_message(response.hex().upper())
-                
-            return True
+        try:
+            read_id = self.current_instance.read_service_id
+            self.can_manager.send_message(self.process_data)
+
+            response = self.can_manager.receive_message()
+            if response:
+                # 첫 번째 바이트 비교
+                if response[0] == (read_id + 0x40):
+                    is_ok = True
+                    recv_msg = response
+                    self.error_handler.log_message(response.hex().upper())
+                else:
+                    # 부정 응답 처리
+                    is_ok = False
+                    error_code = response[2]  # NRC는 보통 응답 메시지의 세 번째 바이트에 있음
+                    error_info = self.current_instance.negative_response_codes.get(error_code)
+
+                    if error_info:
+                        error_msg = (
+                            f"Negative Response Code: {hex(error_code)}\n"
+                            f"Code: {error_info['code']}\n"
+                            f"Description: {error_info['description']}\n"
+                            f"Remark: {error_info.get('remark', '')}"
+                        )
+                        self.error_handler.handle_error(error_msg)
+                    else:
+                        error_msg = f"Unknown Negative Response Code: {hex(error_code)}"
+                        self.error_handler.handle_error(error_msg)
+            else:
+                # Timeout 발생 시 처리
+                is_ok = False
+                self.error_handler.handle_error("Timeout: No message received within the timeout period.")
+
+            self.current_instance.read_parse(response, record_values)
 
         except Exception as e:
-            self.error_handler.handle_error(f"Error processing UDS command: {str(e)}")
-            return False
-    
+            self.error_handler.handle_error(f"Error processing UDS read command: {str(e)}")
+
+        return is_ok, self.process_data ,recv_msg, error_msg
+
+    def process_uds_cmd_write(self, record_values):
+        """
+        UDS command processing function for write operations.
+        """
+        self.can_manager.clear_can_buffer()
+        is_ok = False
+        recv_msg = None
+        error_msg = None
+
+        try:
+            write_id = self.current_instance.write_service_id
+            self._ssesion_change_seed_reaquest()  # 시드 요청 후 키 전송 과정 진행
+            self.can_manager.send_message(self.process_data)
+
+            response = self.can_manager.receive_message()
+
+            if response:
+                # 긍정 응답 확인: 첫 번째 바이트가 write_id + 0x40인지 확인
+                if response[0] == (write_id + 0x40):
+                    is_ok = True
+                    recv_msg = response
+                    self.error_handler.log_message(response.hex().upper())
+                else:
+                    # 부정 응답 처리
+                    is_ok = False
+                    error_code = response[2]  # NRC는 보통 응답 메시지의 세 번째 바이트에 있음
+                    error_info = self.current_instance.negative_response_codes.get(error_code)
+
+                    if error_info:
+                        error_msg = (
+                            f"Negative Response Code: {hex(error_code)}\n"
+                            f"Code: {error_info['code']}\n"
+                            f"Description: {error_info['description']}\n"
+                            f"Remark: {error_info.get('remark', '')}"
+                        )
+                        self.error_handler.handle_error(error_msg)
+                    else:
+                        error_msg = f"Unknown Negative Response Code: {hex(error_code)}"
+                        self.error_handler.handle_error(error_msg)
+            else:
+                # Timeout 발생 시 처리
+                is_ok = False
+                error_msg = "Timeout: No message received within the timeout period."
+                self.error_handler.handle_error(error_msg)
+
+        except Exception as e:
+            self.error_handler.handle_error(f"Error processing UDS write command: {str(e)}")
+
+        return is_ok, self.process_data, recv_msg, error_msg
+  
     def get_uds_cmd(self):
         print(self.process_data.hex().upper())
         data = [f'{b:02X}' for b in self.process_data]

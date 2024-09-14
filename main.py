@@ -92,6 +92,7 @@ class MainWindow(QMainWindow):
         self.uds_manager = UdsManager('./config_uds', self.error_handler, self.can_manager)
         self.read_record = False 
         self.record_values = None
+        
 
         # SHOW APP
         # ///////////////////////////////////////////////////////////////
@@ -139,6 +140,8 @@ class MainWindow(QMainWindow):
                             background-color: rgb(33, 37, 43);
                         }
                     """)
+
+                    widgets.lineEdit_search.setEnabled(False)
             except Exception as e:
                 self.error_handler.handle_error(str(e))
         else:
@@ -158,7 +161,8 @@ class MainWindow(QMainWindow):
                 did_names = self.uds_manager.get_did_names()
                 widgets.comboBox_did.clear()
                 widgets.comboBox_did.addItems(did_names)
-                
+                self.init_search_completer()
+
                 # GUI MANAGEMENT
                 widgets.stackedWidget.setCurrentWidget(widgets.widgets_workspace)
                 widgets.groupBox_pannel.setVisible(True)
@@ -195,13 +199,13 @@ class MainWindow(QMainWindow):
         if widgets.radioButton_read.isChecked() or widgets.radioButton_write.isChecked():
             is_read = widgets.radioButton_read.isChecked()
             if is_read:
-                self.uds_manager.process_uds_cmd(is_read, self.record_values)
+                self.uds_manager.process_uds_cmd_read(is_read, self.record_values)
                 self.populate_grid(self.record_values, is_read=is_read)
                 self.read_record = True
             else: # write
                 is_valid = self.uds_manager.validate_value()
                 if is_valid:
-                    self.uds_manager.process_uds_cmd(is_read, self.record_values)
+                    self.uds_manager.process_uds_cmd_write(is_read, self.record_values)
                     self.populate_grid(self.record_values, is_read=is_read)
                     self.uds_manager.copy_write_to_read()
                 else:
@@ -452,6 +456,101 @@ class MainWindow(QMainWindow):
                 current_val = col_info['current_val'][1] if is_read else col_info['current_val'][2]
                 print(f"  Column: {col_key} | Current Value: {current_val}")
             print()  # 행 간에 빈 줄 추가
+    
+    # INIT SEARCH FUNCTION
+    # ///////////////////////////////////////////////////////////////
+    def init_search_completer(self):
+        # 검색 데이터 준비: did_map의 클래스 이름과 각 클래스의 record_values 키 및 coloms 키 추가
+        self.search_data = self.get_search_data()
+
+        # QCompleter 생성 및 설정
+        self.completer = QCompleter(list(self.search_data.keys()), self)
+        self.completer.setCaseSensitivity(Qt.CaseInsensitive)  # 대소문자 구분 없이 검색
+
+        # 스타일시트 설정 (자동완성 팝업의 배경색과 글자색 변경)
+        self.completer.popup().setStyleSheet("""
+            QAbstractItemView {
+                background-color: rgb(27, 29, 35);
+                color: rgb(135, 206, 250);
+                border: 1px solid rgb(61, 70, 86);
+            }
+        """)
+
+        # lineEdit_search에 completer 연결
+        widgets.lineEdit_search.setEnabled(True)
+        widgets.lineEdit_search.setCompleter(self.completer)
+
+        # lineEdit_search에서 입력된 검색어 처리
+        widgets.lineEdit_search.textChanged.connect(self.handle_search)
+
+# search_data 목록 생성 함수
+    def get_search_data(self):
+        search_data = {}
+
+        # 1. did_map의 클래스 이름들 추가
+        did_names = self.uds_manager.get_did_names()
+
+        # 딕셔너리로 저장하여 col_key에 해당하는 did_name도 매핑 가능하게 만듦
+        for did_name in did_names:
+            search_data[did_name] = did_name
+
+            # 각 DID 클래스의 record_values의 key와 coloms의 key 추가
+            self.uds_manager.select_did(did_name)
+            record_values = self.uds_manager.get_record_values()
+
+            for data_key, data_info in record_values.items():
+                for col_key in data_info['coloms']:
+                    search_data[col_key] = did_name  # col_key를 해당하는 did_name에 매핑
+
+        return search_data
+
+    # 검색어 처리 함수
+    # 검색어 처리 함수
+    def handle_search(self):
+        search_text = widgets.lineEdit_search.text().strip()
+
+        if not search_text:
+            # 빈 검색어일 경우 패널을 비움
+            while widgets.gridLayout_pannel_main.count():
+                child = widgets.gridLayout_pannel_main.takeAt(0)
+                if child.widget():
+                    child.widget().deleteLater()
+
+            # ComboBox 초기화
+            widgets.comboBox_did.setCurrentIndex(0)  # 아무 것도 선택되지 않도록 초기화
+            widgets.lineEdit_cancmd.clear()  # 검색어 초기화 시 커맨드 라인도 초기화
+
+            # 라디오 버튼 초기화
+            widgets.radioButton_read.setChecked(False)
+            widgets.radioButton_write.setChecked(False)
+
+            return
+
+        # 검색어와 매칭되는 DID 이름이나 col_key 찾기
+        matching_items = [key for key in self.search_data if search_text.lower() in key.lower()]
+
+        if matching_items:
+            matched_did_name = self.search_data[matching_items[0]]
+            widgets.comboBox_did.setCurrentText(matched_did_name)
+
+            # 해당 DID를 선택하여 로드
+            self.handle_did_change()  # 직접 handle_did_change 함수 호출
+
+            # method 확인 ('r'과 'w' 둘 다 있는지 확인)
+            method = self.uds_manager.get_method()
+
+            # 'r'과 'w'가 모두 존재하면 'r'을 선택하고 radioButton_read를 클릭
+            if 'r' in method and 'w' in method:
+                widgets.radioButton_read.setChecked(True)  # 'r' 유형 자동 선택
+            else:
+                if 'r' in method:
+                    widgets.radioButton_read.setChecked(True)  # 'r' 유형만 있을 경우 선택
+                elif 'w' in method:
+                    widgets.radioButton_write.setChecked(True)  # 'w' 유형만 있을 경우 선택
+        else:
+            # 해당 DID가 없을 때 처리
+            widgets.lineEdit_search.setCompleter(QCompleter(["Cannot find DID"], self))
+
     # INIT CONFIG COMBOBOX
     # ///////////////////////////////////////////////////////////////
     def populateComboBoxes(self):
