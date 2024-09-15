@@ -118,90 +118,99 @@ class UDSBase:
         self.byte_array.clear()
         current_byte = 0
         bit_offset = 0
-
+    
         for data_key, data_info in record_values.items():
-
+        
             row_type = data_info.get('row_type', 'bitwise')
             if row_type == 'bitwise':
                 for col_key, col_info in data_info['coloms'].items():
                     bit_size = col_info['bit']
-                    write_val = col_info['w_val']  # 쓰기 값으로 'w_val'을 사용 (기존에 'current_val'에서 가져왔던 부분 수정)
+                    write_val = col_info['w_val']  # 쓰기 값으로 'w_val'을 사용
                     options = col_info['options']
+    
+                    # options가 'auto'일 경우 처리
                     if options == 'auto':
-                        pass
-                    else:
-                        if write_val is None:
-                            write_val = 0  # None이면 0으로 대체
-
-                        # 각 비트별로 값을 byte_array에 저장
-                        for i in range(bit_size):
-                            bit = (write_val >> (bit_size - 1 - i)) & 1
-                            current_byte = (current_byte << 1) | bit
-                            bit_offset += 1
-
-                            # 현재 바이트가 채워졌다면 byte_array에 추가
-                            if bit_offset == 8:
-                                self.byte_array.append(current_byte)
-                                current_byte = 0
-                                bit_offset = 0
-
+                        continue  # auto 값은 별도 처리로 패스하거나 추가 연산이 필요할 경우 처리 가능
+                    
+                    if write_val is None:
+                        write_val = 0  # None이면 0으로 대체
+    
+                    # 각 비트별로 값을 byte_array에 저장
+                    for i in range(bit_size):
+                        bit = (write_val >> (bit_size - 1 - i)) & 1
+                        current_byte = (current_byte << 1) | bit
+                        bit_offset += 1
+    
+                        # 현재 바이트가 채워졌다면 byte_array에 추가
+                        if bit_offset == 8:
+                            self.byte_array.append(current_byte)
+                            current_byte = 0
+                            bit_offset = 0
+    
                 # 남아 있는 비트들이 있으면 마지막 바이트에 추가
                 if bit_offset > 0:
                     current_byte = current_byte << (8 - bit_offset)  # 남은 비트들을 0으로 채움
                     self.byte_array.append(current_byte)
+    
             elif row_type == 'bytewise':
-                     # bytewise 처리 로직 추가
+                # bytewise 처리 로직
                 for col_key, col_info in data_info['coloms'].items():
                     bit_size = col_info['bit']
                     byte_size = bit_size // 8  # bit 크기를 byte 크기로 변환
-
+    
                     # w_val 값을 가져옴
                     write_val = col_info['w_val']
                     options = col_info.get('options', None)
-                    w_type = col_info['w_type']
-
-                    # options 값이 'auto'이면 값을 None으로 대체하고, 이후 추가 연산 가능
+                    w_type = col_info.get('w_type', 'int')  # 기본적으로 w_type을 'int'로 설정
+    
+                    # options 값이 'auto'일 경우 처리
                     if options == 'auto':
-                        current_value = None
-                        # 추가 연산을 위해 구조적으로 이 자리를 비워 둠
-                        pass
-                    else:
-                        # w_type에 따라 값을 처리
-                        if w_type == 'ascii':
-                            # ASCII 변환
-                            if write_val is None:
-                                write_val = ''
-                            write_val_bytes = write_val.encode('ascii')
-                            self.byte_array.extend(write_val_bytes.ljust(byte_size, b'\x00'))  # 0으로 패딩
-
-                        elif w_type == 'hex':
-                            # HEX 변환
-                            if write_val is None:
-                                write_val = 0
-                            try:
-                                write_val_bytes = int(write_val, 16).to_bytes(byte_size, byteorder='big')
-                            except ValueError:
-                                write_val_bytes = b'\x00' * byte_size  # 변환 실패 시 0으로 설정
-                            self.byte_array.extend(write_val_bytes)
-
-                        elif w_type == 'dec':
-                            # DEC 변환
-                            if write_val is None:
-                                write_val = 0
-                            try:
-                                write_val_bytes = int(write_val).to_bytes(byte_size, byteorder='big')
-                            except ValueError:
-                                write_val_bytes = b'\x00' * byte_size  # 변환 실패 시 0으로 설정
-                            self.byte_array.extend(write_val_bytes)
-
-                        else:
-                            # 기본 처리 (정수형으로 처리)
-                            if write_val is None:
-                                write_val = 0
+                        write_val = None  # auto에 맞는 값을 처리할 수 있으면 여기에 작성
+                        continue  # 필요 시 추가 연산 후 처리 가능
+                    
+                    # w_type에 따라 값을 처리
+                    if w_type == 'ascii':
+                        # ASCII 변환
+                        if write_val is None:
+                            write_val = ''
+                        write_val_bytes = write_val.encode('ascii')
+                        self.byte_array.extend(write_val_bytes.ljust(byte_size, b'\x00'))  # 0으로 패딩
+    
+                    elif w_type == 'hex':
+                        # HEX 변환
+                        if write_val is None:
+                            write_val = 0
+                        try:
+                            write_val_bytes = int(write_val, 16).to_bytes(byte_size, byteorder='big')
+                        except (ValueError, TypeError) as e:
+                            write_val_bytes = b'\x00' * byte_size  # 변환 실패 시 0으로 설정
+                            print(f"Error converting hex: {write_val}, error: {e}")
+                        self.byte_array.extend(write_val_bytes)
+    
+                    elif w_type == 'dec':
+                        # DEC 변환
+                        if write_val is None:
+                            write_val = 0
+                        try:
                             write_val_bytes = int(write_val).to_bytes(byte_size, byteorder='big')
-                            self.byte_array.extend(write_val_bytes)
-
+                        except (ValueError, TypeError) as e:
+                            write_val_bytes = b'\x00' * byte_size  # 변환 실패 시 0으로 설정
+                            print(f"Error converting decimal: {write_val}, error: {e}")
+                        self.byte_array.extend(write_val_bytes)
+    
+                    else:
+                        # 기본 처리 (정수형으로 처리)
+                        if write_val is None:
+                            write_val = 0
+                        try:
+                            write_val_bytes = int(write_val).to_bytes(byte_size, byteorder='big')
+                        except (ValueError, TypeError) as e:
+                            write_val_bytes = b'\x00' * byte_size  # 변환 실패 시 0으로 설정
+                            print(f"Error converting value: {write_val}, error: {e}")
+                        self.byte_array.extend(write_val_bytes)
+    
         return self.byte_array
+
     
     def validate_record_values(self):
         for data_key, data_info in self.record_values.items():

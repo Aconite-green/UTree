@@ -110,7 +110,7 @@ class CarInfo(UDSBase):
             'data1': {
                       'row_type': 'bytewise',
                       'coloms':{ 
-                                'dealer_id':{'bit':40, 'col_type':'line_edit','options':None, 'r_type': 'ascii', 'w_type': 'ascii', 'r_val': 'CONTI', 'w_val': 'CONTI'}}},
+                                'dealer_id':{'bit':40, 'col_type':'line_edit','options':None, 'r_type': 'ascii', 'w_type': 'ascii', 'r_val': None, 'w_val': 'CONTI'}}},
             'data2': {
                       'row_type': 'bytewise',
                       'coloms':{ 

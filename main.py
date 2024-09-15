@@ -103,9 +103,9 @@ class MainWindow(QMainWindow):
 
     # BUTTONS CLICK
     # ///////////////////////////////////////////////////////////////
-    def handle_connect(self):
-        btn = self.sender()
-        if not btn.isChecked():
+    def handle_connect(self, checked):
+        
+        if not checked:
             # CHECK 해제 시: CAN 통신 중지
             try:
                 if hasattr(self, 'can_manager'):
@@ -142,6 +142,7 @@ class MainWindow(QMainWindow):
                     """)
 
                     widgets.lineEdit_search.setEnabled(False)
+                    
             except Exception as e:
                 self.error_handler.handle_error(str(e))
         else:
@@ -158,9 +159,11 @@ class MainWindow(QMainWindow):
                 selected_uds_file = widgets.comboBox_uds.currentText()
                 self.uds_manager.load_module_classes(selected_uds_file)
 
+                widgets.comboBox_did.blockSignals(True)
                 did_names = self.uds_manager.get_did_names()
                 widgets.comboBox_did.clear()
                 widgets.comboBox_did.addItems(did_names)
+                widgets.comboBox_did.blockSignals(False)
                 self.init_search_completer()
 
                 # GUI MANAGEMENT
@@ -365,16 +368,25 @@ class MainWindow(QMainWindow):
                                 widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
                             )
                         )
-                    elif col_type == 'calendar':
-                    # calendar 위젯에 selectionChanged 이벤트 연결
-                        widget.selectionChanged.connect(
-                        lambda row=row_index, col=col_key, col_type=col_type, widget=widget: (
-                            apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.handle_date_change(widget), col_type), col_type),
-                            self.uds_manager.update_record_value(self.record_values, row, col, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.handle_date_change(widget), col_type)),
-                            self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values), 
-                            widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
+                    elif col_type == 'calendar' and isinstance(widget, QWidget):
+                        calendar_widget = widget.calendar_widget
+                        date_line_edit = widget.date_line_edit
+
+                        # 날짜가 선택되었을 때 lineEdit에 값을 설정
+                        calendar_widget.selectionChanged.connect(
+                            lambda row=row_index, col=col_key, col_type=col_type, widget=calendar_widget: (
+                                date_line_edit.setText(calendar_widget.selectedDate().toString("yyyyMMdd")),
+                                apply_styles(calendar_widget, self.uds_manager.get_val_for_style_sheet(
+                                    self.record_values, row, col, calendar_widget.handle_date_change(calendar_widget), col_type
+                                ), col_type),
+                                self.uds_manager.update_record_value(
+                                    self.record_values, row, col, 
+                                    self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, calendar_widget.handle_date_change(calendar_widget), col_type)
+                                ),
+                                self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values),
+                                widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
+                            )
                         )
-                    )
 
                 if widget:
                     bit_ratio = bit_size / total_bits
@@ -416,6 +428,10 @@ class MainWindow(QMainWindow):
         widgets.radioButton_write.setChecked(False)
 
         selected_did = widgets.comboBox_did.currentText()
+        if not selected_did:
+            if widgets.comboBox_did.count() > 0:  # ComboBox에 항목이 있는지 확인
+                selected_did = widgets.comboBox_did.itemText(0)
+        
         self.uds_manager.select_did(selected_did)
         self.record_values = self.uds_manager.get_record_values()
 
@@ -494,7 +510,7 @@ class MainWindow(QMainWindow):
         for did_name in did_names:
             search_data[did_name] = did_name
 
-            # 각 DID 클래스의 record_values의 key와 coloms의 key 추가
+
             self.uds_manager.select_did(did_name)
             record_values = self.uds_manager.get_record_values()
 
@@ -504,7 +520,6 @@ class MainWindow(QMainWindow):
 
         return search_data
 
-    # 검색어 처리 함수
     # 검색어 처리 함수
     def handle_search(self):
         search_text = widgets.lineEdit_search.text().strip()
@@ -519,11 +534,7 @@ class MainWindow(QMainWindow):
             # ComboBox 초기화
             widgets.comboBox_did.setCurrentIndex(0)  # 아무 것도 선택되지 않도록 초기화
             widgets.lineEdit_cancmd.clear()  # 검색어 초기화 시 커맨드 라인도 초기화
-
-            # 라디오 버튼 초기화
-            widgets.radioButton_read.setChecked(False)
-            widgets.radioButton_write.setChecked(False)
-
+            self.handle_did_change()
             return
 
         # 검색어와 매칭되는 DID 이름이나 col_key 찾기
