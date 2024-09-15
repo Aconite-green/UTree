@@ -103,9 +103,9 @@ class MainWindow(QMainWindow):
 
     # BUTTONS CLICK
     # ///////////////////////////////////////////////////////////////
-    def handle_connect(self, checked):
+    def handle_connect(self):
         
-        if not checked:
+        if not widgets.btn_connect.isChecked():
             # CHECK 해제 시: CAN 통신 중지
             try:
                 if hasattr(self, 'can_manager'):
@@ -142,7 +142,6 @@ class MainWindow(QMainWindow):
                     """)
 
                     widgets.lineEdit_search.setEnabled(False)
-                    
             except Exception as e:
                 self.error_handler.handle_error(str(e))
         else:
@@ -159,11 +158,10 @@ class MainWindow(QMainWindow):
                 selected_uds_file = widgets.comboBox_uds.currentText()
                 self.uds_manager.load_module_classes(selected_uds_file)
 
-                widgets.comboBox_did.blockSignals(True)
                 did_names = self.uds_manager.get_did_names()
+
                 widgets.comboBox_did.clear()
                 widgets.comboBox_did.addItems(did_names)
-                widgets.comboBox_did.blockSignals(False)
                 self.init_search_completer()
 
                 # GUI MANAGEMENT
@@ -428,10 +426,6 @@ class MainWindow(QMainWindow):
         widgets.radioButton_write.setChecked(False)
 
         selected_did = widgets.comboBox_did.currentText()
-        if not selected_did:
-            if widgets.comboBox_did.count() > 0:  # ComboBox에 항목이 있는지 확인
-                selected_did = widgets.comboBox_did.itemText(0)
-        
         self.uds_manager.select_did(selected_did)
         self.record_values = self.uds_manager.get_record_values()
 
@@ -510,7 +504,7 @@ class MainWindow(QMainWindow):
         for did_name in did_names:
             search_data[did_name] = did_name
 
-
+            
             self.uds_manager.select_did(did_name)
             record_values = self.uds_manager.get_record_values()
 

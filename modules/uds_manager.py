@@ -69,8 +69,8 @@ class UdsManager:
             cls = self.did_map[did_name]
             self.current_instance = cls()  # 인스턴스 생성
         else:
-            self.error_handler.handle_error(f"DID '{did_name}' not found in did_map.")   
-    
+            # self.error_handler.handle_error(f"DID '{did_name}' not found in did_map.")   
+            pass
     def get_record_values(self):
         if self.current_instance:
             return self.current_instance.get_record_values()

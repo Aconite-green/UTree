@@ -469,7 +469,7 @@ class UIFunctions(MainWindow):
             else:
                 style_sheet = StyleSheets.PUSHBUTTON_STYLE_SHEET_DEACTIVE
             widget.setStyleSheet(style_sheet)
-            widget.setChecked(True if current_val is not None and current_val == 0 else False)
+            widget.setChecked(False if current_val is not None and current_val == 1 else True)
 
         elif col_type == 'calendar':
             layout = QHBoxLayout()
