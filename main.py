@@ -315,34 +315,13 @@ class MainWindow(QMainWindow):
                 widget = UIFunctions.create_widget(col_type, options, is_read, current_val)
 
                 if widget and not is_read:
-                    def apply_styles(widget, val, col_type):
-                        new_value, read_value = val[0], val[1]
-                        print(f"input : {new_value}, read_val : {read_value}")
-                        if new_value != read_value:
-                            
-                            if col_type == 'button':
-                                widget.setStyleSheet(StyleSheets.PUSHBUTTON_STYLE_SHEET_DEACTIVE)
-                            elif col_type == 'combobox':
-                                widget.setStyleSheet(StyleSheets.STYLE_SHEET_DEACTIVE)
-                            elif col_type == "line_edit":
-                                widget.setStyleSheet(StyleSheets.STYLE_SHEET_DEACTIVE)
-                            elif col_type == "calendar":
-                                widget.setStyleSheet(StyleSheets.CALENDAR_STYLE_SHEET_DEACTIVE)
-                                widget.set_active(False)
-                        else:
-                            if col_type == 'button':
-                                widget.setStyleSheet(StyleSheets.PUSHBUTTON_STYLE_SHEET_ACTIVE)
-                            elif col_type == "calendar":
-                                widget.setStyleSheet(StyleSheets.CALENDAR_STYLE_SHEET_ACTIVE)
-                                widget.set_active(True)
-                            else:
-                                widget.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE)
+                    
 
                     if col_type == 'combobox':
                         widget.currentIndexChanged.connect(
                             lambda idx, row=row_index, col=col_key, col_type=col_type, widget=widget: (
                                 self.uds_manager.update_record_value(self.record_values, row, col, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.currentText(), col_type)),
-                                apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.currentText(), col_type), col_type),
+                                self.apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.currentText(), col_type), col_type),
                                 self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values), 
                                 widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
                             )
@@ -350,7 +329,7 @@ class MainWindow(QMainWindow):
                     elif col_type == 'line_edit':
                         widget.textChanged.connect(
                             lambda text, row=row_index, col=col_key, col_type=col_type, widget=widget: (
-                                apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.text(), col_type), col_type),
+                                self.apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.text(), col_type), col_type),
                                 self.uds_manager.update_record_value(self.record_values, row, col, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.text(), col_type)),
                                 self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values), 
                                 widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
@@ -359,30 +338,17 @@ class MainWindow(QMainWindow):
                     elif col_type == 'button':
                         widget.clicked.connect(
                             lambda checked, row=row_index, col=col_key, col_type=col_type, widget=widget: (
-                                apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, 0 if checked else 1, col_type), col_type),
+                                self.apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, 0 if checked else 1, col_type), col_type),
                                 widget.setText('0' if checked else '1'),  
                                 self.uds_manager.update_record_value(self.record_values, row, col, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, 0 if checked else 1, col_type)),
                                 self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values), 
                                 widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
                             )
                         )
-                    elif col_type == 'calendar' and isinstance(widget, QWidget):
-                        calendar_widget = widget.calendar_widget
-                        date_line_edit = widget.date_line_edit
-
-                        # 날짜가 선택되었을 때 lineEdit에 값을 설정
-                        calendar_widget.selectionChanged.connect(
-                            lambda row=row_index, col=col_key, col_type=col_type, widget=calendar_widget: (
-                                date_line_edit.setText(calendar_widget.selectedDate().toString("yyyyMMdd")),
-                                apply_styles(calendar_widget, self.uds_manager.get_val_for_style_sheet(
-                                    self.record_values, row, col, calendar_widget.handle_date_change(calendar_widget), col_type
-                                ), col_type),
-                                self.uds_manager.update_record_value(
-                                    self.record_values, row, col, 
-                                    self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, calendar_widget.handle_date_change(calendar_widget), col_type)
-                                ),
-                                self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values),
-                                widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
+                    elif col_type == 'calendar':
+                        widget.dateChanged.connect(
+                            lambda date, row=row_index, col=col_key, col_type=col_type, widget=widget: (
+                                self.handle_date_edit_change(widget, date, row, col, col_type)
                             )
                         )
 
@@ -467,6 +433,40 @@ class MainWindow(QMainWindow):
                 print(f"  Column: {col_key} | Current Value: {current_val}")
             print()  # 행 간에 빈 줄 추가
     
+    def apply_styles(self, widget, val, col_type):
+                        new_value, read_value = val[0], val[1]
+                        print(f"input : {new_value}, read_val : {read_value}")
+                        if new_value != read_value:
+                            
+                            if col_type == 'button':
+                                widget.setStyleSheet(StyleSheets.PUSHBUTTON_STYLE_SHEET_DEACTIVE)
+                            elif col_type == 'combobox':
+                                widget.setStyleSheet(StyleSheets.STYLE_SHEET_DEACTIVE)
+                            elif col_type == "line_edit":
+                                widget.setStyleSheet(StyleSheets.STYLE_SHEET_DEACTIVE)
+                            elif col_type == "calendar":
+                                widget.setStyleSheet(StyleSheets.STYLE_SHEET_DEACTIVE)
+                                
+                        else:
+                            if col_type == 'button':
+                                widget.setStyleSheet(StyleSheets.PUSHBUTTON_STYLE_SHEET_ACTIVE)
+                            elif col_type == "calendar":
+                                widget.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE)
+                            else:
+                                widget.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE)
+
+    def handle_date_edit_change(self, widget, date, row, col, col_type):
+        date_str = date.toString("yyyyMMdd")
+        self.apply_styles(widget, self.uds_manager.get_val_for_style_sheet(
+            self.record_values, row, col, date_str, col_type
+        ), col_type)
+        self.uds_manager.update_record_value(
+            self.record_values, row, col, 
+            self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, date_str, col_type)
+        )
+        self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values)
+        widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
+
     # INIT SEARCH FUNCTION
     # ///////////////////////////////////////////////////////////////
     def init_search_completer(self):

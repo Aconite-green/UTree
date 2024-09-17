@@ -243,7 +243,56 @@ class UdsManager:
         except Exception as e:
             self.error_handler.handle_error(f"Error processing UDS read command: {str(e)}")
 
-        return is_ok, self.process_data ,recv_msg, error_msg
+        # 결과를 plainTextEdit_log에 출력
+        self.update_log(is_ok, error_msg, self.process_data, recv_msg)
+
+        return is_ok, self.process_data, recv_msg, error_msg
+
+
+    def update_log(self, is_ok, error_msg, send_msg, recv_msg):
+        """
+        Update the log in plainTextEdit_log with formatted messages.
+        """
+        # clear previous log
+        self.ui.plainTextEdit_log.clear()
+
+        # OK 또는 NG 메시지 출력
+        if is_ok:
+            self.ui.plainTextEdit_log.appendHtml("""
+                <p style="background-color: rgb(33, 37, 43); color: rgb(135, 206, 250); text-align: center; font-size: 16pt;">
+                -------------------------------------------------------------------------<br>
+                |                                    OK                                            |<br>
+                -------------------------------------------------------------------------
+                </p>
+            """)
+        else:
+            self.ui.plainTextEdit_log.appendHtml("""
+                <p style="background-color: rgb(33, 37, 43); color: rgb(255, 0, 0); text-align: center; font-size: 16pt;">
+                -------------------------------------------------------------------------<br>
+                |                                    NG                                           |<br>
+                -------------------------------------------------------------------------
+                </p>
+            """)
+
+        # Error message 출력
+        if error_msg:
+            self.ui.plainTextEdit_log.appendHtml(f"""
+                <p style="color: rgb(220, 220, 220); font-size: 12pt;">Error Message: {error_msg}</p>
+            """)
+
+        # Send message 출력
+        if send_msg:
+            self.ui.plainTextEdit_log.appendHtml(f"""
+                <p style="color: rgb(220, 220, 220); font-size: 12pt;">Sent Message: {send_msg.hex().upper()}</p>
+            """)
+
+        # Receive message 출력
+        if recv_msg:
+            self.ui.plainTextEdit_log.appendHtml(f"""
+                <p style="color: rgb(220, 220, 220); font-size: 12pt;">Received Message: {recv_msg.hex().upper()}</p>
+            """)
+
+
 
     def process_uds_cmd_write(self, record_values):
         """
@@ -253,14 +302,14 @@ class UdsManager:
         is_ok = False
         recv_msg = None
         error_msg = None
-
+    
         try:
             write_id = self.current_instance.write_service_id
             self._ssesion_change_seed_reaquest()  # 시드 요청 후 키 전송 과정 진행
             self.can_manager.send_message(self.process_data)
-
+    
             response = self.can_manager.receive_message()
-
+    
             if response:
                 # 긍정 응답 확인: 첫 번째 바이트가 write_id + 0x40인지 확인
                 if response[0] == (write_id + 0x40):
@@ -272,7 +321,7 @@ class UdsManager:
                     is_ok = False
                     error_code = response[2]  # NRC는 보통 응답 메시지의 세 번째 바이트에 있음
                     error_info = self.current_instance.negative_response_codes.get(error_code)
-
+    
                     if error_info:
                         error_msg = (
                             f"Negative Response Code: {hex(error_code)}\n"
@@ -289,11 +338,15 @@ class UdsManager:
                 is_ok = False
                 error_msg = "Timeout: No message received within the timeout period."
                 self.error_handler.handle_error(error_msg)
-
+    
         except Exception as e:
             self.error_handler.handle_error(f"Error processing UDS write command: {str(e)}")
-
+    
+        # 로그 업데이트
+        self.update_log(is_ok, error_msg, self.process_data, recv_msg)
+    
         return is_ok, self.process_data, recv_msg, error_msg
+
   
     def get_uds_cmd(self):
         print(self.process_data.hex().upper())

@@ -31,6 +31,7 @@ class StyleSheets:
         padding: 2px;
         text-align: center;  /* 가로 중앙 정렬 */
         vertical-align: middle;
+        color: rgb(220, 220, 220); 
     """
     STYLE_SHEET_ACTIVE = """
         font-size: 10pt;
@@ -41,99 +42,7 @@ class StyleSheets:
         text-align: center;  /* 가로 중앙 정렬 */
         vertical-align: middle;
     """
-    CALENDAR_STYLE_SHEET_INIT = """
-    /* 달력 위쪽 네비게이션 바의 배경색 */
-    QCalendarWidget QWidget#qt_calendar_navigationbar { 
-        background-color: rgb(27, 29, 35);  /* 달력 위쪽 배경색 */
 
-    }
-
-    QCalendarWidget QWidget#qt_calendar_calendarview{
-        border-left: 1px solid rgb(220, 220, 220);
-        border-right: 1px solid rgb(220, 220, 220);
-    }
-
-    QCalendarWidget QToolButton::hover {
-        color: lightblue; /* 마우스 오버시 색상 */
-    }
-
-    /* 날짜 셀의 기본 배경색과 선택된 날짜의 배경색 */
-    QCalendarWidget QAbstractItemView {
-        background-color: rgb(27, 29, 35);  /* 모든 날짜 셀의 배경색 */
-        selection-background-color: rgb(27, 29, 35);  /* 선택한 날짜의 배경색 */
-        gridline-color: rgb(27, 29, 35); /* Grid 선 색상 */
-    }
-
-
-    /* 선택된 날짜의 테두리를 하얀색으로 설정 */
-    QCalendarWidget QAbstractItemView::item:selected {
-        border: 1px solid rgb(27, 29, 35);  
-        background-color: rgb(27, 29, 35);
-        color: white;
-    }
-"""
-
-    CALENDAR_STYLE_SHEET_DEACTIVE = """
-    /* 달력 위쪽 네비게이션 바의 배경색 */
-    QCalendarWidget QWidget#qt_calendar_navigationbar { 
-        background-color: rgb(27, 29, 35);  /* 달력 위쪽 배경색 */
-
-    }
-
-    QCalendarWidget QWidget#qt_calendar_calendarview{
-        border-left: 1px solid rgb(220, 220, 220);
-        border-right: 1px solid rgb(220, 220, 220);
-    }
-
-    QCalendarWidget QToolButton::hover {
-        color: lightblue; /* 마우스 오버시 색상 */
-    }
-
-    /* 날짜 셀의 기본 배경색과 선택된 날짜의 배경색 */
-    QCalendarWidget QAbstractItemView {
-        background-color: rgb(27, 29, 35);  /* 모든 날짜 셀의 배경색 */
-        selection-background-color: rgb(27, 29, 35);  /* 선택한 날짜의 배경색 */
-        selection-color: white;
-        gridline-color: rgb(27, 29, 35); /* Grid 선 색상 */
-    }
-
-
-    /* 선택된 날짜의 테두리를 하얀색으로 설정 */
-    QCalendarWidget QAbstractItemView::item:selected {
-        border: 1px solid rgb(220, 220, 220);  /* 선택된 날짜 셀의 테두리만 흰색 */
-        background-color: rgb(27, 29, 35);  /* 배경색은 유지 */
-    }
-"""
-
-    CALENDAR_STYLE_SHEET_ACTIVE = """
-    /* 달력 위쪽 네비게이션 바의 배경색 */
-    QCalendarWidget QWidget#qt_calendar_navigationbar { 
-        background-color: rgb(27, 29, 35);  /* 달력 위쪽 배경색 */
-    }
-
-    QCalendarWidget QToolButton::hover {
-        color: lightblue; /* 마우스 오버시 색상 */
-    }
-
-    /* 날짜 셀의 기본 배경색과 선택된 날짜의 배경색 */
-    QCalendarWidget QAbstractItemView {
-        background-color: rgb(27, 29, 35);  /* 모든 날짜 셀의 배경색 */
-        selection-background-color: rgb(27, 29, 35);  /* 선택한 날짜의 배경색 */
-        selection-color: rgb(135, 206, 250);
-    }
-
-    /* 날짜 간 구분선(Grid)의 색상 */
-    QCalendarWidget QAbstractItemView::item {
-        gridline-color: grey;  /* 날짜 간 구분선 색상 설정 */
-    }
-
-   
-    QCalendarWidget QAbstractItemView::item:selected {
-        border: 1px solid rgb(135, 206, 250);  /* 선택된 날짜 셀의 테두리만*/
-        background-color: rgb(27, 29, 35);  /* 배경색은 유지 */
-        color: rgb(135, 206, 250);
-    }
-"""
 
     PUSHBUTTON_STYLE_SHEET_DEACTIVE = """
         QPushButton {
@@ -420,6 +329,9 @@ class UIFunctions(MainWindow):
     
     # ///////////////////////////////////////////////////////////////
     # END - GUI DEFINITIONS
+        # QComboBox 드롭다운 자동 열림
+    
+    
     def create_widget(col_type, options, is_read, current_val):
         widget = None
 
@@ -472,107 +384,40 @@ class UIFunctions(MainWindow):
             widget.setChecked(False if current_val is not None and current_val == 1 else True)
 
         elif col_type == 'calendar':
-            layout = QHBoxLayout()
+            # QDateEdit 위젯 생성
+            date_edit = QDateEdit()
+            date_edit.setCalendarPopup(True)
+            date_edit.setDisplayFormat("yyyyMMdd")
+            date_edit.setAlignment(Qt.AlignCenter)
+            date_edit.setEnabled(not is_read)
+            date_edit.lineEdit().setReadOnly(True)
             
-            # 달력 위젯 추가
-            calendar_widget = CustomCalendarWidget()
-            calendar_widget.setHorizontalHeaderFormat(QCalendarWidget.NoHorizontalHeader)
-            calendar_widget.setVerticalHeaderFormat(QCalendarWidget.NoVerticalHeader)
-            calendar_widget.setNavigationBarVisible(True)
-            calendar_widget.setGridVisible(False)
-
-            next_month_button = calendar_widget.findChild(QToolButton, 'qt_calendar_nextmonth')
-            previous_month_button = calendar_widget.findChild(QToolButton, 'qt_calendar_prevmonth')
-
-            # 버튼을 숨기는 코드 추가
-            if next_month_button:
-                next_month_button.hide()
-            if previous_month_button:
-                previous_month_button.hide()
-            calendar_widget.setEnabled(not is_read)
-                
             if current_val and isinstance(current_val, str):
-                # current_val이 None이 아니고 문자열일 경우 날짜 설정
-                calendar_widget.set_active(True)
                 try:
                     # 문자열을 QDate로 변환 (YYYYMMDD 형식)
                     year = int(current_val[:4])
                     month = int(current_val[4:6])
                     day = int(current_val[6:8])
                     qdate = QDate(year, month, day)
-                    # QDate로 변환한 값을 사용하여 날짜 설정
-                    calendar_widget.setSelectedDate(qdate)
+                    date_edit.setDate(qdate)
                 except ValueError:
                     print(f"Invalid date format: {current_val}")
-                calendar_widget.setStyleSheet(StyleSheets.CALENDAR_STYLE_SHEET_ACTIVE if current_val else StyleSheets.CALENDAR_STYLE_SHEET_DEACTIVE)
             else:
-                # 1. 다음 스타일 시트 적용: 선택된 날짜의 테두리를 배경과 동일하게 설정
-                calendar_widget.setStyleSheet(StyleSheets.CALENDAR_STYLE_SHEET_INIT)
-                calendar_widget.set_active(False)
+                date_edit.setDate(QDate.currentDate())
 
+            # 스타일 적용
+            date_edit.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE 
+                                    if current_val else StyleSheets.STYLE_SHEET_DEACTIVE)
             
-
-            # Add Line Edit
-            date_line_edit = QLineEdit()
-            date_line_edit.setAlignment(Qt.AlignCenter)
-            date_line_edit.setReadOnly(True)
-
-            date_line_edit.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE if current_val else StyleSheets.STYLE_SHEET_DEACTIVE)
-            date_line_edit.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
-
-            layout.addWidget(date_line_edit)
-            layout.addWidget(calendar_widget)
-
-            container_widget = QWidget()
-            container_widget.setLayout(layout)
-
-            widget = container_widget  # QFrame을 최종 위젯으로 반환
-
-            widget.date_line_edit = date_line_edit
-            widget.calendar_widget = calendar_widget
+        
+            widget = date_edit
+        
         if widget:
             widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
 
         return widget
 
-    
-class CustomCalendarWidget(QCalendarWidget):
-    def __init__(self, *args, **kwargs):
-        super(CustomCalendarWidget, self).__init__(*args, **kwargs)
-        
-        # 현재 월을 저장
-        self.current_month = QDate.currentDate().month()
-        self.is_active = True  # 기본값으로 활성 상태 설정
 
-        # 달이나 연도가 바뀔 때 current_month 업데이트 및 첫날로 설정
-        self.currentPageChanged.connect(self.update_month)
-        self.selectionChanged.connect(lambda: self.handle_date_change(self))
-
-
-    def update_month(self, year, month):
-        self.current_month = month
-        # 페이지가 바뀔 때 해당 달의 1일로 설정
-        first_day_of_month = QDate(year, month, 1)
-        self.setSelectedDate(first_day_of_month)
-
-    def paintCell(self, painter, rect, date):
-        # 현재 월의 날짜만 표기, 다른 날짜는 상태에 따라 색상 설정
-        if date.month() == self.current_month:
-
-            super(CustomCalendarWidget, self).paintCell(painter, rect, date)
-        else:
-            painter.fillRect(rect, QColor(27, 29, 35))
-
-    def handle_date_change(self, widget):
-        # 선택된 날짜를 가져와 yyyyMMdd 형식으로 변환
-        selected_date = widget.selectedDate()
-        formatted_date = selected_date.toString("yyyyMMdd")
-        return formatted_date
-
-    # 활성 상태 설정 메서드
-    def set_active(self, active):
-        self.is_active = active
-        self.update()  # 다시 그리기 요청
 
 
 
