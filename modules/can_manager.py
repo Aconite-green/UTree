@@ -6,7 +6,7 @@ import isotp.errors
 import os
 import yaml
 import can.interfaces.vector
-
+import subprocess
 
 class CanManager:
     def __init__(self, can_directory, error_handler):
@@ -106,6 +106,8 @@ class CanManager:
         self.send_id = app_config['SendID']
         self.recv_id = app_config['RecvID']
         self.interface = self._get_device_type(app_config['CanTargetDevice'])
+        # for device checking
+        self.device = app_config['CanTargetDevice']
         self.channel = self._get_channel(app_config['CanTargetDevice'])
         self.is_fd = self._get_fd_info(app_config['Interface'])
 
@@ -230,6 +232,21 @@ class CanManager:
         if 'VN1630A' in CanTargetDevice:
             return 'vector'
     
+    def check_device_connection(self):
+        result = subprocess.run(
+            ["powershell", "-Command", "Get-PnpDevice -PresentOnly | Where-Object { $_.InstanceId -match '^USB' } | Select-Object -ExpandProperty Name"],
+            capture_output=True, text=True, check=True
+        )
+        devices = result.stdout.splitlines()
+        is_connectd = False
+        for device in devices:
+            if 'VN1630A' in self.device and device == 'VN1630A':
+                is_connectd = True
+        
+        return is_connectd
+
+        
+
 
     def _txfn(self, msg):
     # Raw CAN message 생성

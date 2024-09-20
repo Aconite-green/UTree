@@ -475,16 +475,16 @@ class DIDB002(UDSBase):
                 'coloms': {'Supported_PID': {'bit': 32, 'col_type':'line_edit','options':None, 'r_type': 'hex', 'w_type': 'dec', 'r_val': None, 'w_val': None}}},
             'data2': {
                 'row_type': 'bytewise',
-                'coloms': {'Fuel_Input': {'bit': 8, 'col_type':'line_edit','options':None, 'r_type': 'hex', 'w_type': 'dec', 'r_val': None, 'w_val': None}}},
+                'coloms': {'Fuel_Input': {'bit': 8, 'col_type':'line_edit','options':None, 'r_type': 'dec', 'w_type': 'dec', 'r_val': None, 'w_val': None}}},
             'data3': {
                 'row_type': 'bytewise',
-                'coloms': {'Battery Voltage on CLU': {'bit': 8, 'col_type':'line_edit','options':None, 'r_type': 'hex', 'w_type': 'dec', 'r_val': None, 'w_val': None}}},
+                'coloms': {'Battery Voltage on CLU': {'bit': 8, 'col_type':'line_edit','options':None, 'r_type': 'dec', 'w_type': 'dec', 'r_val': None, 'w_val': None}}},
             'data4': {
                 'row_type': 'bytewise',
-                'coloms': {'Odometer(km)': {'bit': 24, 'col_type':'line_edit','options':None, 'r_type': 'hex', 'w_type': 'dec', 'r_val': None, 'w_val': None}}},
+                'coloms': {'Odometer(km)': {'bit': 24, 'col_type':'line_edit','options':None, 'r_type': 'dec', 'w_type': 'dec', 'r_val': None, 'w_val': None}}},
             'data5': {
                 'row_type': 'bytewise',
-                'coloms': {'Odometer(mile)': {'bit': 24, 'col_type':'line_edit','options':None, 'r_type': 'hex', 'w_type': 'dec', 'r_val': None, 'w_val': None}}},
+                'coloms': {'Odometer(mile)': {'bit': 24, 'col_type':'line_edit','options':None, 'r_type': 'dec', 'w_type': 'dec', 'r_val': None, 'w_val': None}}},
         }
         super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
 

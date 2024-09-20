@@ -301,14 +301,14 @@ class UIFunctions(MainWindow):
         self.ui.bgApp.setGraphicsEffect(self.shadow)
 
         # RESIZE WINDOW
-        self.sizegrip = QSizeGrip(self.ui.frame_size_grip)
-        self.sizegrip.setStyleSheet("width: 20px; height: 20px; margin 0px; padding: 0px;")
+        # self.sizegrip = QSizeGrip(self.ui.frame_size_grip)
+        # self.sizegrip.setStyleSheet("width: 20px; height: 20px; margin 0px; padding: 0px;")
 
         # MINIMIZE
         self.ui.minimizeAppBtn.clicked.connect(lambda: self.showMinimized())
 
         # MAXIMIZE/RESTORE
-        self.ui.maximizeRestoreAppBtn.clicked.connect(lambda: UIFunctions.maximize_restore(self))
+        # self.ui.maximizeRestoreAppBtn.clicked.connect(lambda: UIFunctions.maximize_restore(self))
 
         # CLOSE APPLICATION
         self.ui.closeAppBtn.clicked.connect(lambda: self.close())
@@ -367,7 +367,8 @@ class UIFunctions(MainWindow):
             widget = QTextEdit()
             widget.setText(str(current_val))
             widget.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE if current_val else StyleSheets.STYLE_SHEET_DEACTIVE)
-            widget.setEnabled(not is_read)
+            widget.setReadOnly(is_read)
+            # widget.setEnabled(not is_read)
 
         elif col_type == 'button':
             widget = QPushButton()
@@ -440,34 +441,34 @@ class UIFunctions(MainWindow):
             if is_read:
                 log_widget.appendHtml(f"""
                 <p style="background-color: rgb(33, 37, 43); color: rgb(135, 206, 250); text-align: center; font-size: 16pt; line-height: 1;">
-                --------------------------<br>
-                |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Read&nbsp;OK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
-                --------------------------
+                -------------------------<br>
+                |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Read&nbsp;OK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+                -------------------------
                 </p>
                 """)
             else:
                 log_widget.appendHtml(f"""
                 <p style="background-color: rgb(33, 37, 43); color: rgb(135, 206, 250); text-align: center; font-size: 16pt; line-height: 1;">
-                --------------------------<br>
-                |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Write&nbsp;OK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
-                --------------------------
+                -------------------------<br>
+                |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Write&nbsp;OK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+                -------------------------
                 </p>
                 """)
         else:
             if is_read:
                 log_widget.appendHtml(f"""
                 <p style="background-color: rgb(33, 37, 43); color: rgb(255, 0, 0); text-align: center; font-size: 16pt; line-height: 1;">
-                --------------------------<br>
-                |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Read&nbsp;NG&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
-                --------------------------
+                -------------------------<br>
+                |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Read&nbsp;NG&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+                -------------------------
                 </p>
                 """)
             else:
                 log_widget.appendHtml(f"""
                 <p style="background-color: rgb(33, 37, 43); color: rgb(255, 0, 0); text-align: center; font-size: 16pt; line-height: 1;">
-                --------------------------<br>
-                |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Write&nbsp;NG&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
-                --------------------------
+                -------------------------<br>
+                |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Write&nbsp;NG&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+                -------------------------
                 </p>
                 """)
 

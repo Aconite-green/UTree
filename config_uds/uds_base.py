@@ -89,15 +89,15 @@ class UDSBase:
 
                         elif r_type == 'hex':
                             if extracted_bytes == b'\x00' * byte_size:
-                                # current_value = "Not Set"
-                                pass
+                                current_value = "Not Set"
+                                
                             else:
                                 current_value = hex(int.from_bytes(extracted_bytes, byteorder='big')).upper()[2:]
 
                         elif r_type == 'dec':
                             if extracted_bytes == b'\x00' * byte_size:
-                                # current_value = "Not Set"
-                                pass
+                                current_value = "Not Set"
+                                
                             else:
                                 current_value = int.from_bytes(extracted_bytes, byteorder='big')
 
@@ -213,6 +213,13 @@ class UDSBase:
 
     
     def validate_record_values(self):
+        """
+        Validate the record values.
+    
+        Returns:
+            is_ok (bool): True if validation succeeds, False otherwise.
+            failure_message (str): Combined string with the column key and failure reason, or None if successful.
+        """
         for data_key, data_info in self.record_values.items():
             for col_key, col_info in data_info['coloms'].items():
                 w_val = col_info['w_val']
@@ -220,37 +227,38 @@ class UDSBase:
                 byte_size = bit_size // 8
                 w_type = col_info['w_type']
                 options = col_info['options']
-
+    
                 if options == 'auto':
-                    pass
-                else:
-                    if w_val is None:
-                        return False  # w_val이 None이면 False 반환
+                    continue  # auto 옵션은 검증하지 않음
+                
+                if w_val is None:
+                    return False, f"{col_key}: Value is None"  # w_val이 None이면 실패 반환
+    
+                if w_type == 'ascii':
+                    if len(w_val.encode('ascii')) != byte_size:
+                        return False, f"{col_key}: Expected ASCII length {byte_size}, but got {len(w_val.encode('ascii'))}"
+    
+                elif w_type == 'hex':
+                    # HEX 값일 때는 바이트당 2자릿수여야 함
+                    if len(w_val) != byte_size * 2:  # hex 문자열은 바이트당 2자릿수
+                        return False, f"{col_key}: Expected hex length {byte_size * 2}, but got {len(w_val)}"
+    
+                elif w_type == 'dec':
+                    try:
+                        int_value = int(w_val)
+                        if int_value.bit_length() > bit_size:
+                            return False, f"{col_key}: Decimal value too large for {bit_size} bits"
+                    except ValueError:
+                        return False, f"{col_key}: Invalid decimal value"
+    
+                else:  # 기본적인 int로 처리하는 경우
+                    try:
+                        int_value = int(w_val)
+                        if int_value.bit_length() > bit_size:
+                            return False, f"{col_key}: Value too large for {bit_size} bits"
+                    except ValueError:
+                        return False, f"{col_key}: Invalid value"
+    
+        return True, None  # 모든 값이 유효하면 성공
 
-                    if w_type == 'ascii':
-                        if len(w_val.encode('ascii')) != byte_size:
-                            return False
-
-                    elif w_type == 'hex':
-                        # HEX 값일 때는 각 2자릿수마다 나누어 처리
-                        if len(w_val) != byte_size * 2:  # hex 문자열은 바이트당 2자릿수
-                            return False
-
-                    elif w_type == 'dec':
-                        try:
-                            int_value = int(w_val)
-                            if int_value.bit_length() > bit_size:
-                                return False
-                        except ValueError:
-                            return False
-
-                    else:
-                        try:
-                            int_value = int(w_val)
-                            if int_value.bit_length() > bit_size:
-                                return False
-                        except ValueError:
-                            return False
-
-        return True 
 

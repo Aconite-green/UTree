@@ -1389,50 +1389,6 @@ li.checked::marker { content: &quot;\2612&quot;; }
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="maximizeRestoreAppBtn">
-                  <property name="minimumSize">
-                   <size>
-                    <width>28</width>
-                    <height>28</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>28</width>
-                    <height>28</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Segoe UI</family>
-                    <pointsize>10</pointsize>
-                    <italic>false</italic>
-                    <bold>false</bold>
-                    <stylestrategy>PreferDefault</stylestrategy>
-                   </font>
-                  </property>
-                  <property name="cursor">
-                   <cursorShape>PointingHandCursor</cursorShape>
-                  </property>
-                  <property name="toolTip">
-                   <string>Maximize</string>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                  <property name="icon">
-                   <iconset resource="resources.qrc">
-                    <normaloff>:/icons/images/icons/icon_maximize.png</normaloff>:/icons/images/icons/icon_maximize.png</iconset>
-                  </property>
-                  <property name="iconSize">
-                   <size>
-                    <width>20</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </widget>
-                </item>
-                <item>
                  <widget class="QPushButton" name="closeAppBtn">
                   <property name="minimumSize">
                    <size>
@@ -2425,6 +2381,14 @@ background-repeat: no-repeat;</string>
                          <height>41</height>
                         </rect>
                        </property>
+                       <property name="font">
+                        <font>
+                         <family>Segoe UI</family>
+                         <pointsize>10</pointsize>
+                         <italic>false</italic>
+                         <bold>false</bold>
+                        </font>
+                       </property>
                        <property name="mouseTracking">
                         <bool>true</bool>
                        </property>
@@ -2433,7 +2397,8 @@ background-repeat: no-repeat;</string>
                        </property>
                        <property name="styleSheet">
                         <string notr="true">background-color: rgb(27, 29, 35);
-border: 1px solid rgb(220, 220, 220);</string>
+border: 1px solid rgb(220, 220, 220);
+</string>
                        </property>
                       </widget>
                       <widget class="QComboBox" name="comboBox_can">
@@ -2497,7 +2462,8 @@ border: 1px solid rgb(220, 220, 220);</string>
                            </property>
                            <property name="styleSheet">
                             <string notr="true">background-color: rgb(27, 29, 35);
-border: 1px solid rgb(220, 220, 220);</string>
+border: 1px solid rgb(220, 220, 220);
+</string>
                            </property>
                           </widget>
                          </item>
@@ -2579,7 +2545,8 @@ border: 1px solid rgb(220, 220, 220);</string>
                             </size>
                            </property>
                            <property name="styleSheet">
-                            <string notr="true"> background-color: rgb(27, 29, 35);</string>
+                            <string notr="true"> background-color: rgb(27, 29, 35);
+</string>
                            </property>
                            <property name="readOnly">
                             <bool>true</bool>
@@ -2928,33 +2895,17 @@ font: 600 12pt &quot;Segoe UI Semibold&quot;;</string>
                 </item>
                 <item>
                  <widget class="QLabel" name="version">
+                  <property name="minimumSize">
+                   <size>
+                    <width>50</width>
+                    <height>0</height>
+                   </size>
+                  </property>
                   <property name="text">
                    <string>v1.0.0</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QFrame" name="frame_size_grip">
-                  <property name="minimumSize">
-                   <size>
-                    <width>20</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>20</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="frameShape">
-                   <enum>QFrame::Shape::NoFrame</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Shadow::Raised</enum>
                   </property>
                  </widget>
                 </item>

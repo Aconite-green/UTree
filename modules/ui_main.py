@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainTYuQsl.ui'
+## Form generated from reading UI file 'mainJONyQi.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.7.2
 ##
@@ -22,7 +22,7 @@ from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplicat
     QRadioButton, QScrollArea, QScrollBar, QSizePolicy,
     QSlider, QSpacerItem, QStackedWidget, QTableWidget,
     QTableWidgetItem, QTextEdit, QVBoxLayout, QWidget)
-# import resources_rc
+#import resources_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -903,25 +903,6 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_2.addWidget(self.minimizeAppBtn)
 
-        self.maximizeRestoreAppBtn = QPushButton(self.rightButtons)
-        self.maximizeRestoreAppBtn.setObjectName(u"maximizeRestoreAppBtn")
-        self.maximizeRestoreAppBtn.setMinimumSize(QSize(28, 28))
-        self.maximizeRestoreAppBtn.setMaximumSize(QSize(28, 28))
-        font3 = QFont()
-        font3.setFamilies([u"Segoe UI"])
-        font3.setPointSize(10)
-        font3.setBold(False)
-        font3.setItalic(False)
-        font3.setStyleStrategy(QFont.PreferDefault)
-        self.maximizeRestoreAppBtn.setFont(font3)
-        self.maximizeRestoreAppBtn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        icon2 = QIcon()
-        icon2.addFile(u":/icons/images/icons/icon_maximize.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.maximizeRestoreAppBtn.setIcon(icon2)
-        self.maximizeRestoreAppBtn.setIconSize(QSize(20, 20))
-
-        self.horizontalLayout_2.addWidget(self.maximizeRestoreAppBtn)
-
         self.closeAppBtn = QPushButton(self.rightButtons)
         self.closeAppBtn.setObjectName(u"closeAppBtn")
         self.closeAppBtn.setMinimumSize(QSize(28, 28))
@@ -1040,9 +1021,9 @@ class Ui_MainWindow(object):
         self.pushButton.setFont(font)
         self.pushButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.pushButton.setStyleSheet(u"background-color: rgb(52, 59, 72);")
-        icon3 = QIcon()
-        icon3.addFile(u":/icons/images/icons/cil-folder-open.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.pushButton.setIcon(icon3)
+        icon2 = QIcon()
+        icon2.addFile(u":/icons/images/icons/cil-folder-open.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.pushButton.setIcon(icon2)
 
         self.gridLayout.addWidget(self.pushButton, 0, 1, 1, 1)
 
@@ -1141,9 +1122,9 @@ class Ui_MainWindow(object):
         self.commandLinkButton.setObjectName(u"commandLinkButton")
         self.commandLinkButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.commandLinkButton.setStyleSheet(u"")
-        icon4 = QIcon()
-        icon4.addFile(u":/icons/images/icons/cil-link.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.commandLinkButton.setIcon(icon4)
+        icon3 = QIcon()
+        icon3.addFile(u":/icons/images/icons/cil-link.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.commandLinkButton.setIcon(icon3)
 
         self.gridLayout_2.addWidget(self.commandLinkButton, 1, 6, 1, 1)
 
@@ -1205,10 +1186,10 @@ class Ui_MainWindow(object):
         self.tableWidget.setHorizontalHeaderItem(3, __qtablewidgetitem3)
         if (self.tableWidget.rowCount() < 16):
             self.tableWidget.setRowCount(16)
-        font4 = QFont()
-        font4.setFamilies([u"Segoe UI"])
+        font3 = QFont()
+        font3.setFamilies([u"Segoe UI"])
         __qtablewidgetitem4 = QTableWidgetItem()
-        __qtablewidgetitem4.setFont(font4);
+        __qtablewidgetitem4.setFont(font3);
         self.tableWidget.setVerticalHeaderItem(0, __qtablewidgetitem4)
         __qtablewidgetitem5 = QTableWidgetItem()
         self.tableWidget.setVerticalHeaderItem(1, __qtablewidgetitem5)
@@ -1320,8 +1301,12 @@ class Ui_MainWindow(object):
         self.comboBox_uds = QComboBox(self.widgets_workspace)
         self.comboBox_uds.setObjectName(u"comboBox_uds")
         self.comboBox_uds.setGeometry(QRect(0, 0, 211, 41))
+        self.comboBox_uds.setFont(font)
+        self.comboBox_uds.setMouseTracking(True)
+        self.comboBox_uds.setAcceptDrops(False)
         self.comboBox_uds.setStyleSheet(u"background-color: rgb(27, 29, 35);\n"
-"border: 1px solid rgb(220, 220, 220);")
+"border: 1px solid rgb(220, 220, 220);\n"
+"")
         self.comboBox_can = QComboBox(self.widgets_workspace)
         self.comboBox_can.setObjectName(u"comboBox_can")
         self.comboBox_can.setGeometry(QRect(220, 0, 211, 41))
@@ -1346,7 +1331,8 @@ class Ui_MainWindow(object):
         self.comboBox_did.setSizePolicy(sizePolicy4)
         self.comboBox_did.setMinimumSize(QSize(220, 0))
         self.comboBox_did.setStyleSheet(u"background-color: rgb(27, 29, 35);\n"
-"border: 1px solid rgb(220, 220, 220);")
+"border: 1px solid rgb(220, 220, 220);\n"
+"")
 
         self.horizontalLayout_pannel_top.addWidget(self.comboBox_did)
 
@@ -1384,7 +1370,8 @@ class Ui_MainWindow(object):
         sizePolicy4.setHeightForWidth(self.lineEdit_cancmd.sizePolicy().hasHeightForWidth())
         self.lineEdit_cancmd.setSizePolicy(sizePolicy4)
         self.lineEdit_cancmd.setMinimumSize(QSize(500, 0))
-        self.lineEdit_cancmd.setStyleSheet(u" background-color: rgb(27, 29, 35);")
+        self.lineEdit_cancmd.setStyleSheet(u" background-color: rgb(27, 29, 35);\n"
+"")
         self.lineEdit_cancmd.setReadOnly(True)
 
         self.horizontalLayout_pannel_top.addWidget(self.lineEdit_cancmd)
@@ -1438,12 +1425,12 @@ class Ui_MainWindow(object):
         sizePolicy1.setHeightForWidth(self.btn_connect.sizePolicy().hasHeightForWidth())
         self.btn_connect.setSizePolicy(sizePolicy1)
         self.btn_connect.setMinimumSize(QSize(0, 45))
-        font5 = QFont()
-        font5.setFamilies([u"Segoe UI Semibold"])
-        font5.setPointSize(12)
-        font5.setWeight(QFont.DemiBold)
-        font5.setItalic(False)
-        self.btn_connect.setFont(font5)
+        font4 = QFont()
+        font4.setFamilies([u"Segoe UI Semibold"])
+        font4.setPointSize(12)
+        font4.setWeight(QFont.DemiBold)
+        font4.setItalic(False)
+        self.btn_connect.setFont(font4)
         self.btn_connect.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_connect.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
         self.btn_connect.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-equalizer.png);\n"
@@ -1514,29 +1501,21 @@ class Ui_MainWindow(object):
         self.creditsLabel = QLabel(self.bottomBar)
         self.creditsLabel.setObjectName(u"creditsLabel")
         self.creditsLabel.setMaximumSize(QSize(16777215, 16))
-        font6 = QFont()
-        font6.setFamilies([u"Segoe UI"])
-        font6.setBold(False)
-        font6.setItalic(False)
-        self.creditsLabel.setFont(font6)
+        font5 = QFont()
+        font5.setFamilies([u"Segoe UI"])
+        font5.setBold(False)
+        font5.setItalic(False)
+        self.creditsLabel.setFont(font5)
         self.creditsLabel.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
 
         self.horizontalLayout_5.addWidget(self.creditsLabel)
 
         self.version = QLabel(self.bottomBar)
         self.version.setObjectName(u"version")
+        self.version.setMinimumSize(QSize(50, 0))
         self.version.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.horizontalLayout_5.addWidget(self.version)
-
-        self.frame_size_grip = QFrame(self.bottomBar)
-        self.frame_size_grip.setObjectName(u"frame_size_grip")
-        self.frame_size_grip.setMinimumSize(QSize(20, 0))
-        self.frame_size_grip.setMaximumSize(QSize(20, 16777215))
-        self.frame_size_grip.setFrameShape(QFrame.Shape.NoFrame)
-        self.frame_size_grip.setFrameShadow(QFrame.Shadow.Raised)
-
-        self.horizontalLayout_5.addWidget(self.frame_size_grip)
 
 
         self.verticalLayout_6.addWidget(self.bottomBar)
@@ -1591,10 +1570,6 @@ class Ui_MainWindow(object):
         self.minimizeAppBtn.setToolTip(QCoreApplication.translate("MainWindow", u"Minimize", None))
 #endif // QT_CONFIG(tooltip)
         self.minimizeAppBtn.setText("")
-#if QT_CONFIG(tooltip)
-        self.maximizeRestoreAppBtn.setToolTip(QCoreApplication.translate("MainWindow", u"Maximize", None))
-#endif // QT_CONFIG(tooltip)
-        self.maximizeRestoreAppBtn.setText("")
 #if QT_CONFIG(tooltip)
         self.closeAppBtn.setToolTip(QCoreApplication.translate("MainWindow", u"Close", None))
 #endif // QT_CONFIG(tooltip)

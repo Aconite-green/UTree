@@ -61,6 +61,13 @@ class UdsManager:
         return self.client.generate_key(seed)
     # DID Utility
     # ///////////////////////////////////////////////////////////////
+    def check_can_device(self):
+        is_conected = False
+        if self.can_manager.check_device_connection():
+            is_conected = True
+        
+        return is_conected
+    
     def get_method(self):
         return self.current_instance.get_method()
 
@@ -216,13 +223,34 @@ class UdsManager:
 
                     is_ok = True
                     recv_msg = response
-                    self.error_handler.log_message(response.hex().upper())
+                    
                 else:
                     # 부정 응답 처리
                     is_ok = False
                     recv_msg = response
                     error_code = response[2]  # NRC는 보통 응답 메시지의 세 번째 바이트에 있음
-                    error_msg = self.error_codes.get(error_code)
+                    
+                    
+                    if error_code == 0x78:
+                        response = self.can_manager.receive_message()
+                        if response:
+                            if response[0] == (read_id[0] + 0x40):
+                                is_ok = True
+                                recv_msg = response
+                                error_msg = None
+                            
+                            else:
+                                # 부정 응답 처리
+                                is_ok = False
+                                recv_msg = response
+                                error_code = response[2]  # NRC는 보통 응답 메시지의 세 번째 바이트에 있음
+                                error_msg = self.error_codes.get(error_code)
+                        else:
+                            # Timeout 발생 시 처리
+                            is_ok = False
+                            error_msg = "No message recieved, please check HW conection"
+                    else:
+                        error_msg = self.error_codes.get(error_code)
 
             else:
                 # Timeout 발생 시 처리
@@ -257,13 +285,31 @@ class UdsManager:
                 if response[0] == (write_id[0] + 0x40):
                     is_ok = True
                     recv_msg = response
-                    self.error_handler.log_message(response.hex().upper())
+                    
                 else:
                     # 부정 응답 처리
                     is_ok = False
-                    error_code = response[2]  # NRC는 보통 응답 메시지의 세 번째 바이트에 있음
                     recv_msg = response
-                    error_msg = self.error_codes.get(error_code)
+                    error_code = response[2]  # NRC는 보통 응답 메시지의 세 번째 바이트에 있음
+                    
+                    if error_code == 0x78:
+                        response = self.can_manager.receive_message()
+                        if response:
+                            if response[0] == (write_id[0] + 0x40):
+                                is_ok = True
+                                recv_msg = response
+                                error_msg = None
+                            else:
+                                # 부정 응답 처리
+                                is_ok = False
+                                recv_msg = response
+                                error_code = response[2]
+                                error_msg = self.error_codes.get(error_code)
+                        else:
+                            is_ok = False
+                            error_msg = "No message recieved, please check HW conection"
+                    else:
+                        error_msg = self.error_codes.get(error_code)
     
                     
             else:

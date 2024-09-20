@@ -214,7 +214,7 @@ class MainWindow(QMainWindow):
                 else:
                     pass
             else: # write
-                is_valid = self.uds_manager.validate_value()
+                is_valid, msg = self.uds_manager.validate_value()
                 if is_valid:
                     is_ok, send_data, recv_data, error_msg = self.uds_manager.process_uds_cmd_write(self.record_values)
                     UIFunctions.update_log(widgets.plainTextEdit_log, 
@@ -226,7 +226,9 @@ class MainWindow(QMainWindow):
                     else:
                         pass
                 else:
-                    self.error_handler.log_message("not a valid write value")                
+                    is_ok, send_data, recv_data, error_msg = is_valid, None, None, msg
+                    UIFunctions.update_log(widgets.plainTextEdit_log, 
+                                       is_ok, error_msg, send_data, recv_data, is_read)               
         else:
             self.error_handler.log_message("please select Write or Read Button")
         
