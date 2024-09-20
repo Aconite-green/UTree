@@ -17,7 +17,7 @@
 # MAIN FILE
 # ///////////////////////////////////////////////////////////////
 from main import *
-import math
+import re
 # GLOBALS
 # ///////////////////////////////////////////////////////////////
 GLOBAL_STATE = False
@@ -25,7 +25,7 @@ GLOBAL_TITLE_BAR = True
 
 class StyleSheets:
     STYLE_SHEET_DEACTIVE = """
-        font-size: 10pt;
+        font-size: 12pt;
         border: 1px solid rgb(220, 220, 220);
         background-color: rgb(27, 29, 35);
         padding: 2px;
@@ -34,13 +34,14 @@ class StyleSheets:
         color: rgb(220, 220, 220); 
     """
     STYLE_SHEET_ACTIVE = """
-        font-size: 10pt;
-        border: 2px solid  rgb(61, 70, 86);
+        font-size: 12pt;
+        border: 1px solid  rgb(61, 70, 86);
         background-color: rgb(27, 29, 35);
         color: rgb(135, 206, 250); 
         padding: 2px;
         text-align: center;  /* 가로 중앙 정렬 */
         vertical-align: middle;
+        color: rgb(135, 206, 250);
     """
 
 
@@ -64,20 +65,20 @@ class StyleSheets:
 
     PUSHBUTTON_DISABLE_0 = """
         QPushButton:disabled { 
-            border: 2px solid rgb(61, 70, 86);
+            border: 1px solid rgb(61, 70, 86);
             background-color: rgb(27, 29, 35);
         }
     """
     PUSHBUTTON_DISABLE_1 = """
         QPushButton:disabled { 
-            border: 2px solid rgb(61, 70, 86);
+            border: 1px solid rgb(61, 70, 86);
             background-color: rgb(61, 70, 86); 
         }
     """
     PUSHBUTTON_STYLE_SHEET_ACTIVE = """
         QPushButton {
             font-size: 10pt;
-            border: 2px solid rgb(61, 70, 86);
+            border: 1px solid rgb(61, 70, 86);
             background-color: rgb(61, 70, 86);
             color: rgb(135, 206, 250);
             padding: 2px;
@@ -416,6 +417,85 @@ class UIFunctions(MainWindow):
             widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
 
         return widget
+
+
+    
+
+    def update_log(log_widget, is_ok, error_msg, send_msg, recv_msg, is_read):
+        """
+        Update the log in plainTextEdit_log with formatted messages.
+        """
+        def format_message_with_hyphens(msg):
+            return '-'.join(re.findall('..', msg.hex().upper()))
+        # clear previous log
+        log_widget.clear()
+        
+        if is_read:
+            read_or_write =" "
+        else:
+            read_or_write= "Write "
+         
+        # OK 또는 NG 메시지 출력
+        if is_ok:
+            if is_read:
+                log_widget.appendHtml(f"""
+                <p style="background-color: rgb(33, 37, 43); color: rgb(135, 206, 250); text-align: center; font-size: 16pt; line-height: 1;">
+                --------------------------<br>
+                |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Read&nbsp;OK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+                --------------------------
+                </p>
+                """)
+            else:
+                log_widget.appendHtml(f"""
+                <p style="background-color: rgb(33, 37, 43); color: rgb(135, 206, 250); text-align: center; font-size: 16pt; line-height: 1;">
+                --------------------------<br>
+                |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Write&nbsp;OK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+                --------------------------
+                </p>
+                """)
+        else:
+            if is_read:
+                log_widget.appendHtml(f"""
+                <p style="background-color: rgb(33, 37, 43); color: rgb(255, 0, 0); text-align: center; font-size: 16pt; line-height: 1;">
+                --------------------------<br>
+                |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Read&nbsp;NG&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+                --------------------------
+                </p>
+                """)
+            else:
+                log_widget.appendHtml(f"""
+                <p style="background-color: rgb(33, 37, 43); color: rgb(255, 0, 0); text-align: center; font-size: 16pt; line-height: 1;">
+                --------------------------<br>
+                |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Write&nbsp;NG&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+                --------------------------
+                </p>
+                """)
+
+        # Error message 출력
+        if error_msg:
+            log_widget.appendHtml(f"""
+                <p style="color: rgb(220, 220, 220); font-size: 12pt;">Error Message<br>{error_msg}</p>
+            """)
+        else:
+            log_widget.appendHtml(f"""
+                <p style="color: rgb(220, 220, 220); font-size: 12pt;">Error Message<br>{error_msg}</p>
+            """)
+
+        # Send message 출력
+        if send_msg:
+            formatted_send_msg = format_message_with_hyphens(send_msg)
+            log_widget.appendHtml(f"""
+                <p style="color: rgb(220, 220, 220); font-size: 12pt;"><br>Sent Message<br>{formatted_send_msg}</p>
+            """)
+
+        # Receive message 출력
+        if recv_msg:
+            formatted_recv_msg = format_message_with_hyphens(recv_msg)
+            log_widget.appendHtml(f"""
+                <p style="color: rgb(220, 220, 220); font-size: 12pt;"><br>Received Message<br>{formatted_recv_msg}<br><br></p>
+            """)
+
+
 
 
 

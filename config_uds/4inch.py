@@ -595,74 +595,18 @@ did_map = {
 }
 
 negative_response_codes = {
-    0x11: {
-        "code": "ServiceNotSupported",
-        "description": "Send if the requested service is no supported",
-        "remark": ""
-    },
-    0x12: {
-        "code": "SubFunctionNotSupported",
-        "description": "Send if the sub-function parameter in the request message is not supported",
-        "remark": ""
-    },
-    0x13: {
-        "code": "IncorrectMessageLengthOrInvalidFormat",
-        "description": "The length of the message is wrong",
-        "remark": ""
-    },
-    0x22: {
-        "code": "ConditionNotCorrect",
-        "description": "This code shall be returned if the criteria for the request DiagnosticSessionControl are not met",
-        "remark": ""
-    },
-    0x24: {
-        "code": "RequestSequenceError",
-        "description": "Send if the ‘sendKey’ sub-function is received without first receiving a ‘requestSeed’ request message",
-        "remark": ""
-    },
-    0x31: {
-        "code": "RequestOutOfRange",
-        "description": "Requested message contains a parameter which attempts to substitute a value beyond its range, or access a Data Identifier/Routine Identifier that is not supported (in active session)",
-        "remark": ""
-    },
-    0x33: {
-        "code": "SecurityAccessDenied",
-        "description": "Security strategy has not been satisfied",
-        "remark": ""
-    },
-    0x35: {
-        "code": "InvalidKey",
-        "description": "Send if an expected ‘sendKey’ sub-function value is received and the value of the key does not match the server’s internally stored/calculated key",
-        "remark": ""
-    },
-    0x36: {
-        "code": "ExceedNumberOfAttempts",
-        "description": "Send if the delay timer is active due to exceeding the maximum number of allowed false access attempts",
-        "remark": ""
-    },
-    0x37: {
-        "code": "RequiredTimeDelayNotExpired",
-        "description": "Send if the delay time is active and request is transmitted",
-        "remark": ""
-    },
-    0x72: {
-        "code": "GeneralProgrammingFailure",
-        "description": "Detected an error when erasing or programming a memory location in the permanent memory device",
-        "remark": ""
-    },
-    0x78: {
-        "code": "RequestCorrectlyReceived-ResponsePending",
-        "description": "Request message was received correctly but the action to be performed is not yet completed",
-        "remark": "CAN Message Timeout 감지 시간 동안에 통신 연결 유지를 위함"
-    },
-    0x7E: {
-        "code": "SubFunctionNotSupportedInActiveSession",
-        "description": "Does not support the requested sub-function in the session currently active",
-        "remark": ""
-    },
-    0x7F: {
-        "code": "ServiceNotSupportedInActiveSession",
-        "description": "Does not support the requested service in the session currently active",
-        "remark": ""
-    }
+    0x11: "Send if the requested service is no supported",
+    0x12: "Send if the sub-function parameter in the request message is not supported",
+    0x13: "The length of the message is wrong",
+    0x22: "This code shall be returned if the criteria for the request DiagnosticSessionControl are not met",
+    0x24: "Send if the ‘sendKey’ sub-function is received without first receiving a ‘requestSeed’ request message",
+    0x31: "Requested message contains a parameter which attempts to substitute a value beyond its range, or access a Data Identifier/Routine Identifier that is not supported (in active session)",
+    0x33: "Security strategy has not been satisfied",
+    0x35: "Send if an expected ‘sendKey’ sub-function value is received and the value of the key does not match the server’s internally stored/calculated key",
+    0x36: "Send if the delay timer is active due to exceeding the maximum number of allowed false access attempts",
+    0x37: "Send if the delay time is active and request is transmitted",
+    0x72: "Detected an error when erasing or programming a memory location in the permanent memory device",
+    0x78: "Request message was received correctly but the action to be performed is not yet completed",
+    0x7E: "Does not support the requested sub-function in the session currently active",
+    0x7F: "Does not support the requested service in the session currently active"
 }

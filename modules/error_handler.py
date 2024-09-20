@@ -26,3 +26,4 @@ class ErrorHandler:
             self.log_widget.clear()
         else:
             print("Log widget is not set, cannot clear log.")
+        return

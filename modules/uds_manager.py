@@ -211,88 +211,30 @@ class UdsManager:
 
             response = self.can_manager.receive_message()
             if response:
-                # 첫 번째 바이트 비교
-                if response[0] == (read_id + 0x40):
+
+                if response[0] == (read_id[0] + 0x40):
+
                     is_ok = True
                     recv_msg = response
                     self.error_handler.log_message(response.hex().upper())
                 else:
                     # 부정 응답 처리
                     is_ok = False
+                    recv_msg = response
                     error_code = response[2]  # NRC는 보통 응답 메시지의 세 번째 바이트에 있음
-                    error_info = self.current_instance.negative_response_codes.get(error_code)
+                    error_msg = self.error_codes.get(error_code)
 
-                    if error_info:
-                        error_msg = (
-                            f"Negative Response Code: {hex(error_code)}\n"
-                            f"Code: {error_info['code']}\n"
-                            f"Description: {error_info['description']}\n"
-                            f"Remark: {error_info.get('remark', '')}"
-                        )
-                        self.error_handler.handle_error(error_msg)
-                    else:
-                        error_msg = f"Unknown Negative Response Code: {hex(error_code)}"
-                        self.error_handler.handle_error(error_msg)
             else:
                 # Timeout 발생 시 처리
                 is_ok = False
-                self.error_handler.handle_error("Timeout: No message received within the timeout period.")
+                error_msg = "No message recieved, please check HW conection"
 
             self.current_instance.read_parse(response, record_values)
 
         except Exception as e:
             self.error_handler.handle_error(f"Error processing UDS read command: {str(e)}")
 
-        # 결과를 plainTextEdit_log에 출력
-        self.update_log(is_ok, error_msg, self.process_data, recv_msg)
-
         return is_ok, self.process_data, recv_msg, error_msg
-
-
-    def update_log(self, is_ok, error_msg, send_msg, recv_msg):
-        """
-        Update the log in plainTextEdit_log with formatted messages.
-        """
-        # clear previous log
-        self.ui.plainTextEdit_log.clear()
-
-        # OK 또는 NG 메시지 출력
-        if is_ok:
-            self.ui.plainTextEdit_log.appendHtml("""
-                <p style="background-color: rgb(33, 37, 43); color: rgb(135, 206, 250); text-align: center; font-size: 16pt;">
-                -------------------------------------------------------------------------<br>
-                |                                    OK                                            |<br>
-                -------------------------------------------------------------------------
-                </p>
-            """)
-        else:
-            self.ui.plainTextEdit_log.appendHtml("""
-                <p style="background-color: rgb(33, 37, 43); color: rgb(255, 0, 0); text-align: center; font-size: 16pt;">
-                -------------------------------------------------------------------------<br>
-                |                                    NG                                           |<br>
-                -------------------------------------------------------------------------
-                </p>
-            """)
-
-        # Error message 출력
-        if error_msg:
-            self.ui.plainTextEdit_log.appendHtml(f"""
-                <p style="color: rgb(220, 220, 220); font-size: 12pt;">Error Message: {error_msg}</p>
-            """)
-
-        # Send message 출력
-        if send_msg:
-            self.ui.plainTextEdit_log.appendHtml(f"""
-                <p style="color: rgb(220, 220, 220); font-size: 12pt;">Sent Message: {send_msg.hex().upper()}</p>
-            """)
-
-        # Receive message 출력
-        if recv_msg:
-            self.ui.plainTextEdit_log.appendHtml(f"""
-                <p style="color: rgb(220, 220, 220); font-size: 12pt;">Received Message: {recv_msg.hex().upper()}</p>
-            """)
-
-
 
     def process_uds_cmd_write(self, record_values):
         """
@@ -312,7 +254,7 @@ class UdsManager:
     
             if response:
                 # 긍정 응답 확인: 첫 번째 바이트가 write_id + 0x40인지 확인
-                if response[0] == (write_id + 0x40):
+                if response[0] == (write_id[0] + 0x40):
                     is_ok = True
                     recv_msg = response
                     self.error_handler.log_message(response.hex().upper())
@@ -320,30 +262,17 @@ class UdsManager:
                     # 부정 응답 처리
                     is_ok = False
                     error_code = response[2]  # NRC는 보통 응답 메시지의 세 번째 바이트에 있음
-                    error_info = self.current_instance.negative_response_codes.get(error_code)
+                    recv_msg = response
+                    error_msg = self.error_codes.get(error_code)
     
-                    if error_info:
-                        error_msg = (
-                            f"Negative Response Code: {hex(error_code)}\n"
-                            f"Code: {error_info['code']}\n"
-                            f"Description: {error_info['description']}\n"
-                            f"Remark: {error_info.get('remark', '')}"
-                        )
-                        self.error_handler.handle_error(error_msg)
-                    else:
-                        error_msg = f"Unknown Negative Response Code: {hex(error_code)}"
-                        self.error_handler.handle_error(error_msg)
+                    
             else:
                 # Timeout 발생 시 처리
                 is_ok = False
-                error_msg = "Timeout: No message received within the timeout period."
-                self.error_handler.handle_error(error_msg)
+                error_msg = "No message recieved, please check HW conection"
     
         except Exception as e:
             self.error_handler.handle_error(f"Error processing UDS write command: {str(e)}")
-    
-        # 로그 업데이트
-        self.update_log(is_ok, error_msg, self.process_data, recv_msg)
     
         return is_ok, self.process_data, recv_msg, error_msg
 

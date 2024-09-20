@@ -123,6 +123,7 @@ class MainWindow(QMainWindow):
                         QComboBox {
                             color: rgb(221, 221, 221);
                             background-color: rgb(33, 37, 43);
+                            border: 1px solid rgb(220, 220, 220);
                         }
                         QComboBox QAbstractItemView {
                             color: rgb(135, 206, 250);
@@ -134,6 +135,7 @@ class MainWindow(QMainWindow):
                         QComboBox {
                             color: rgb(221, 221, 221);
                             background-color: rgb(33, 37, 43);
+                            border: 1px solid rgb(220, 220, 220);
                         }
                         QComboBox QAbstractItemView {
                             color: rgb(135, 206, 250);
@@ -176,6 +178,7 @@ class MainWindow(QMainWindow):
                     QComboBox {
                         color: rgb(135, 206, 250);
                         background-color: rgb(33, 37, 43);
+                       
                     }
                     QComboBox QAbstractItemView {
                         color: rgb(135, 206, 250);
@@ -187,6 +190,7 @@ class MainWindow(QMainWindow):
                     QComboBox {
                         color: rgb(135, 206, 250);
                         background-color: rgb(33, 37, 43);
+                       
                     }
                     QComboBox QAbstractItemView {
                         color: rgb(135, 206, 250);
@@ -200,15 +204,27 @@ class MainWindow(QMainWindow):
         if widgets.radioButton_read.isChecked() or widgets.radioButton_write.isChecked():
             is_read = widgets.radioButton_read.isChecked()
             if is_read:
-                self.uds_manager.process_uds_cmd_read(is_read, self.record_values)
-                self.populate_grid(self.record_values, is_read=is_read)
-                self.read_record = True
+                is_ok, send_data, recv_data, error_msg=self.uds_manager.process_uds_cmd_read(self.record_values)
+                UIFunctions.update_log(widgets.plainTextEdit_log, 
+                                       is_ok, error_msg, send_data, recv_data, is_read)
+                
+                if is_ok:
+                    self.populate_grid(self.record_values, is_read=is_read)
+                    self.read_record = True
+                else:
+                    pass
             else: # write
                 is_valid = self.uds_manager.validate_value()
                 if is_valid:
-                    self.uds_manager.process_uds_cmd_write(is_read, self.record_values)
-                    self.populate_grid(self.record_values, is_read=is_read)
-                    self.uds_manager.copy_write_to_read()
+                    is_ok, send_data, recv_data, error_msg = self.uds_manager.process_uds_cmd_write(self.record_values)
+                    UIFunctions.update_log(widgets.plainTextEdit_log, 
+                                       is_ok, error_msg, send_data, recv_data, is_read)
+                    
+                    if is_ok:
+                        self.populate_grid(self.record_values, is_read=is_read)
+                        self.uds_manager.copy_write_to_read()
+                    else:
+                        pass
                 else:
                     self.error_handler.log_message("not a valid write value")                
         else:
@@ -236,6 +252,7 @@ class MainWindow(QMainWindow):
                 self.uds_manager.make_uds_cmd(is_read=True, record_values=self.record_values)
                 data = self.uds_manager.get_uds_cmd()
                 widgets.lineEdit_cancmd.setText(data)
+                self.error_handler.clear_log()
         else:
             print("not set")
     
@@ -263,6 +280,7 @@ class MainWindow(QMainWindow):
                 self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values)
                 data = self.uds_manager.get_uds_cmd()
                 widgets.lineEdit_cancmd.setText(data)
+                self.error_handler.clear_log()
 
     def populate_grid(self, record_values, is_read):
         # 기존 버튼들 삭제
@@ -302,7 +320,7 @@ class MainWindow(QMainWindow):
                 if len(coloms) > 1:
                     name_label = QLabel(col_key)
                     name_label.setStyleSheet("""
-                        font-size: 9pt; 
+                        font-size: 10pt; 
                         padding: 1px;
                         color: rgb(221, 221, 221);
                         border: 1px solid rgb(61, 70, 86);
@@ -319,37 +337,19 @@ class MainWindow(QMainWindow):
 
                     if col_type == 'combobox':
                         widget.currentIndexChanged.connect(
-                            lambda idx, row=row_index, col=col_key, col_type=col_type, widget=widget: (
-                                self.uds_manager.update_record_value(self.record_values, row, col, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.currentText(), col_type)),
-                                self.apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.currentText(), col_type), col_type),
-                                self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values), 
-                                widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
-                            )
+                            lambda idx, row=row_index, col=col_key, col_type=col_type, widget=widget: self.combobox_changed(idx, row, col, col_type, widget)
                         )
                     elif col_type == 'line_edit':
                         widget.textChanged.connect(
-                            lambda text, row=row_index, col=col_key, col_type=col_type, widget=widget: (
-                                self.apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.text(), col_type), col_type),
-                                self.uds_manager.update_record_value(self.record_values, row, col, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, widget.text(), col_type)),
-                                self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values), 
-                                widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
-                            )
+                            lambda text, row=row_index, col=col_key, col_type=col_type, widget=widget: self.line_edit_changed(text, row, col, col_type, widget)
                         )
                     elif col_type == 'button':
                         widget.clicked.connect(
-                            lambda checked, row=row_index, col=col_key, col_type=col_type, widget=widget: (
-                                self.apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, 0 if checked else 1, col_type), col_type),
-                                widget.setText('0' if checked else '1'),  
-                                self.uds_manager.update_record_value(self.record_values, row, col, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, 0 if checked else 1, col_type)),
-                                self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values), 
-                                widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
-                            )
+                            lambda checked, row=row_index, col=col_key, col_type=col_type, widget=widget: self.button_clicked(checked, row, col, col_type, widget)
                         )
                     elif col_type == 'calendar':
                         widget.dateChanged.connect(
-                            lambda date, row=row_index, col=col_key, col_type=col_type, widget=widget: (
-                                self.handle_date_edit_change(widget, date, row, col, col_type)
-                            )
+                            lambda date, row=row_index, col=col_key, col_type=col_type, widget=widget: self.calendar_changed(date, row, col, col_type, widget)
                         )
 
                 if widget:
@@ -377,6 +377,7 @@ class MainWindow(QMainWindow):
                         QComboBox {
                             color: rgb(221, 221, 221);
                             background-color: rgb(33, 37, 43);
+                            border: 1px solid rgb(220, 220, 220);
                         }
                         QComboBox QAbstractItemView {
                             color: rgb(135, 206, 250);
@@ -455,17 +456,45 @@ class MainWindow(QMainWindow):
                             else:
                                 widget.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE)
 
-    def handle_date_edit_change(self, widget, date, row, col, col_type):
-        date_str = date.toString("yyyyMMdd")
-        self.apply_styles(widget, self.uds_manager.get_val_for_style_sheet(
-            self.record_values, row, col, date_str, col_type
-        ), col_type)
+    def combobox_changed(self, idx, row, col, col_type, widget):
+        value = widget.currentText()
         self.uds_manager.update_record_value(
-            self.record_values, row, col, 
-            self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, date_str, col_type)
+            self.record_values, row, col, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, value, col_type)
+        )
+        self.apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, value, col_type), col_type)
+        self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values)
+        widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
+        self.error_handler.clear_log()
+
+    def line_edit_changed(self, text, row, col, col_type, widget):
+        self.apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, text, col_type), col_type)
+        self.uds_manager.update_record_value(
+            self.record_values, row, col, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, text, col_type)
         )
         self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values)
         widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
+        self.error_handler.clear_log()
+
+    def button_clicked(self, checked, row, col, col_type, widget):
+        value = 0 if checked else 1
+        self.apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, value, col_type), col_type)
+        widget.setText('0' if checked else '1')
+        self.uds_manager.update_record_value(
+            self.record_values, row, col, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, value, col_type)
+        )
+        self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values)
+        widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
+        self.error_handler.clear_log()
+
+    def calendar_changed(self, date, row, col, col_type, widget):
+        date_str = date.toString("yyyyMMdd")
+        self.apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, date_str, col_type), col_type)
+        self.uds_manager.update_record_value(
+            self.record_values, row, col, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, date_str, col_type)
+        )
+        self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values)
+        widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
+        self.error_handler.clear_log()
 
     # INIT SEARCH FUNCTION
     # ///////////////////////////////////////////////////////////////

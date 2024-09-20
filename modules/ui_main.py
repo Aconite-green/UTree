@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainsOzhzc.ui'
+## Form generated from reading UI file 'mainTYuQsl.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.7.2
 ##
@@ -1320,11 +1320,13 @@ class Ui_MainWindow(object):
         self.comboBox_uds = QComboBox(self.widgets_workspace)
         self.comboBox_uds.setObjectName(u"comboBox_uds")
         self.comboBox_uds.setGeometry(QRect(0, 0, 211, 41))
-        self.comboBox_uds.setStyleSheet(u" background-color: rgb(27, 29, 35);")
+        self.comboBox_uds.setStyleSheet(u"background-color: rgb(27, 29, 35);\n"
+"border: 1px solid rgb(220, 220, 220);")
         self.comboBox_can = QComboBox(self.widgets_workspace)
         self.comboBox_can.setObjectName(u"comboBox_can")
         self.comboBox_can.setGeometry(QRect(220, 0, 211, 41))
-        self.comboBox_can.setStyleSheet(u" background-color: rgb(27, 29, 35);")
+        self.comboBox_can.setStyleSheet(u"background-color: rgb(27, 29, 35);\n"
+"border: 1px solid rgb(220, 220, 220);")
         self.groupBox_pannel = QGroupBox(self.widgets_workspace)
         self.groupBox_pannel.setObjectName(u"groupBox_pannel")
         self.groupBox_pannel.setGeometry(QRect(0, 50, 941, 601))
@@ -1343,7 +1345,8 @@ class Ui_MainWindow(object):
         sizePolicy4.setHeightForWidth(self.comboBox_did.sizePolicy().hasHeightForWidth())
         self.comboBox_did.setSizePolicy(sizePolicy4)
         self.comboBox_did.setMinimumSize(QSize(220, 0))
-        self.comboBox_did.setStyleSheet(u" background-color: rgb(27, 29, 35);")
+        self.comboBox_did.setStyleSheet(u"background-color: rgb(27, 29, 35);\n"
+"border: 1px solid rgb(220, 220, 220);")
 
         self.horizontalLayout_pannel_top.addWidget(self.comboBox_did)
 
