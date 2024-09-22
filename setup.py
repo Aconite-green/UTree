@@ -21,8 +21,9 @@ setup(
     author="SeongYong Park",
     options={
         'build_exe': {
-            'include_files': files,  # 추가 파일 설정
-            'include_msvcr': True   # MSVC 런타임 포함
+            'build_exe': 'UTree',
+            'include_files': ['config_can/', 'config_uds/'],
+            'include_msvcr': False   # MSVC 런타임 포함
         }
     },
     executables=[target]

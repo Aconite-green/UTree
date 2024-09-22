@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainJONyQi.ui'
+## Form generated from reading UI file 'mainReoySc.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.7.2
 ##
@@ -22,7 +22,7 @@ from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplicat
     QRadioButton, QScrollArea, QScrollBar, QSizePolicy,
     QSlider, QSpacerItem, QStackedWidget, QTableWidget,
     QTableWidgetItem, QTextEdit, QVBoxLayout, QWidget)
-#import resources_rc
+# import resources_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -1550,12 +1550,6 @@ class Ui_MainWindow(object):
         self.extraCloseColumnBtn.setToolTip(QCoreApplication.translate("MainWindow", u"Close left box", None))
 #endif // QT_CONFIG(tooltip)
         self.extraCloseColumnBtn.setText("")
-        self.textEdit.setMarkdown(QCoreApplication.translate("MainWindow", u"**UTree**  An interface created using Python and PySide (support for PyQt), and\n"
-"with colors based on the Dracula theme created by Zeno Rocha.  MIT License \n"
-"Created by: Wanderson M. Pimenta  **Convert UI**  pyside6-uic main.ui >\n"
-"ui_main.py  **Convert QRC**  pyside6-rcc resources.qrc -o resources_rc.py\n"
-"\n"
-"", None))
         self.textEdit.setHtml(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
@@ -1563,8 +1557,21 @@ class Ui_MainWindow(object):
 "li.unchecked::marker { content: \"\\2610\"; }\n"
 "li.checked::marker { content: \"\\2612\"; }\n"
 "</style></head><body style=\" font-family:'Segoe UI'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:6px; margin-bottom:6px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:700;\">UTree</span>  An interface created using Python and PySide (support for PyQt), and with colors based on the Dracula theme created by Zeno Rocha.  MIT License  Created by: Wanderson M. Pimenta  <span style=\" font-weight:700;\">Convert UI</span>  pyside6-uic main.ui &gt; ui_main.py  <span style=\" font-weight:700;\">Convert QRC</span>  pyside6-rcc resources.qrc -o res"
-                        "ources_rc.py</p></body></html>", None))
+"<h2 style=\" margin-top:20px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; font-weight:700; color:#48a2ce;\">Process</span></h2>\n"
+"<ol style=\"margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;\">\n"
+"<li style=\" font-size:11pt;\" style=\" margin-top:0px; margin-bottom:10px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">&quot;Project&quot;, &quot;CAN&quot; \uc124\uc815"
+                        "\uc744 \uc9c4\ud589 (\uc67c\ucabd \uc704\uc5d0)    </li>\n"
+"<li style=\" font-size:11pt;\" style=\" margin-top:0px; margin-bottom:10px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Connect \ud074\ub9ad (\uc624\ub978\ucabd \uc704\uc5d0)    </li>\n"
+"<li style=\" font-size:11pt;\" style=\" margin-top:0px; margin-bottom:10px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">DID -&gt; Read/Write \uc21c\uc11c\ub85c \uc120\ud0dd    </li>\n"
+"<li style=\" font-size:11pt;\" style=\" margin-top:0px; margin-bottom:10px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\uac12 \uc124\uc815 \ud6c4 Send \ud074\ub9ad (\uc774 \ud398\uc774\uc9c0\ub97c \uc811\uc5b4\uc8fc\uc138\uc694)</li></ol>\n"
+"<h2 style=\" margin-top:20px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; font-weight:700; color:#48a2ce;\">Cautions</span></h2>\n"
+"<ul style=\"margin-top: 0px; margin-bottom"
+                        ": 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;\">\n"
+"<li style=\" font-size:11pt;\" style=\" margin-top:0px; margin-bottom:10px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Read \ub610\ub294 Write \uae30\ub2a5 \uc911 <span style=\" font-weight:700; color:#ffffff;\">\ud558\ub098\ub9cc \uc81c\uacf5\ud558\ub294 DID\ub294 \uc790\ub3d9\uc120\ud0dd</span>\ub429\ub2c8\ub2e4.    </li>\n"
+"<li style=\" font-size:11pt;\" style=\" margin-top:0px; margin-bottom:10px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\ud770\uc0c9 \uae00\uc790 + \ud770\uc0c9 \ud14c\ub450\ub9ac\uc77c \uacbd\uc6b0 <span style=\" font-weight:700; color:#ffffff;\">\uc124\uc815\uc774 \uc548\ub41c \uc0c1\ud0dc\uc785\ub2c8\ub2e4</span>.    </li>\n"
+"<li style=\" font-size:11pt;\" style=\" margin-top:0px; margin-bottom:20px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Read \ud6c4\uc5d0 Write \uae30\ub2a5\uc744 \uc0ac\uc6a9\ud560 \uacbd\uc6b0 Read \ud588"
+                        "\ub358 \uac12\uc774 <span style=\" font-weight:700; color:#ffffff;\">\uc800\uc7a5</span> \ub429\ub2c8\ub2e4.     </li>\n"
+"<li style=\" font-size:11pt;\" style=\" margin-top:0px; margin-bottom:10px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:700;\">Connect \ub41c \ud6c4\uc5d0</span> Search \uae30\ub2a5 \uc0ac\uc6a9\uac00\ub2a5\ud569\ub2c8\ub2e4</li></ul></body></html>", None))
         self.titleRightInfo.setText(QCoreApplication.translate("MainWindow", u"UTree APP - GUI Program for UDS Management", None))
 #if QT_CONFIG(tooltip)
         self.minimizeAppBtn.setToolTip(QCoreApplication.translate("MainWindow", u"Minimize", None))
