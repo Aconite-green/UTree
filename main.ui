@@ -1844,7 +1844,7 @@ background-repeat: no-repeat;</string>
                                 <rect>
                                  <x>0</x>
                                  <y>0</y>
-                                 <width>218</width>
+                                 <width>274</width>
                                  <height>218</height>
                                 </rect>
                                </property>
@@ -2375,49 +2375,6 @@ background-repeat: no-repeat;</string>
                       <property name="styleSheet">
                        <string notr="true"/>
                       </property>
-                      <widget class="QComboBox" name="comboBox_uds">
-                       <property name="geometry">
-                        <rect>
-                         <x>0</x>
-                         <y>0</y>
-                         <width>211</width>
-                         <height>41</height>
-                        </rect>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <family>Segoe UI</family>
-                         <pointsize>10</pointsize>
-                         <italic>false</italic>
-                         <bold>false</bold>
-                        </font>
-                       </property>
-                       <property name="mouseTracking">
-                        <bool>true</bool>
-                       </property>
-                       <property name="acceptDrops">
-                        <bool>false</bool>
-                       </property>
-                       <property name="styleSheet">
-                        <string notr="true">background-color: rgb(27, 29, 35);
-border: 1px solid rgb(220, 220, 220);
-</string>
-                       </property>
-                      </widget>
-                      <widget class="QComboBox" name="comboBox_can">
-                       <property name="geometry">
-                        <rect>
-                         <x>220</x>
-                         <y>0</y>
-                         <width>211</width>
-                         <height>41</height>
-                        </rect>
-                       </property>
-                       <property name="styleSheet">
-                        <string notr="true">background-color: rgb(27, 29, 35);
-border: 1px solid rgb(220, 220, 220);</string>
-                       </property>
-                      </widget>
                       <widget class="QGroupBox" name="groupBox_pannel">
                        <property name="geometry">
                         <rect>
@@ -2605,6 +2562,78 @@ border: 1px solid rgb(220, 220, 220);
                         </layout>
                        </widget>
                       </widget>
+                      <widget class="QWidget" name="gridLayoutWidget_2">
+                       <property name="geometry">
+                        <rect>
+                         <x>0</x>
+                         <y>0</y>
+                         <width>611</width>
+                         <height>51</height>
+                        </rect>
+                       </property>
+                       <layout class="QGridLayout" name="gridLayout_3">
+                        <property name="spacing">
+                         <number>6</number>
+                        </property>
+                        <item row="0" column="0">
+                         <widget class="QComboBox" name="comboBox_uds">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
+                          <property name="font">
+                           <font>
+                            <family>Segoe UI</family>
+                            <pointsize>10</pointsize>
+                            <italic>false</italic>
+                            <bold>false</bold>
+                           </font>
+                          </property>
+                          <property name="mouseTracking">
+                           <bool>true</bool>
+                          </property>
+                          <property name="acceptDrops">
+                           <bool>false</bool>
+                          </property>
+                          <property name="styleSheet">
+                           <string notr="true">background-color: rgb(27, 29, 35);
+border: 1px solid rgb(220, 220, 220);
+</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="0" column="1">
+                         <widget class="QComboBox" name="comboBox_dll">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
+                          <property name="styleSheet">
+                           <string notr="true">background-color: rgb(27, 29, 35);
+border: 1px solid rgb(220, 220, 220);</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="0" column="2">
+                         <widget class="QComboBox" name="comboBox_can">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
+                          <property name="styleSheet">
+                           <string notr="true">background-color: rgb(27, 29, 35);
+border: 1px solid rgb(220, 220, 220);</string>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </widget>
                      </widget>
                     </widget>
                    </item>
@@ -2703,7 +2732,7 @@ border: 1px solid rgb(220, 220, 220);
                          </font>
                         </property>
                         <property name="cursor">
-                         <cursorShape>PointingHandCursor</cursorShape>
+                         <cursorShape>ArrowCursor</cursorShape>
                         </property>
                         <property name="layoutDirection">
                          <enum>Qt::LayoutDirection::LeftToRight</enum>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainZprCgG.ui'
+## Form generated from reading UI file 'mainReoySc.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.7.2
 ##
@@ -1097,7 +1097,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 274, 218))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 218, 218))
         self.scrollAreaWidgetContents.setStyleSheet(u" QScrollBar:vertical {\n"
 "	border: none;\n"
 "    background: rgb(52, 59, 72);\n"
@@ -1298,6 +1298,20 @@ class Ui_MainWindow(object):
         self.widgets_workspace = QWidget()
         self.widgets_workspace.setObjectName(u"widgets_workspace")
         self.widgets_workspace.setStyleSheet(u"")
+        self.comboBox_uds = QComboBox(self.widgets_workspace)
+        self.comboBox_uds.setObjectName(u"comboBox_uds")
+        self.comboBox_uds.setGeometry(QRect(0, 0, 211, 41))
+        self.comboBox_uds.setFont(font)
+        self.comboBox_uds.setMouseTracking(True)
+        self.comboBox_uds.setAcceptDrops(False)
+        self.comboBox_uds.setStyleSheet(u"background-color: rgb(27, 29, 35);\n"
+"border: 1px solid rgb(220, 220, 220);\n"
+"")
+        self.comboBox_can = QComboBox(self.widgets_workspace)
+        self.comboBox_can.setObjectName(u"comboBox_can")
+        self.comboBox_can.setGeometry(QRect(220, 0, 211, 41))
+        self.comboBox_can.setStyleSheet(u"background-color: rgb(27, 29, 35);\n"
+"border: 1px solid rgb(220, 220, 220);")
         self.groupBox_pannel = QGroupBox(self.widgets_workspace)
         self.groupBox_pannel.setObjectName(u"groupBox_pannel")
         self.groupBox_pannel.setGeometry(QRect(0, 50, 941, 601))
@@ -1378,41 +1392,6 @@ class Ui_MainWindow(object):
         self.gridLayout_pannel_main.setSpacing(0)
         self.gridLayout_pannel_main.setObjectName(u"gridLayout_pannel_main")
         self.gridLayout_pannel_main.setContentsMargins(3, 0, 3, 6)
-        self.gridLayoutWidget_2 = QWidget(self.widgets_workspace)
-        self.gridLayoutWidget_2.setObjectName(u"gridLayoutWidget_2")
-        self.gridLayoutWidget_2.setGeometry(QRect(0, 0, 611, 51))
-        self.gridLayout_3 = QGridLayout(self.gridLayoutWidget_2)
-        self.gridLayout_3.setSpacing(6)
-        self.gridLayout_3.setObjectName(u"gridLayout_3")
-        self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
-        self.comboBox_uds = QComboBox(self.gridLayoutWidget_2)
-        self.comboBox_uds.setObjectName(u"comboBox_uds")
-        self.comboBox_uds.setMinimumSize(QSize(0, 40))
-        self.comboBox_uds.setFont(font)
-        self.comboBox_uds.setMouseTracking(True)
-        self.comboBox_uds.setAcceptDrops(False)
-        self.comboBox_uds.setStyleSheet(u"background-color: rgb(27, 29, 35);\n"
-"border: 1px solid rgb(220, 220, 220);\n"
-"")
-
-        self.gridLayout_3.addWidget(self.comboBox_uds, 0, 0, 1, 1)
-
-        self.comboBox_dll = QComboBox(self.gridLayoutWidget_2)
-        self.comboBox_dll.setObjectName(u"comboBox_dll")
-        self.comboBox_dll.setMinimumSize(QSize(0, 40))
-        self.comboBox_dll.setStyleSheet(u"background-color: rgb(27, 29, 35);\n"
-"border: 1px solid rgb(220, 220, 220);")
-
-        self.gridLayout_3.addWidget(self.comboBox_dll, 0, 1, 1, 1)
-
-        self.comboBox_can = QComboBox(self.gridLayoutWidget_2)
-        self.comboBox_can.setObjectName(u"comboBox_can")
-        self.comboBox_can.setMinimumSize(QSize(0, 40))
-        self.comboBox_can.setStyleSheet(u"background-color: rgb(27, 29, 35);\n"
-"border: 1px solid rgb(220, 220, 220);")
-
-        self.gridLayout_3.addWidget(self.comboBox_can, 0, 2, 1, 1)
-
         self.stackedWidget.addWidget(self.widgets_workspace)
 
         self.verticalLayout_15.addWidget(self.stackedWidget)
@@ -1452,7 +1431,7 @@ class Ui_MainWindow(object):
         font4.setWeight(QFont.DemiBold)
         font4.setItalic(False)
         self.btn_connect.setFont(font4)
-        self.btn_connect.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
+        self.btn_connect.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_connect.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
         self.btn_connect.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-equalizer.png);\n"
 "font: 600 12pt \"Segoe UI Semibold\";")

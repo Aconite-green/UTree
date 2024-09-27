@@ -12,7 +12,9 @@ import threading
 class MyClient(Client64):
     def __init__(self):
         try:
+            print("Initializing MyClient...")
             super(MyClient, self).__init__(module32='my_server')
+            print("MyClient initialized successfully.")
         except Exception as e:
             print(f"An error occurred in MyClient initialization: {e}")
             raise
@@ -35,6 +37,7 @@ class UdsManager:
         self.server_thread = threading.Thread(target=self.initialize_client)
         self.server_thread.start()
         
+        # atexit.register(self.client.shutdown_server32)
 
     # Seed Server
     # ///////////////////////////////////////////////////////////////
@@ -59,7 +62,11 @@ class UdsManager:
     # DID Utility
     # ///////////////////////////////////////////////////////////////
     def check_can_device(self):
-        return self.can_manager.check_device_connection()
+        is_conected = False
+        if self.can_manager.check_device_connection():
+            is_conected = True
+        
+        return is_conected
     
     def get_method(self):
         return self.current_instance.get_method()

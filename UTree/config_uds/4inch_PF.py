@@ -172,7 +172,7 @@ class UnlockNotCoded(UDSBase):
         record_values = {
             'data1': { 
                       'row_type': 'bytewise',
-                      'coloms':{ 'Unlock Not Coded 0':{'bit':8,  'col_type':'line_edit','options':'auto', 'r_type': 'dec', 'w_type': 'dec', 'r_val': None, 'w_val': None}}}
+                      'coloms':{ 'Unlock Not Coded':{'bit':8,  'col_type':'line_edit','options':'auto', 'r_type': 'dec', 'w_type': 'dec', 'r_val': None, 'w_val': None}}}
         }
         super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
 
@@ -186,7 +186,7 @@ class LockNotCoded(UDSBase):
         record_values = {
             'data1': { 
                       'row_type': 'bytewise',
-                      'coloms':{ 'Lock Not Coded 1':{'bit':8,  'col_type':'line_edit','options':'auto', 'r_type': 'dec', 'w_type': 'dec', 'r_val': None, 'w_val': None}}}
+                      'coloms':{ 'Lock Not Coded':{'bit':8,  'col_type':'line_edit','options':'auto', 'r_type': 'dec', 'w_type': 'dec', 'r_val': None, 'w_val': None}}}
         }
         super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
 
@@ -576,8 +576,8 @@ did_map = {
     "ECUReset":ECUReset,
     "VIN_Reset_W(F110)":InitVIN,
     "VIN_R/W(F190)":VIN,
-    "CodingErr_UnLock_0":UnlockNotCoded,
-    "CodingErr_Lock_1":LockNotCoded,
+    "CodingErr_UnLock":UnlockNotCoded,
+    "CodingErr_Lock":LockNotCoded,
     "ServiceReminder_Type_W(0070)":SetServiceType,
     "ServiceReminder__W(0071)":InitService,
     "ServiceReminder_Period_W(0073)":SetServiceTerm,

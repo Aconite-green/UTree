@@ -100,76 +100,68 @@ class CanManager:
     # SET CAN CONFIGURATION
     # ///////////////////////////////////////////////////////////////
     def setup_can(self):
-        result = True
-        msg = None
-        try:
-            # APP CONFIG
-            app_config = self.can_config['AppConfig']
-            self.send_id = app_config['SendID']
-            self.recv_id = app_config['RecvID']
-            self.interface = self._get_device_type(app_config['CanTargetDevice'])
-            # for device checking
-            self.device = app_config['CanTargetDevice']
-            self.channel = self._get_channel(app_config['CanTargetDevice'])
-            self.is_fd = self._get_fd_info(app_config['Interface'])
-
-            # BASIC CAN
-            basic_can = self.can_config['Basic_CAN']
-            self.bitrate_abr = basic_can['bitrateAbr']
-            self.sjw_abr = basic_can['sjwAbr']
-            self.tseg1_abr = basic_can['tseg1Abr']
-            self.tseg2_abr = basic_can['tseg2Abr']
-
-            # FD ONLY
-            fd_only = self.can_config['FD_only']
-            self.bitrate_dbr = fd_only['bitrateDbr']
-            self.sjw_dbr = fd_only['sjwDbr']
-            self.tseg1_dbr = fd_only['tseg1Dbr']
-            self.tseg2_dbr = fd_only['tseg2Dbr']
-
-            # ISOTP
-            isotp_data = self.can_config['ISOTP']
-            self.bs = isotp_data['BS']
-            self.padding = isotp_data['Padding']
-            self.stmin = isotp_data['STmin']
-
-            # ASK
-            ask = self.can_config['ASK']
-            self.lib_file_name = ask['LibFileName']
-
-            # Layer Params
-            self.isotp_params= {
-                    'stmin': self.stmin,  # Separation time, default is 0 (no timing requirement)
-                    'blocksize': self.bs,  # Block size, default is 8
-                    'tx_data_length': 8,  # Maximum number of data bytes per CAN message (for CAN FD), default is 8
-                    'tx_data_min_length': 8,  # Minimum length of CAN messages, default is None
-                    'override_receiver_stmin': None,  # Override the receiver's STmin, default is None
-                    'rx_flowcontrol_timeout': 1000,  # Timeout for receiving flow control frames in milliseconds, default is 1000 ms
-                    'rx_consecutive_frame_timeout': 1000,  # Timeout for receiving consecutive frames in milliseconds, default is 1000 ms
-                    'tx_padding': self.padding,  # Padding byte for transmitted messages, default is None (no padding)
-                    'wftmax': 0,  # Maximum wait frames, default is 0 (no wait frames allowed)
-                    'max_frame_size': 4095,  # Maximum frame size that can be received, default is 4095 bytes
-                    'can_fd': self.is_fd,  # Use CAN FD, default is False (use CAN 2.0)
-                    'bitrate_switch': self.is_fd,  # Use CAN FD bitrate switch, default is False
-                    'default_target_address_type': isotp.TargetAddressType.Physical,  # Default address type, Physical (0) or Functional (1)
-                    'rate_limit_enable': False,  # Enable rate limiting, default is False
-                    'rate_limit_max_bitrate': 10000000,  # Maximum bitrate for rate limiter in bits per second, default is 10,000,000 bps
-                    'rate_limit_window_size': 0.2,  # Time window for rate limiting in seconds, default is 0.2 seconds
-                    'listen_mode': False,  # Enable listen mode (no flow control), default is False
-                    'blocking_send': True,  # Enable blocking send, default is False
-                        }
-        except Exception as e:
-            msg = f"Unexpected error reading CAN Config: {str(e)}"
-            result = False
         
-        return (result, msg)
+        # APP CONFIG
+        app_config = self.can_config['AppConfig']
+        self.send_id = app_config['SendID']
+        self.recv_id = app_config['RecvID']
+        self.interface = self._get_device_type(app_config['CanTargetDevice'])
+        # for device checking
+        self.device = app_config['CanTargetDevice']
+        self.channel = self._get_channel(app_config['CanTargetDevice'])
+        self.is_fd = self._get_fd_info(app_config['Interface'])
+
+        # BASIC CAN
+        basic_can = self.can_config['Basic_CAN']
+        self.bitrate_abr = basic_can['bitrateAbr']
+        self.sjw_abr = basic_can['sjwAbr']
+        self.tseg1_abr = basic_can['tseg1Abr']
+        self.tseg2_abr = basic_can['tseg2Abr']
+
+        # FD ONLY
+        fd_only = self.can_config['FD_only']
+        self.bitrate_dbr = fd_only['bitrateDbr']
+        self.sjw_dbr = fd_only['sjwDbr']
+        self.tseg1_dbr = fd_only['tseg1Dbr']
+        self.tseg2_dbr = fd_only['tseg2Dbr']
+
+        # ISOTP
+        isotp_data = self.can_config['ISOTP']
+        self.bs = isotp_data['BS']
+        self.padding = isotp_data['Padding']
+        self.stmin = isotp_data['STmin']
+        
+        # ASK
+        ask = self.can_config['ASK']
+        self.lib_file_name = ask['LibFileName']
+
+        # Layer Params
+        self.isotp_params= {
+                'stmin': self.stmin,  # Separation time, default is 0 (no timing requirement)
+                'blocksize': self.bs,  # Block size, default is 8
+                'tx_data_length': 8,  # Maximum number of data bytes per CAN message (for CAN FD), default is 8
+                'tx_data_min_length': 8,  # Minimum length of CAN messages, default is None
+                'override_receiver_stmin': None,  # Override the receiver's STmin, default is None
+                'rx_flowcontrol_timeout': 1000,  # Timeout for receiving flow control frames in milliseconds, default is 1000 ms
+                'rx_consecutive_frame_timeout': 1000,  # Timeout for receiving consecutive frames in milliseconds, default is 1000 ms
+                'tx_padding': self.padding,  # Padding byte for transmitted messages, default is None (no padding)
+                'wftmax': 0,  # Maximum wait frames, default is 0 (no wait frames allowed)
+                'max_frame_size': 4095,  # Maximum frame size that can be received, default is 4095 bytes
+                'can_fd': self.is_fd,  # Use CAN FD, default is False (use CAN 2.0)
+                'bitrate_switch': self.is_fd,  # Use CAN FD bitrate switch, default is False
+                'default_target_address_type': isotp.TargetAddressType.Physical,  # Default address type, Physical (0) or Functional (1)
+                'rate_limit_enable': False,  # Enable rate limiting, default is False
+                'rate_limit_max_bitrate': 10000000,  # Maximum bitrate for rate limiter in bits per second, default is 10,000,000 bps
+                'rate_limit_window_size': 0.2,  # Time window for rate limiting in seconds, default is 0.2 seconds
+                'listen_mode': False,  # Enable listen mode (no flow control), default is False
+                'blocking_send': True,  # Enable blocking send, default is False
+                    }
+            
             
     # CAN UTILS
     # ///////////////////////////////////////////////////////////////
     def start_communication(self):
     # Connect CAN BUS
-        is_connected = False
-        msg = None
         try:
             self.bus = can.interface.Bus(
                 interface=self.interface, 
@@ -187,25 +179,20 @@ class CanManager:
                 tseg2_dbr=self.tseg2_dbr, 
                 output_mode=1
             )
-
-            if self.check_device_connection():                # Connect CAN ISOTP LAYER
-                addr = isotp.Address(isotp.AddressingMode.Normal_11bits, rxid=self.recv_id, txid=self.send_id)
-                self.layer = isotp.TransportLayer(rxfn=self._rxfn, txfn=self._txfn,address=addr, error_handler=self.error_handler, params=self.isotp_params)
-                self.layer.start()
-                is_connected = True
-                msg = None
-            else:
-                is_connected = False
-                msg = f"Please check HW conection"
+            # Connect CAN ISOTP LAYER
+            addr = isotp.Address(isotp.AddressingMode.Normal_11bits, rxid=self.recv_id, txid=self.send_id)
+            self.layer = isotp.TransportLayer(rxfn=self._rxfn, txfn=self._txfn,address=addr, error_handler=self.error_handler, params=self.isotp_params)
+            self.layer.start()
+        
+            
         except KeyError as e:
             self.error_handler.handle_error(f"Configuration key error: {str(e)}")
         except can.CanError as e:
-            is_connected = False
-            msg = f"Please check HW conection"
+            self.error_handler.handle_error(f"CAN interface error: {str(e)}")
         except Exception as e:
             self.error_handler.handle_error(f"Unexpected error during CAN setup: {str(e)}")
         
-        return (is_connected, msg)
+        self.error_handler.log_message("can connected.")
     
     def stop_communication(self):
         try:
@@ -213,11 +200,11 @@ class CanManager:
             if self.layer is not None:
                 self.layer.stop()
             else:
-                pass
+                self.error_handler.log_message("CAN layer was not initialized.")
             if self.bus is not None:
                 self.bus.shutdown()
             else:
-                pass
+                self.error_handler.log_message("CAN bus was not initialized.")
         
         except can.CanError as e:
             self.error_handler.handle_error(f"Error during CAN bus shutdown: {str(e)}")
@@ -225,7 +212,7 @@ class CanManager:
             self.error_handler.handle_error(f"Unexpected error during CAN shutdown: {str(e)}")
 
 
-        return
+        self.error_handler.log_message("can disconnected.")
 
 
     def _get_required_value(self, config_section, key):
@@ -246,27 +233,17 @@ class CanManager:
             return 'vector'
     
     def check_device_connection(self):
-        is_connected = False
-        total_time = 0.5  # 총 타임아웃 시간 (여기서는 0.1초로 설정됨)
-        interval = 0.1   # recv()를 호출할 간격 (0.05초 간격으로 호출)
-        elapsed_time = 0
-
-        try:
-            if self.bus is not None:
-                while elapsed_time < total_time:
-                    msg = self.bus.recv(timeout=interval)
-                    if msg is not None:
-                        is_connected = True
-                        break  # 메시지를 수신하면 루프 종료
-                    elapsed_time += interval  # 경과 시간 업데이트
-
-        except can.CanError as e:
-            self.error_handler.handle_error(f"CAN 통신 에러 발생: {str(e)}")
-        except Exception as e:
-            self.error_handler.handle_error(f"예상치 못한 에러 발생: {str(e)}")
-        finally:
-            return is_connected
-
+        result = subprocess.run(
+            ["powershell", "-Command", "Get-PnpDevice -PresentOnly | Where-Object { $_.InstanceId -match '^USB' } | Select-Object -ExpandProperty Name"],
+            capture_output=True, text=True, check=True
+        )
+        devices = result.stdout.splitlines()
+        is_connectd = False
+        for device in devices:
+            if 'VN1630A' in self.device and device == 'VN1630A':
+                is_connectd = True
+        
+        return is_connectd
 
         
 

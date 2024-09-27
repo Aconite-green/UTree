@@ -94,38 +94,7 @@ class StyleSheets:
         }
     """
 
-    CONNECT_BUTTEN_STYLE_SHEET_ACTIVE = """
-        QPushButton {
-            background-image: url(:/icons/images/icons/cil-equalizer.png);
-            font: 600 12pt "Segoe UI Semibold";
-        }
-        QPushButton:hover {
-            background-color: rgb(27, 29, 35);
-        }
-        QPushButton:pressed {
-            background-color: rgb(27, 29, 35);
-        }
-        QPushButton:checked {
-            background-color: rgb(102, 163, 255);
-        }
-    """
-
-    CONNECT_BUTTEN_STYLE_SHEET_DEACTIVE = """
-        QPushButton {
-            background-image: url(:/icons/images/icons/cil-equalizer.png);
-            font: 600 12pt "Segoe UI Semibold";
-        }
-        QPushButton:hover {
-            background-color: rgb(27, 29, 35);
-        }
-        QPushButton:pressed {
-            background-color: rgb(27, 29, 35);
-        }
-        QPushButton:checked {
-            background-color: transparent;
-        }
-    """
-class UIFunctions:
+class UIFunctions(MainWindow):
     # MAXIMIZE/RESTORE
     # ///////////////////////////////////////////////////////////////
     def maximize_restore(self):
@@ -359,21 +328,6 @@ class UIFunctions:
         result = "background-image: url(:/images/images/images/UTree_1024.png); background-position: center; background-repeat: no-repeat;"
         return result
     
-    def menual_info():
-        result =  "1. Set Configuration of\n" \
-              "   - Project\n" \
-              "   - Project Seed Key file\n" \
-              "   - CAN\n\n" \
-              "2. Click 'Connect'\n\n" \
-              "3. Select 'DID'\n" \
-              "   e.g) EOL_Coding_R/W\n\n" \
-              "4. Select Read or Write\n\n" \
-              "5. If 'Write', set values.\n" \
-              "   If 'Read', no values needed.\n\n" \
-              "6. Click 'Send'\n\n"
-        return result
-
-    
     # ///////////////////////////////////////////////////////////////
     # END - GUI DEFINITIONS
         # QComboBox 드롭다운 자동 열림
@@ -465,7 +419,10 @@ class UIFunctions:
 
         return widget
 
-    def update_log(log_widget, is_ok, error_msg, send_msg, recv_msg, type):
+
+    
+
+    def update_log(log_widget, is_ok, error_msg, send_msg, recv_msg, is_read):
         """
         Update the log in plainTextEdit_log with formatted messages.
         """
@@ -473,10 +430,15 @@ class UIFunctions:
             return '-'.join(re.findall('..', msg.hex().upper()))
         # clear previous log
         log_widget.clear()
+        
+        if is_read:
+            read_or_write =" "
+        else:
+            read_or_write= "Write "
          
         # OK 또는 NG 메시지 출력
         if is_ok:
-            if type == 'read':
+            if is_read:
                 log_widget.appendHtml(f"""
                 <p style="background-color: rgb(33, 37, 43); color: rgb(135, 206, 250); text-align: center; font-size: 16pt; line-height: 1;">
                 -------------------------<br>
@@ -484,7 +446,7 @@ class UIFunctions:
                 -------------------------
                 </p>
                 """)
-            elif type == 'write':
+            else:
                 log_widget.appendHtml(f"""
                 <p style="background-color: rgb(33, 37, 43); color: rgb(135, 206, 250); text-align: center; font-size: 16pt; line-height: 1;">
                 -------------------------<br>
@@ -493,7 +455,7 @@ class UIFunctions:
                 </p>
                 """)
         else:
-            if type == 'read':
+            if is_read:
                 log_widget.appendHtml(f"""
                 <p style="background-color: rgb(33, 37, 43); color: rgb(255, 0, 0); text-align: center; font-size: 16pt; line-height: 1;">
                 -------------------------<br>
@@ -501,7 +463,7 @@ class UIFunctions:
                 -------------------------
                 </p>
                 """)
-            elif type == 'write':
+            else:
                 log_widget.appendHtml(f"""
                 <p style="background-color: rgb(33, 37, 43); color: rgb(255, 0, 0); text-align: center; font-size: 16pt; line-height: 1;">
                 -------------------------<br>
@@ -509,15 +471,7 @@ class UIFunctions:
                 -------------------------
                 </p>
                 """)
-            elif type == 'connection':
-                log_widget.appendHtml(f"""
-                <p style="background-color: rgb(33, 37, 43); color: rgb(255, 0, 0); text-align: center; font-size: 16pt; line-height: 1;">
-                -------------------------<br>
-                |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Connect&nbsp;NG&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
-                -------------------------
-                </p>
-                """)
-        
+
         # Error message 출력
         if error_msg:
             log_widget.appendHtml(f"""
@@ -525,7 +479,7 @@ class UIFunctions:
             """)
         else:
             log_widget.appendHtml(f"""
-                <p style="color: rgb(220, 220, 220); font-size: 12pt;"><b>Error Message</b><br>No Error </p>
+                <p style="color: rgb(220, 220, 220); font-size: 12pt;"><b>Error Message</b><br>{error_msg}</p>
             """)
 
         # Send message 출력

@@ -27,9 +27,20 @@ from widgets import *
 os.environ["QT_FONT_DPI"] = "96" # FIX Problem for High DPI and Scale above 100%
 
 root_dir = os.path.dirname(os.path.abspath(__file__))
-modules_path = os.path.join(root_dir, 'modules')
-if modules_path not in sys.path:
-    sys.path.append(modules_path)
+
+# 추가할 경로들 리스트
+paths = [
+    os.path.join(root_dir, 'modules'),
+    os.path.join(root_dir, 'config_can'),
+    os.path.join(root_dir, 'config_uds'),
+    os.path.join(root_dir, 'config_dll')
+]
+
+# 경로가 sys.path에 없으면 추가
+for path in paths:
+    if path not in sys.path:
+        sys.path.append(path)
+
 
 # SET AS GLOBAL WIDGETS
 # ///////////////////////////////////////////////////////////////
@@ -92,6 +103,12 @@ class MainWindow(QMainWindow):
         self.uds_manager = UdsManager('./config_uds', self.error_handler, self.can_manager)
         self.read_record = False 
         self.record_values = None
+        self.user_sent = False
+        self.error_for_timer = False
+        
+        self.timer = QTimer(self)
+        self.timer.setInterval(1000)
+        self.timer.timeout.connect(self.check_can_communication)
         
 
         # SHOW APP
@@ -100,16 +117,72 @@ class MainWindow(QMainWindow):
         widgets.stackedWidget.setCurrentWidget(widgets.widgets_workspace)
         widgets.groupBox_pannel.setVisible(False)
         self.populateComboBoxes()
+        widgets.plainTextEdit_log.setPlainText(UIFunctions.menual_info())
 
+    # Checking CAN
+    # ///////////////////////////////////////////////////////////////
+    def check_can_communication(self):
+        
+        try:
+            is_ok = self.uds_manager.check_can_device()
+            if is_ok:
+                pass
+            else:
+                # CAN Managemet
+                self.timer.stop()
+                self.can_manager.stop_communication()
+                # For GUI
+                widgets.btn_connect.setChecked(False)
+                error_msg = f"The communication was disconnected"
+                UIFunctions.update_log(widgets.plainTextEdit_log, 
+                                   is_ok, error_msg, None, None, 'connection')
+                
+                widgets.groupBox_pannel.setVisible(False)
+                widgets.stackedWidget.setCurrentWidget(widgets.widgets_workspace)
+                widgets.pagesContainer.setStyleSheet(UIFunctions.show_utree_logo())
+                 # ComboBox 활성화 및 스타일 복구
+                widgets.comboBox_uds.setEnabled(True)
+                widgets.comboBox_can.setEnabled(True)
+                widgets.comboBox_uds.setStyleSheet("""
+                    QComboBox {
+                        color: rgb(221, 221, 221);
+                        background-color: rgb(33, 37, 43);
+                        border: 1px solid rgb(220, 220, 220);
+                    }
+                    QComboBox QAbstractItemView {
+                        color: rgb(135, 206, 250);
+                        background-color: rgb(33, 37, 43);
+                    }
+                """)
+                widgets.comboBox_can.setStyleSheet("""
+                    QComboBox {
+                        color: rgb(221, 221, 221);
+                        background-color: rgb(33, 37, 43);
+                        border: 1px solid rgb(220, 220, 220);
+                    }
+                    QComboBox QAbstractItemView {
+                        color: rgb(135, 206, 250);
+                        background-color: rgb(33, 37, 43);
+                    }
+                """)
+                widgets.btn_connect.setText("Connect")
+                widgets.lineEdit_search.setEnabled(False)
+        except Exception as e:
+            self.error_handler.handle_error(f"CAN 통신 체크 중 에러 발생: {str(e)}")
+    
     # BUTTONS CLICK
     # ///////////////////////////////////////////////////////////////
     def handle_connect(self):
+        current_text = widgets.btn_connect.text()
         
-        if not widgets.btn_connect.isChecked():
-            # CHECK 해제 시: CAN 통신 중지
+        if current_text == "Connected":
+            # CHECK 해제 시: CAN 통신 중지 로직
             try:
                 if hasattr(self, 'can_manager'):
+                    self.timer.stop()
                     self.error_handler.clear_log()
+                    widgets.plainTextEdit_log.setPlainText(UIFunctions.menual_info())
+                    
                     self.can_manager.stop_communication()
 
                     widgets.groupBox_pannel.setVisible(False)
@@ -142,71 +215,91 @@ class MainWindow(QMainWindow):
                             background-color: rgb(33, 37, 43);
                         }
                     """)
-
+                    widgets.btn_connect.setText("Connect")
+                    widgets.btn_connect.setStyleSheet(StyleSheets.CONNECT_BUTTEN_STYLE_SHEET_DEACTIVE)
                     widgets.lineEdit_search.setEnabled(False)
             except Exception as e:
                 self.error_handler.handle_error(str(e))
         else:
             # CHECK 시: CAN 통신 시작
             try:
+                
                 # CAN MANAGEMENT
-                self.error_handler.clear_log()
                 selected_can_file = widgets.comboBox_can.currentText()               
                 self.can_manager.get_selected_can_yml(selected_can_file)
-                self.can_manager.setup_can()
-                self.can_manager.start_communication()
+                is_ok, error_msg = self.can_manager.setup_can()
+                if not is_ok:
+                    UIFunctions.update_log(widgets.plainTextEdit_log, 
+                                       is_ok, error_msg, None, None, 'connection')
+                is_ok, error_msg = self.can_manager.start_communication()
+                if not is_ok:
+                    UIFunctions.update_log(widgets.plainTextEdit_log, 
+                                       is_ok, error_msg, None, None, 'connection')
+                if is_ok:
+                    # UDS MANAGEMENT
+                    selected_uds_file = widgets.comboBox_uds.currentText()
+                    self.uds_manager.load_module_classes(selected_uds_file)
 
-                # UDS MANAGEMENT
-                selected_uds_file = widgets.comboBox_uds.currentText()
-                self.uds_manager.load_module_classes(selected_uds_file)
+                    did_names = self.uds_manager.get_did_names()
 
-                did_names = self.uds_manager.get_did_names()
+                    widgets.comboBox_did.clear()
+                    widgets.comboBox_did.addItems(did_names)
+                    self.init_search_completer()
 
-                widgets.comboBox_did.clear()
-                widgets.comboBox_did.addItems(did_names)
-                self.init_search_completer()
+                    # GUI MANAGEMENT
+                    widgets.btn_connect.setText("Connected")
+                    widgets.btn_connect.setStyleSheet(StyleSheets.CONNECT_BUTTEN_STYLE_SHEET_ACTIVE)
+                    widgets.stackedWidget.setCurrentWidget(widgets.widgets_workspace)
+                    widgets.groupBox_pannel.setVisible(True)
+                    widgets.pagesContainer.setStyleSheet(UIFunctions.erase_background())
 
-                # GUI MANAGEMENT
-                widgets.stackedWidget.setCurrentWidget(widgets.widgets_workspace)
-                widgets.groupBox_pannel.setVisible(True)
-                widgets.pagesContainer.setStyleSheet(UIFunctions.erase_background())
-                 # ComboBox 비활성화 및 스타일 변경
-                widgets.comboBox_uds.setEnabled(False)
-                widgets.comboBox_can.setEnabled(False)
+                    widgets.comboBox_uds.setEnabled(False)
+                    widgets.comboBox_can.setEnabled(False)
 
-                widgets.comboBox_uds.setStyleSheet("""
-                    QComboBox {
-                        color: rgb(135, 206, 250);
-                        background-color: rgb(33, 37, 43);
-                       
-                    }
-                    QComboBox QAbstractItemView {
-                        color: rgb(135, 206, 250);
-                        background-color: rgb(33, 37, 43);
-                    }
-                """)
+                    widgets.comboBox_uds.setStyleSheet("""
+                        QComboBox {
+                            color: rgb(135, 206, 250);
+                            background-color: rgb(33, 37, 43);
 
-                widgets.comboBox_can.setStyleSheet("""
-                    QComboBox {
-                        color: rgb(135, 206, 250);
-                        background-color: rgb(33, 37, 43);
-                       
-                    }
-                    QComboBox QAbstractItemView {
-                        color: rgb(135, 206, 250);
-                        background-color: rgb(33, 37, 43);
-                    }
-                """)
+                        }
+                        QComboBox QAbstractItemView {
+                            color: rgb(135, 206, 250);
+                            background-color: rgb(33, 37, 43);
+                        }
+                    """)
+
+                    widgets.comboBox_can.setStyleSheet("""
+                        QComboBox {
+                            color: rgb(135, 206, 250);
+                            background-color: rgb(33, 37, 43);
+
+                        }
+                        QComboBox QAbstractItemView {
+                            color: rgb(135, 206, 250);
+                            background-color: rgb(33, 37, 43);
+                        }
+                    """)
+                    
+                    self.error_handler.clear_log()
+                    
+                    # Timer start
+                    self.timer.start()
+                    if not self.user_sent:
+                        widgets.plainTextEdit_log.setPlainText(UIFunctions.menual_info())
+                else:
+                    self.can_manager.stop_communication()
+                    widgets.btn_connect.setChecked(False)
             except Exception as e:
                 self.error_handler.handle_error(str(e))
     
     def handle_send(self):
         if widgets.radioButton_read.isChecked() or widgets.radioButton_write.isChecked():
             is_read = widgets.radioButton_read.isChecked()
+            self.user_sent = True
             if is_read:
                 is_ok, send_data, recv_data, error_msg=self.uds_manager.process_uds_cmd_read(self.record_values)
                 UIFunctions.update_log(widgets.plainTextEdit_log, 
-                                       is_ok, error_msg, send_data, recv_data, is_read)
+                                       is_ok, error_msg, send_data, recv_data, 'read')
                 
                 if is_ok:
                     self.populate_grid(self.record_values, is_read=is_read)
@@ -218,7 +311,7 @@ class MainWindow(QMainWindow):
                 if is_valid:
                     is_ok, send_data, recv_data, error_msg = self.uds_manager.process_uds_cmd_write(self.record_values)
                     UIFunctions.update_log(widgets.plainTextEdit_log, 
-                                       is_ok, error_msg, send_data, recv_data, is_read)
+                                       is_ok, error_msg, send_data, recv_data, 'write')
                     
                     if is_ok:
                         self.populate_grid(self.record_values, is_read=is_read)
@@ -228,7 +321,7 @@ class MainWindow(QMainWindow):
                 else:
                     is_ok, send_data, recv_data, error_msg = is_valid, None, None, msg
                     UIFunctions.update_log(widgets.plainTextEdit_log, 
-                                       is_ok, error_msg, send_data, recv_data, is_read)               
+                                       is_ok, error_msg, send_data, recv_data, 'write')               
         else:
             self.error_handler.log_message("please select Write or Read Button")
         
@@ -254,9 +347,9 @@ class MainWindow(QMainWindow):
                 self.uds_manager.make_uds_cmd(is_read=True, record_values=self.record_values)
                 data = self.uds_manager.get_uds_cmd()
                 widgets.lineEdit_cancmd.setText(data)
-                self.error_handler.clear_log()
+                # self.error_handler.clear_log()
         else:
-            print("not set")
+            pass
     
     def handle_write(self, checked):
 
@@ -282,7 +375,7 @@ class MainWindow(QMainWindow):
                 self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values)
                 data = self.uds_manager.get_uds_cmd()
                 widgets.lineEdit_cancmd.setText(data)
-                self.error_handler.clear_log()
+                # self.error_handler.clear_log()
 
     def populate_grid(self, record_values, is_read):
         # 기존 버튼들 삭제
@@ -335,8 +428,6 @@ class MainWindow(QMainWindow):
                 widget = UIFunctions.create_widget(col_type, options, is_read, current_val)
 
                 if widget and not is_read:
-                    
-
                     if col_type == 'combobox':
                         widget.currentIndexChanged.connect(
                             lambda idx, row=row_index, col=col_key, col_type=col_type, widget=widget: self.combobox_changed(idx, row, col, col_type, widget)
@@ -373,7 +464,8 @@ class MainWindow(QMainWindow):
                     col_start_index += col_span
 
     def handle_did_change(self):
-        
+        if self.user_sent:
+            self.error_handler.clear_log()
         self.read_record = False
         widgets.comboBox_did.setStyleSheet("""
                         QComboBox {
@@ -466,7 +558,8 @@ class MainWindow(QMainWindow):
         self.apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, value, col_type), col_type)
         self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values)
         widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
-        self.error_handler.clear_log()
+        if self.user_sent:
+            self.error_handler.clear_log()
 
     def line_edit_changed(self, text, row, col, col_type, widget):
         self.apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, text, col_type), col_type)
@@ -475,7 +568,8 @@ class MainWindow(QMainWindow):
         )
         self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values)
         widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
-        self.error_handler.clear_log()
+        if self.user_sent:
+            self.error_handler.clear_log()
 
     def button_clicked(self, checked, row, col, col_type, widget):
         value = 0 if checked else 1
@@ -486,7 +580,8 @@ class MainWindow(QMainWindow):
         )
         self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values)
         widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
-        self.error_handler.clear_log()
+        if self.user_sent:
+            self.error_handler.clear_log()
 
     def calendar_changed(self, date, row, col, col_type, widget):
         date_str = date.toString("yyyyMMdd")
@@ -496,7 +591,8 @@ class MainWindow(QMainWindow):
         )
         self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values)
         widgets.lineEdit_cancmd.setText(self.uds_manager.get_uds_cmd())
-        self.error_handler.clear_log()
+        if self.user_sent:
+            self.error_handler.clear_log()
 
     # INIT SEARCH FUNCTION
     # ///////////////////////////////////////////////////////////////
@@ -522,9 +618,8 @@ class MainWindow(QMainWindow):
         widgets.lineEdit_search.setCompleter(self.completer)
 
         # lineEdit_search에서 입력된 검색어 처리
-        widgets.lineEdit_search.textChanged.connect(self.handle_search)
+        self.completer.activated.connect(self.handle_search)
 
-# search_data 목록 생성 함수
     def get_search_data(self):
         search_data = {}
 
@@ -545,7 +640,6 @@ class MainWindow(QMainWindow):
 
         return search_data
 
-    # 검색어 처리 함수
     def handle_search(self):
         search_text = widgets.lineEdit_search.text().strip()
 
@@ -631,7 +725,10 @@ class MainWindow(QMainWindow):
             if hasattr(self, 'uds_manager'):
                 self.uds_manager.shutdown()  # UdsManager 자원 해제
 
-            self.error_handler.log_message("Application resources were successfully cleaned up.")
+            for path in paths:
+                if path in sys.path:
+                    sys.path.remove(path)
+
         except Exception as e:
             self.error_handler.handle_error(f"Error during application shutdown: {str(e)}")
         
@@ -642,3 +739,5 @@ if __name__ == "__main__":
     app.setWindowIcon(QIcon("UTree_80.ico"))
     window = MainWindow()
     sys.exit(app.exec())
+
+    
