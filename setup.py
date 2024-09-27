@@ -22,7 +22,7 @@ setup(
     options={
         'build_exe': {
             'build_exe': 'UTree',
-            'include_files': ['config_can/', 'config_uds/','modules/'],
+            'include_files': ['config_can/', 'config_uds/','modules/', 'config_dll/'],
             'include_msvcr': False   # MSVC 런타임 포함
         }
     },

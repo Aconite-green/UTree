@@ -4,7 +4,7 @@ import os
 import importlib
 import sys
 from . can_manager import *
-from . my_server import *
+from .server32 import *
 from msl.loadlib import Client64, Server32
 import atexit
 import threading
@@ -12,18 +12,27 @@ import threading
 class MyClient(Client64):
     def __init__(self):
         try:
-            super(MyClient, self).__init__(module32='my_server')
+            super(MyClient, self).__init__(module32='server32')
+            self.dll_name = None
         except Exception as e:
             print(f"An error occurred in MyClient initialization: {e}")
             raise
 
     def generate_key(self, seed):
-        return self.request32('generate_key', seed)
+        key, current_dll, msg = self.request32('generate_key', seed, self.dll_name)
+        if msg:
+            print(msg)
+        else:
+            return key, current_dll 
+    
+    def set_dll(self, dll_name):
+        self.dll_name = dll_name
 
 
 class UdsManager:
-    def __init__(self ,uds_directory, error_handler, can_manager):
+    def __init__(self ,uds_directory, dll_directory,error_handler, can_manager):
         self.uds_directory = os.path.abspath(uds_directory)
+        self.dll_directory = os.path.abspath(dll_directory)
         self.error_handler = error_handler
         self.can_manager = can_manager
         self.did_map = None
@@ -56,6 +65,20 @@ class UdsManager:
         if not self.initialized:
             self.server_thread.join()  # 초기화가 끝날 때까지 기다림
         return self.client.generate_key(seed)
+    
+    def get_dll_file_names(self):
+        try:
+            dll_files = [f for f in os.listdir(self.dll_directory)]
+            return [os.path.splitext(filename)[0] for filename in dll_files]
+        except Exception as e:
+            self.error_handler.handle_error(f"Error getting UDS file names: {str(e)}")
+            return []
+    
+    def set_dll(self, dll_name):
+        if self.client:
+            self.client.set_dll(dll_name)
+        
+        return
     # DID Utility
     # ///////////////////////////////////////////////////////////////
     def check_can_device(self):
@@ -84,6 +107,17 @@ class UdsManager:
                 for col_key, col_info in data_info['coloms'].items():
                     read_val = col_info['r_val']  # 읽기 영역 값
                     col_info['w_val'] = read_val  # 쓰기 영역에 복사
+        else:
+            self.error_handler.handle_error("No current_instance available to copy values.")
+    
+    def init_write_val(self):
+        if self.current_instance:
+            for data_key, data_info in self.current_instance.record_values.items():
+                for col_key, col_info in data_info['coloms'].items():
+                    if col_info['col_type'] == 'button':
+                        col_info['w_val'] = 0x01
+                    elif col_info['col_type'] == 'combobox':
+                        col_info['w_val'] = 0x01
         else:
             self.error_handler.handle_error("No current_instance available to copy values.")
 
@@ -115,7 +149,7 @@ class UdsManager:
                 
                 record_values[record_key]['coloms'][col_key]['w_val'] = value[0]
 
-                print(record_values[record_key]['coloms'][col_key]['w_val'])
+                # print(record_values[record_key]['coloms'][col_key]['w_val'])
             except KeyError as e:
                 self.error_handler.handle_error(f"Error updating record value: {str(e)}")
         else:
@@ -184,7 +218,7 @@ class UdsManager:
 
         # generate key value using the 32-bit server
         response_seed_bytes = bytes.fromhex(response_seed.hex())
-        key = self.generate_key_with_background_init(response_seed_bytes)
+        key, name = self.generate_key_with_background_init(response_seed_bytes)
         send_key = bytearray([0x27, 0x12])
         send_key.extend(key)
         self.can_manager.send_message(send_key)
@@ -317,7 +351,7 @@ class UdsManager:
 
   
     def get_uds_cmd(self):
-        print(self.process_data.hex().upper())
+        # print(self.process_data.hex().upper())
         data = [f'{b:02X}' for b in self.process_data]
         formatted_data = '-'.join(data)
         return formatted_data

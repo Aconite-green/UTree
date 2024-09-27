@@ -125,6 +125,29 @@ class StyleSheets:
             background-color: transparent;
         }
     """
+
+    CONFIGUATION_STYLE_SHEET_ACTIVE = """
+                        QComboBox {
+                            color: rgb(135, 206, 250);
+                            background-color: rgb(33, 37, 43);
+
+                        }
+                        QComboBox QAbstractItemView {
+                            color: rgb(135, 206, 250);
+                            background-color: rgb(33, 37, 43);
+                        }
+                    """
+    CONFIGUATION_STYLE_SHEET_DEACTIVE = """
+                        QComboBox {
+                            color: rgb(221, 221, 221);
+                            background-color: rgb(33, 37, 43);
+                            border: 1px solid rgb(220, 220, 220);
+                        }
+                        QComboBox QAbstractItemView {
+                            color: rgb(135, 206, 250);
+                            background-color: rgb(33, 37, 43);
+                        }
+                    """
 class UIFunctions:
     # MAXIMIZE/RESTORE
     # ///////////////////////////////////////////////////////////////

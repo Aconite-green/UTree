@@ -28,7 +28,6 @@ os.environ["QT_FONT_DPI"] = "96" # FIX Problem for High DPI and Scale above 100%
 
 root_dir = os.path.dirname(os.path.abspath(__file__))
 
-# 추가할 경로들 리스트
 paths = [
     os.path.join(root_dir, 'modules'),
     os.path.join(root_dir, 'config_can'),
@@ -36,7 +35,6 @@ paths = [
     os.path.join(root_dir, 'config_dll')
 ]
 
-# 경로가 sys.path에 없으면 추가
 for path in paths:
     if path not in sys.path:
         sys.path.append(path)
@@ -100,12 +98,13 @@ class MainWindow(QMainWindow):
         # Initialize Modules
         self.error_handler = ErrorHandler(log_widget=widgets.plainTextEdit_log)
         self.can_manager = CanManager('./config_can', self.error_handler)
-        self.uds_manager = UdsManager('./config_uds', self.error_handler, self.can_manager)
+        self.uds_manager = UdsManager('./config_uds', "./config_dll",self.error_handler, self.can_manager)
         self.read_record = False 
         self.record_values = None
         self.user_sent = False
         self.error_for_timer = False
         
+        # Timer
         self.timer = QTimer(self)
         self.timer.setInterval(1000)
         self.timer.timeout.connect(self.check_can_communication)
@@ -119,7 +118,7 @@ class MainWindow(QMainWindow):
         self.populateComboBoxes()
         widgets.plainTextEdit_log.setPlainText(UIFunctions.menual_info())
 
-    # Checking CAN
+    # CAN Mangement
     # ///////////////////////////////////////////////////////////////
     def check_can_communication(self):
         
@@ -143,28 +142,10 @@ class MainWindow(QMainWindow):
                  # ComboBox 활성화 및 스타일 복구
                 widgets.comboBox_uds.setEnabled(True)
                 widgets.comboBox_can.setEnabled(True)
-                widgets.comboBox_uds.setStyleSheet("""
-                    QComboBox {
-                        color: rgb(221, 221, 221);
-                        background-color: rgb(33, 37, 43);
-                        border: 1px solid rgb(220, 220, 220);
-                    }
-                    QComboBox QAbstractItemView {
-                        color: rgb(135, 206, 250);
-                        background-color: rgb(33, 37, 43);
-                    }
-                """)
-                widgets.comboBox_can.setStyleSheet("""
-                    QComboBox {
-                        color: rgb(221, 221, 221);
-                        background-color: rgb(33, 37, 43);
-                        border: 1px solid rgb(220, 220, 220);
-                    }
-                    QComboBox QAbstractItemView {
-                        color: rgb(135, 206, 250);
-                        background-color: rgb(33, 37, 43);
-                    }
-                """)
+                widgets.comboBox_dll.setEnabled(True)
+                widgets.comboBox_uds.setStyleSheet(StyleSheets.CONFIGUATION_STYLE_SHEET_DEACTIVE)
+                widgets.comboBox_can.setStyleSheet(StyleSheets.CONFIGUATION_STYLE_SHEET_DEACTIVE)
+                widgets.comboBox_dll.setStyleSheet(StyleSheets.CONFIGUATION_STYLE_SHEET_DEACTIVE)
                 widgets.btn_connect.setText("Connect")
                 widgets.lineEdit_search.setEnabled(False)
         except Exception as e:
@@ -175,58 +156,55 @@ class MainWindow(QMainWindow):
     def handle_connect(self):
         current_text = widgets.btn_connect.text()
         
-        if current_text == "Connected":
-            # CHECK 해제 시: CAN 통신 중지 로직
+        if current_text == "Connected":  # CAN STOP
             try:
                 if hasattr(self, 'can_manager'):
-                    self.timer.stop()
-                    self.error_handler.clear_log()
-                    widgets.plainTextEdit_log.setPlainText(UIFunctions.menual_info())
                     
+                    # UDS MANAGEMENT
+                    # ///////////////////////////////////////////////////////////////
+                    self.timer.stop()
                     self.can_manager.stop_communication()
 
+                    # GUI MANAGEMENT
+                    # ///////////////////////////////////////////////////////////////
+
+                    # Pannel
                     widgets.groupBox_pannel.setVisible(False)
                     widgets.stackedWidget.setCurrentWidget(widgets.widgets_workspace)
                     widgets.pagesContainer.setStyleSheet(UIFunctions.show_utree_logo())
-                     # ComboBox 활성화 및 스타일 복구
-                    widgets.comboBox_uds.setEnabled(True)
-                    widgets.comboBox_can.setEnabled(True)
-
-                    widgets.comboBox_uds.setStyleSheet("""
-                        QComboBox {
-                            color: rgb(221, 221, 221);
-                            background-color: rgb(33, 37, 43);
-                            border: 1px solid rgb(220, 220, 220);
-                        }
-                        QComboBox QAbstractItemView {
-                            color: rgb(135, 206, 250);
-                            background-color: rgb(33, 37, 43);
-                        }
-                    """)
-
-                    widgets.comboBox_can.setStyleSheet("""
-                        QComboBox {
-                            color: rgb(221, 221, 221);
-                            background-color: rgb(33, 37, 43);
-                            border: 1px solid rgb(220, 220, 220);
-                        }
-                        QComboBox QAbstractItemView {
-                            color: rgb(135, 206, 250);
-                            background-color: rgb(33, 37, 43);
-                        }
-                    """)
+                    
+                    # Connect button
                     widgets.btn_connect.setText("Connect")
                     widgets.btn_connect.setStyleSheet(StyleSheets.CONNECT_BUTTEN_STYLE_SHEET_DEACTIVE)
+
+                    # Configuation Combobox
+                    widgets.comboBox_uds.setEnabled(True)
+                    widgets.comboBox_can.setEnabled(True)
+                    widgets.comboBox_dll.setEnabled(True)
+
+                    widgets.comboBox_uds.setStyleSheet(StyleSheets.CONFIGUATION_STYLE_SHEET_DEACTIVE)
+                    widgets.comboBox_can.setStyleSheet(StyleSheets.CONFIGUATION_STYLE_SHEET_DEACTIVE)
+                    widgets.comboBox_dll.setStyleSheet(StyleSheets.CONFIGUATION_STYLE_SHEET_DEACTIVE)
+                    
+                    # Report Log Text Edit
+                    self.error_handler.clear_log()
+                    widgets.plainTextEdit_log.setPlainText(UIFunctions.menual_info())
+                    
+                    # Search Line Edit
                     widgets.lineEdit_search.setEnabled(False)
+
             except Exception as e:
                 self.error_handler.handle_error(str(e))
-        else:
-            # CHECK 시: CAN 통신 시작
+        else:  # CAN START
             try:
                 
-                # CAN MANAGEMENT
+                # UDS MANAGEMENT
+                # ///////////////////////////////////////////////////////////////
+
+                # CAN
                 selected_can_file = widgets.comboBox_can.currentText()               
                 self.can_manager.get_selected_can_yml(selected_can_file)
+                
                 is_ok, error_msg = self.can_manager.setup_can()
                 if not is_ok:
                     UIFunctions.update_log(widgets.plainTextEdit_log, 
@@ -235,60 +213,64 @@ class MainWindow(QMainWindow):
                 if not is_ok:
                     UIFunctions.update_log(widgets.plainTextEdit_log, 
                                        is_ok, error_msg, None, None, 'connection')
+                
                 if is_ok:
+                    
                     # UDS MANAGEMENT
-                    selected_uds_file = widgets.comboBox_uds.currentText()
-                    self.uds_manager.load_module_classes(selected_uds_file)
-
-                    did_names = self.uds_manager.get_did_names()
-
-                    widgets.comboBox_did.clear()
-                    widgets.comboBox_did.addItems(did_names)
-                    self.init_search_completer()
+                    # ///////////////////////////////////////////////////////////////
+                    
+                    # Timer start
+                    self.timer.start()
+                    
+                    # ASK Settings
+                    selected_dll_file = widgets.comboBox_dll.currentText()
+                    self.uds_manager.set_dll(selected_dll_file)
 
                     # GUI MANAGEMENT
-                    widgets.btn_connect.setText("Connected")
-                    widgets.btn_connect.setStyleSheet(StyleSheets.CONNECT_BUTTEN_STYLE_SHEET_ACTIVE)
+                    # ///////////////////////////////////////////////////////////////
+                    
+                    # Pannel
                     widgets.stackedWidget.setCurrentWidget(widgets.widgets_workspace)
                     widgets.groupBox_pannel.setVisible(True)
                     widgets.pagesContainer.setStyleSheet(UIFunctions.erase_background())
 
+                    # Connect button
+                    widgets.btn_connect.setText("Connected")
+                    widgets.btn_connect.setStyleSheet(StyleSheets.CONNECT_BUTTEN_STYLE_SHEET_ACTIVE)
+                    
+                    # Configuation Combobox
                     widgets.comboBox_uds.setEnabled(False)
                     widgets.comboBox_can.setEnabled(False)
+                    widgets.comboBox_dll.setEnabled(False)
 
-                    widgets.comboBox_uds.setStyleSheet("""
-                        QComboBox {
-                            color: rgb(135, 206, 250);
-                            background-color: rgb(33, 37, 43);
+                    widgets.comboBox_uds.setStyleSheet(StyleSheets.CONFIGUATION_STYLE_SHEET_ACTIVE)
+                    widgets.comboBox_can.setStyleSheet(StyleSheets.CONFIGUATION_STYLE_SHEET_ACTIVE)
+                    widgets.comboBox_dll.setStyleSheet(StyleSheets.CONFIGUATION_STYLE_SHEET_ACTIVE)
 
-                        }
-                        QComboBox QAbstractItemView {
-                            color: rgb(135, 206, 250);
-                            background-color: rgb(33, 37, 43);
-                        }
-                    """)
-
-                    widgets.comboBox_can.setStyleSheet("""
-                        QComboBox {
-                            color: rgb(135, 206, 250);
-                            background-color: rgb(33, 37, 43);
-
-                        }
-                        QComboBox QAbstractItemView {
-                            color: rgb(135, 206, 250);
-                            background-color: rgb(33, 37, 43);
-                        }
-                    """)
-                    
+                    # Report Log Text Edit
                     self.error_handler.clear_log()
-                    
-                    # Timer start
-                    self.timer.start()
                     if not self.user_sent:
                         widgets.plainTextEdit_log.setPlainText(UIFunctions.menual_info())
-                else:
+
+                    # DID Combobox
+                    selected_uds_file = widgets.comboBox_uds.currentText()
+                    self.uds_manager.load_module_classes(selected_uds_file)
+                    did_names = self.uds_manager.get_did_names()
+                    widgets.comboBox_did.clear()
+                    widgets.comboBox_did.addItems(did_names)
+
+                    
+                    # Search Line Edit
+                    self.init_search_completer()
+
+                    # Init DID
+                    self.uds_manager.select_did(did_names[0])
+
+                else: # CAN Error State 
                     self.can_manager.stop_communication()
                     widgets.btn_connect.setChecked(False)
+            
+            
             except Exception as e:
                 self.error_handler.handle_error(str(e))
     
@@ -331,52 +313,102 @@ class MainWindow(QMainWindow):
             selected_did = widgets.comboBox_did.currentText()
             self.uds_manager.select_did(selected_did)
             self.record_values = self.uds_manager.get_record_values()
-            widgets.comboBox_did.setStyleSheet("""
-                QComboBox {
-                    color: rgb(135, 206, 250);
-                    background-color: rgb(33, 37, 43);
-                }
-                QComboBox QAbstractItemView {
-                    color: rgb(135, 206, 250);
-                    background-color: rgb(33, 37, 43);
-                }
-            """)
+            widgets.comboBox_did.setStyleSheet(StyleSheets.CONFIGUATION_STYLE_SHEET_ACTIVE)
             if self.record_values is not None:
                 self.uds_manager.auto_set()
                 self.populate_grid(self.record_values, is_read=True)
                 self.uds_manager.make_uds_cmd(is_read=True, record_values=self.record_values)
                 data = self.uds_manager.get_uds_cmd()
                 widgets.lineEdit_cancmd.setText(data)
-                # self.error_handler.clear_log()
+                
         else:
             pass
     
     def handle_write(self, checked):
 
         if self.read_record:
-                self.uds_manager.copy_read_to_write()
+            self.uds_manager.copy_read_to_write()
         else:
-            pass  
-
+            self.uds_manager.init_write_val()  
+        self.record_values = self.uds_manager.get_record_values()
         if checked:
-            widgets.comboBox_did.setStyleSheet("""
-                                    QComboBox {
-                                        color: rgb(135, 206, 250);
-                                        background-color: rgb(33, 37, 43);
-                                    }
-                                    QComboBox QAbstractItemView {
-                                        color: rgb(135, 206, 250);
-                                        background-color: rgb(33, 37, 43);
-                                    }
-                                """)
+            widgets.comboBox_did.setStyleSheet(StyleSheets.CONFIGUATION_STYLE_SHEET_ACTIVE)
             if self.record_values is not None:
                 self.uds_manager.auto_set()
                 self.populate_grid(self.record_values, is_read=False)
                 self.uds_manager.make_uds_cmd(is_read=False, record_values=self.record_values)
                 data = self.uds_manager.get_uds_cmd()
                 widgets.lineEdit_cancmd.setText(data)
-                # self.error_handler.clear_log()
+               
 
+    # COMBOBOX
+    # ///////////////////////////////////////////////////////////////
+    def handle_did_change(self):
+        if self.user_sent:
+            self.error_handler.clear_log()
+        self.read_record = False
+        widgets.comboBox_did.setStyleSheet(StyleSheets.CONFIGUATION_STYLE_SHEET_DEACTIVE)
+        # 라디오 버튼의 autoExclusive 속성 비활성화
+        widgets.radioButton_read.setAutoExclusive(False)
+        widgets.radioButton_write.setAutoExclusive(False)
+
+        # 라디오 버튼 초기화
+        widgets.radioButton_read.setChecked(False)
+        widgets.radioButton_write.setChecked(False)
+
+        selected_did = widgets.comboBox_did.currentText()
+        self.uds_manager.select_did(selected_did)
+        self.record_values = self.uds_manager.get_record_values()
+
+        if 'r' not in self.uds_manager.get_method():
+            widgets.radioButton_read.setEnabled(False)
+        else:
+            widgets.radioButton_read.setEnabled(True)
+        
+        if 'w' not in self.uds_manager.get_method():
+            widgets.radioButton_write.setEnabled(False)
+        else:
+            widgets.radioButton_write.setEnabled(True)
+
+        widgets.radioButton_read.setAutoExclusive(True)
+        widgets.radioButton_write.setAutoExclusive(True)
+
+        # 패널 지우기
+        while widgets.gridLayout_pannel_main.count():
+            child = widgets.gridLayout_pannel_main.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
+        widgets.lineEdit_cancmd.clear()
+        method = self.uds_manager.get_did_method()
+        if len(method) == 2: # both r,w
+            pass
+        else:
+            if 'r' in method:
+                widgets.radioButton_read.click()
+                pass
+            else:
+                widgets.radioButton_write.click()
+                pass
+    
+    def populateComboBoxes(self):
+        self.can_manager.load_yml_files()
+        
+        # Populate comboBox_can with CAN YML file names
+        can_file_names = self.can_manager.get_can_file_names()
+        widgets.comboBox_can.clear()
+        widgets.comboBox_can.addItems(can_file_names)
+
+        # 필요에 따라 UDS 관련 comboBox도 추가 가능
+        uds_file_names = self.uds_manager.get_uds_file_names()
+        widgets.comboBox_uds.clear()
+        widgets.comboBox_uds.addItems(uds_file_names)
+
+        dll_file_names = self.uds_manager.get_dll_file_names()
+        widgets.comboBox_dll.clear()
+        widgets.comboBox_dll.addItems(dll_file_names)
+    
+    # PANNEL
+    # ///////////////////////////////////////////////////////////////
     def populate_grid(self, record_values, is_read):
         # 기존 버튼들 삭제
         while widgets.gridLayout_pannel_main.count():
@@ -463,71 +495,6 @@ class MainWindow(QMainWindow):
                     widgets.gridLayout_pannel_main.addWidget(container_widget, row_index, col_start_index, 1, col_span)
                     col_start_index += col_span
 
-    def handle_did_change(self):
-        if self.user_sent:
-            self.error_handler.clear_log()
-        self.read_record = False
-        widgets.comboBox_did.setStyleSheet("""
-                        QComboBox {
-                            color: rgb(221, 221, 221);
-                            background-color: rgb(33, 37, 43);
-                            border: 1px solid rgb(220, 220, 220);
-                        }
-                        QComboBox QAbstractItemView {
-                            color: rgb(135, 206, 250);
-                            background-color: rgb(33, 37, 43);
-                        }
-                    """)
-        # 라디오 버튼의 autoExclusive 속성 비활성화
-        widgets.radioButton_read.setAutoExclusive(False)
-        widgets.radioButton_write.setAutoExclusive(False)
-
-        # 라디오 버튼 초기화
-        widgets.radioButton_read.setChecked(False)
-        widgets.radioButton_write.setChecked(False)
-
-        selected_did = widgets.comboBox_did.currentText()
-        self.uds_manager.select_did(selected_did)
-        self.record_values = self.uds_manager.get_record_values()
-
-        if 'r' not in self.uds_manager.get_method():
-            widgets.radioButton_read.setEnabled(False)
-        else:
-            widgets.radioButton_read.setEnabled(True)
-        
-        if 'w' not in self.uds_manager.get_method():
-            widgets.radioButton_write.setEnabled(False)
-        else:
-            widgets.radioButton_write.setEnabled(True)
-
-        widgets.radioButton_read.setAutoExclusive(True)
-        widgets.radioButton_write.setAutoExclusive(True)
-
-        # 패널 지우기
-        while widgets.gridLayout_pannel_main.count():
-            child = widgets.gridLayout_pannel_main.takeAt(0)
-            if child.widget():
-                child.widget().deleteLater()
-        widgets.lineEdit_cancmd.clear()
-        method = self.uds_manager.get_did_method()
-        if len(method) == 2: # both r,w
-            pass
-        else:
-            if 'r' in method:
-                widgets.radioButton_read.click()
-                pass
-            else:
-                widgets.radioButton_write.click()
-                pass
-    
-    def print_record_values(self, record_values, is_read):
-        for row_key, data_info in record_values.items():
-            print(f"Row: {row_key}")
-            for col_key, col_info in data_info['coloms'].items():
-                current_val = col_info['current_val'][1] if is_read else col_info['current_val'][2]
-                print(f"  Column: {col_key} | Current Value: {current_val}")
-            print()  # 행 간에 빈 줄 추가
-    
     def apply_styles(self, widget, val, col_type):
                         new_value, read_value = val[0], val[1]
                         print(f"input : {new_value}, read_val : {read_value}")
@@ -594,7 +561,7 @@ class MainWindow(QMainWindow):
         if self.user_sent:
             self.error_handler.clear_log()
 
-    # INIT SEARCH FUNCTION
+    # SEARCH Line Edit
     # ///////////////////////////////////////////////////////////////
     def init_search_completer(self):
         # 검색 데이터 준비: did_map의 클래스 이름과 각 클래스의 record_values 키 및 coloms 키 추가
@@ -681,21 +648,6 @@ class MainWindow(QMainWindow):
             # 해당 DID가 없을 때 처리
             widgets.lineEdit_search.setCompleter(QCompleter(["Cannot find DID"], self))
 
-    # INIT CONFIG COMBOBOX
-    # ///////////////////////////////////////////////////////////////
-    def populateComboBoxes(self):
-        self.can_manager.load_yml_files()
-        
-        # Populate comboBox_can with CAN YML file names
-        can_file_names = self.can_manager.get_can_file_names()
-        widgets.comboBox_can.clear()
-        widgets.comboBox_can.addItems(can_file_names)
-
-        # 필요에 따라 UDS 관련 comboBox도 추가 가능
-        uds_file_names = self.uds_manager.get_uds_file_names()
-        widgets.comboBox_uds.clear()
-        widgets.comboBox_uds.addItems(uds_file_names)
-    
     # RESIZE EVENTS
     # ///////////////////////////////////////////////////////////////
     def resizeEvent(self, event):
