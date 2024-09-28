@@ -32,7 +32,8 @@ paths = [
     os.path.join(root_dir, 'modules'),
     os.path.join(root_dir, 'config_can'),
     os.path.join(root_dir, 'config_uds'),
-    os.path.join(root_dir, 'config_dll')
+    os.path.join(root_dir, 'config_dll'),
+    os.path.join(root_dir, 'config_user_info')
 ]
 
 for path in paths:
@@ -99,6 +100,7 @@ class MainWindow(QMainWindow):
         self.error_handler = ErrorHandler(log_widget=widgets.plainTextEdit_log)
         self.can_manager = CanManager('./config_can', self.error_handler)
         self.uds_manager = UdsManager('./config_uds', "./config_dll",self.error_handler, self.can_manager)
+        self.service_manager = ServiceManager('./config_user_info')
         self.read_record = False 
         self.record_values = None
         self.user_sent = False
@@ -116,7 +118,9 @@ class MainWindow(QMainWindow):
         widgets.stackedWidget.setCurrentWidget(widgets.widgets_workspace)
         widgets.groupBox_pannel.setVisible(False)
         self.populateComboBoxes()
-        widgets.plainTextEdit_log.setPlainText(UIFunctions.menual_info())
+        if not self.service_manager.get_user_status():
+            widgets.plainTextEdit_log.setPlainText(UIFunctions.menual_info())
+
 
     # CAN Mangement
     # ///////////////////////////////////////////////////////////////
@@ -188,7 +192,8 @@ class MainWindow(QMainWindow):
                     
                     # Report Log Text Edit
                     self.error_handler.clear_log()
-                    widgets.plainTextEdit_log.setPlainText(UIFunctions.menual_info())
+                    if not self.service_manager.get_user_status():    
+                        widgets.plainTextEdit_log.setPlainText(UIFunctions.menual_info())
                     
                     # Search Line Edit
                     widgets.lineEdit_search.setEnabled(False)
@@ -216,6 +221,16 @@ class MainWindow(QMainWindow):
                 
                 if is_ok:
                     
+                    # Service MANAGEMENT
+                    # ///////////////////////////////////////////////////////////////
+                    selected_project_file = widgets.comboBox_uds.currentText()
+                    selected_dll_file = widgets.comboBox_dll.currentText()
+                    selected_can_file = widgets.comboBox_can.currentText()
+
+                    self.service_manager.update_recent_project(selected_project_file)
+                    self.service_manager.update_recent_dll(selected_dll_file)
+                    self.service_manager.update_recent_can(selected_can_file)
+
                     # UDS MANAGEMENT
                     # ///////////////////////////////////////////////////////////////
                     
@@ -249,7 +264,7 @@ class MainWindow(QMainWindow):
 
                     # Report Log Text Edit
                     self.error_handler.clear_log()
-                    if not self.user_sent:
+                    if not self.service_manager.get_user_status() and not self.user_sent:
                         widgets.plainTextEdit_log.setPlainText(UIFunctions.menual_info())
 
                     # DID Combobox
@@ -286,6 +301,11 @@ class MainWindow(QMainWindow):
                 if is_ok:
                     self.populate_grid(self.record_values, is_read=is_read)
                     self.read_record = True
+                    
+                    # Service MANAGEMENT
+                    # ///////////////////////////////////////////////////////////////
+                    self.service_manager.update_user_status(True)
+
                 else:
                     pass
             else: # write
@@ -330,6 +350,7 @@ class MainWindow(QMainWindow):
             self.uds_manager.copy_read_to_write()
         else:
             self.uds_manager.init_write_val()  
+        
         self.record_values = self.uds_manager.get_record_values()
         if checked:
             widgets.comboBox_did.setStyleSheet(StyleSheets.CONFIGUATION_STYLE_SHEET_ACTIVE)
@@ -340,7 +361,6 @@ class MainWindow(QMainWindow):
                 data = self.uds_manager.get_uds_cmd()
                 widgets.lineEdit_cancmd.setText(data)
                
-
     # COMBOBOX
     # ///////////////////////////////////////////////////////////////
     def handle_did_change(self):
@@ -391,21 +411,37 @@ class MainWindow(QMainWindow):
                 pass
     
     def populateComboBoxes(self):
+        # CAN 관련 처리
         self.can_manager.load_yml_files()
-        
-        # Populate comboBox_can with CAN YML file names
         can_file_names = self.can_manager.get_can_file_names()
         widgets.comboBox_can.clear()
         widgets.comboBox_can.addItems(can_file_names)
 
-        # 필요에 따라 UDS 관련 comboBox도 추가 가능
+        # YML 파일의 'can' 값이 있으면 해당 값을 선택
+        recent_can_file = self.service_manager.get_recent_can()
+        if recent_can_file and recent_can_file in can_file_names:
+            widgets.comboBox_can.setCurrentText(recent_can_file)
+
+        # UDS 관련 처리 (project 영역과 매핑)
         uds_file_names = self.uds_manager.get_uds_file_names()
         widgets.comboBox_uds.clear()
         widgets.comboBox_uds.addItems(uds_file_names)
 
+        # YML 파일의 'project' 값이 있으면 해당 값을 선택
+        recent_project_file = self.service_manager.get_recent_project()
+        if recent_project_file and recent_project_file in uds_file_names:
+            widgets.comboBox_uds.setCurrentText(recent_project_file)
+
+        # DLL 관련 처리
         dll_file_names = self.uds_manager.get_dll_file_names()
         widgets.comboBox_dll.clear()
         widgets.comboBox_dll.addItems(dll_file_names)
+
+        # YML 파일의 'dll' 값이 있으면 해당 값을 선택
+        recent_dll_file = self.service_manager.get_recent_dll()
+        if recent_dll_file and recent_dll_file in dll_file_names:
+            widgets.comboBox_dll.setCurrentText(recent_dll_file)
+
     
     # PANNEL
     # ///////////////////////////////////////////////////////////////
@@ -457,7 +493,7 @@ class MainWindow(QMainWindow):
                     name_label.setFixedHeight(25)
 
                 # 위젯 생성 및 설정
-                widget = UIFunctions.create_widget(col_type, options, is_read, current_val)
+                widget = UIFunctions.create_widget(col_type, options, is_read, read_val, write_val)
 
                 if widget and not is_read:
                     if col_type == 'combobox':
@@ -541,7 +577,7 @@ class MainWindow(QMainWindow):
     def button_clicked(self, checked, row, col, col_type, widget):
         value = 0 if checked else 1
         self.apply_styles(widget, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, value, col_type), col_type)
-        widget.setText('0' if checked else '1')
+        widget.setText('Disable' if checked else 'Enable')
         self.uds_manager.update_record_value(
             self.record_values, row, col, self.uds_manager.get_val_for_style_sheet(self.record_values, row, col, value, col_type)
         )
@@ -567,8 +603,11 @@ class MainWindow(QMainWindow):
         # 검색 데이터 준비: did_map의 클래스 이름과 각 클래스의 record_values 키 및 coloms 키 추가
         self.search_data = self.get_search_data()
 
+        # search_data에서 키와 값들을 한 리스트로 평탄화(flatten)하고 중복 제거
+        flattened_search_data = list(set([key for key in self.search_data.keys()] + [item for sublist in self.search_data.values() for item in sublist]))
+
         # QCompleter 생성 및 설정
-        self.completer = QCompleter(list(self.search_data.keys()), self)
+        self.completer = QCompleter(flattened_search_data, self)
         self.completer.setCaseSensitivity(Qt.CaseInsensitive)  # 대소문자 구분 없이 검색
 
         # 스타일시트 설정 (자동완성 팝업의 배경색과 글자색 변경)
@@ -587,6 +626,7 @@ class MainWindow(QMainWindow):
         # lineEdit_search에서 입력된 검색어 처리
         self.completer.activated.connect(self.handle_search)
 
+
     def get_search_data(self):
         search_data = {}
 
@@ -595,39 +635,34 @@ class MainWindow(QMainWindow):
 
         # 딕셔너리로 저장하여 col_key에 해당하는 did_name도 매핑 가능하게 만듦
         for did_name in did_names:
-            search_data[did_name] = did_name
+            search_data[did_name] = [did_name]
 
-            
             self.uds_manager.select_did(did_name)
             record_values = self.uds_manager.get_record_values()
 
             for data_key, data_info in record_values.items():
                 for col_key in data_info['coloms']:
-                    search_data[col_key] = did_name  # col_key를 해당하는 did_name에 매핑
+                    if col_key in search_data:
+                        # 키가 이미 존재하면 값 리스트에 추가
+                        search_data[col_key].append(did_name)
+                    else:
+                        # 새로운 키를 리스트로 생성
+                        search_data[col_key] = [did_name]
 
         return search_data
 
-    def handle_search(self):
-        search_text = widgets.lineEdit_search.text().strip()
 
-        if not search_text:
-            # 빈 검색어일 경우 패널을 비움
-            while widgets.gridLayout_pannel_main.count():
-                child = widgets.gridLayout_pannel_main.takeAt(0)
-                if child.widget():
-                    child.widget().deleteLater()
-
-            # ComboBox 초기화
-            widgets.comboBox_did.setCurrentIndex(0)  # 아무 것도 선택되지 않도록 초기화
-            widgets.lineEdit_cancmd.clear()  # 검색어 초기화 시 커맨드 라인도 초기화
-            self.handle_did_change()
-            return
-
-        # 검색어와 매칭되는 DID 이름이나 col_key 찾기
+    def handle_search(self, search_text):
+        # search_text와 매칭되는 DID 이름이나 col_key 찾기
         matching_items = [key for key in self.search_data if search_text.lower() in key.lower()]
 
         if matching_items:
             matched_did_name = self.search_data[matching_items[0]]
+
+            # matched_did_name이 리스트인 경우 첫 번째 요소를 선택
+            if isinstance(matched_did_name, list):
+                matched_did_name = matched_did_name[0]
+
             widgets.comboBox_did.setCurrentText(matched_did_name)
 
             # 해당 DID를 선택하여 로드

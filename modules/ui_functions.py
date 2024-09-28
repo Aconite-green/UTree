@@ -148,6 +148,7 @@ class StyleSheets:
                             background-color: rgb(33, 37, 43);
                         }
                     """
+
 class UIFunctions:
     # MAXIMIZE/RESTORE
     # ///////////////////////////////////////////////////////////////
@@ -402,15 +403,17 @@ class UIFunctions:
         # QComboBox 드롭다운 자동 열림
     
     
-    def create_widget(col_type, options, is_read, current_val):
+    def create_widget(col_type, options, is_read, read_val, write_val):
         widget = None
+        current_val = read_val if is_read else write_val
 
         if col_type == 'combobox':
             widget = QComboBox()
             widget.addItems(list(options.keys()))
-            widget.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE if current_val is not None else StyleSheets.STYLE_SHEET_DEACTIVE)
+            widget.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE if read_val is not None and write_val is not None else StyleSheets.STYLE_SHEET_DEACTIVE)
             widget.setEnabled(not is_read)
-
+            
+            
             if current_val is not None:
                 key = next((k for k, v in options.items() if v == current_val), None)
                 if key:
@@ -425,7 +428,7 @@ class UIFunctions:
         elif col_type == 'line_edit':
             widget = QLineEdit()
             widget.setText(str(current_val))
-            widget.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE if current_val else StyleSheets.STYLE_SHEET_DEACTIVE)
+            widget.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE if read_val is not None and write_val is not None else StyleSheets.STYLE_SHEET_DEACTIVE)
             if is_read or options == 'auto':
                 widget.setEnabled(False)
             else:
@@ -435,24 +438,24 @@ class UIFunctions:
         elif col_type == 'text_edit':
             widget = QTextEdit()
             widget.setText(str(current_val))
-            widget.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE if current_val else StyleSheets.STYLE_SHEET_DEACTIVE)
+            widget.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE if read_val is not None and write_val is not None else StyleSheets.STYLE_SHEET_DEACTIVE)
             widget.setReadOnly(is_read)
             # widget.setEnabled(not is_read)
 
         elif col_type == 'button':
             widget = QPushButton()
             widget.setEnabled(not is_read)
-            widget.setText('1' if current_val is not None and current_val == 1 else '0')
+            widget.setText('Enable' if current_val and current_val == 1 else 'Disable')
             widget.setCheckable(True)
             widget.setMouseTracking(False)
-            if current_val is not None and current_val == 1:
+            if read_val is not None and write_val is not None and current_val == 1:
                 style_sheet = StyleSheets.PUSHBUTTON_STYLE_SHEET_ACTIVE + StyleSheets.PUSHBUTTON_DISABLE_1
-            elif current_val is not None and current_val == 0:
+            elif read_val is not None and write_val is not None and current_val == 0:
                 style_sheet = StyleSheets.PUSHBUTTON_STYLE_SHEET_ACTIVE + StyleSheets.PUSHBUTTON_DISABLE_0
             else:
                 style_sheet = StyleSheets.PUSHBUTTON_STYLE_SHEET_DEACTIVE
             widget.setStyleSheet(style_sheet)
-            widget.setChecked(False if current_val is not None and current_val == 1 else True)
+            widget.setChecked(False if current_val and current_val == 1 else True)
 
         elif col_type == 'calendar':
             # QDateEdit 위젯 생성
@@ -463,6 +466,7 @@ class UIFunctions:
             date_edit.setEnabled(not is_read)
             date_edit.lineEdit().setReadOnly(True)
             
+            # is read & current_val 
             if current_val and isinstance(current_val, str):
                 try:
                     # 문자열을 QDate로 변환 (YYYYMMDD 형식)
@@ -473,12 +477,14 @@ class UIFunctions:
                     date_edit.setDate(qdate)
                 except ValueError:
                     print(f"Invalid date format: {current_val}")
-            else:
-                date_edit.setDate(QDate.currentDate())
+            else: 
+                date_edit.setDate(QDate())
+
+                
 
             # 스타일 적용
             date_edit.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE 
-                                    if current_val else StyleSheets.STYLE_SHEET_DEACTIVE)
+                                    if read_val is not None and write_val is not None else StyleSheets.STYLE_SHEET_DEACTIVE)
             
         
             widget = date_edit

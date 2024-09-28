@@ -8,6 +8,7 @@ from .server32 import *
 from msl.loadlib import Client64, Server32
 import atexit
 import threading
+from datetime import datetime
 
 class MyClient(Client64):
     def __init__(self):
@@ -110,6 +111,8 @@ class UdsManager:
         else:
             self.error_handler.handle_error("No current_instance available to copy values.")
     
+    
+
     def init_write_val(self):
         if self.current_instance:
             for data_key, data_info in self.current_instance.record_values.items():
@@ -118,6 +121,10 @@ class UdsManager:
                         col_info['w_val'] = 0x01
                     elif col_info['col_type'] == 'combobox':
                         col_info['w_val'] = 0x01
+                    elif col_info['col_type'] == 'calendar':
+                        # 오늘 날짜를 "YYYYMMDD" 형식으로 변환
+                        today_str = datetime.today().strftime('%Y%m%d')
+                        col_info['w_val'] = today_str  # '20240924' 형식으로 저장
         else:
             self.error_handler.handle_error("No current_instance available to copy values.")
 
