@@ -2,8 +2,6 @@ import sys
 import os
 from cx_Freeze import setup, Executable
 
-# ADD FILES
-files = ['UTree_80.ico', 'main.ui', 'resources.qrc', 'images/', 'modules/', 'config_can/', 'config_uds/']
 
 # TARGET
 target = Executable(
@@ -22,7 +20,7 @@ setup(
     options={
         'build_exe': {
             'build_exe': 'UTree',
-            'include_files': ['config_can/', 'config_uds/','modules/', 'config_dll/'],
+            'include_files': ['config_can/', 'config_uds/','modules/', 'config_dll/', 'config_user_info'],
             'include_msvcr': False   # MSVC 런타임 포함
         }
     },

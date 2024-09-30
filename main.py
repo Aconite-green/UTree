@@ -111,7 +111,7 @@ class MainWindow(QMainWindow):
         self.timer.setInterval(1000)
         self.timer.timeout.connect(self.check_can_communication)
         
-
+        
         # SHOW APP
         # ///////////////////////////////////////////////////////////////
         self.show()
@@ -120,7 +120,7 @@ class MainWindow(QMainWindow):
         self.populateComboBoxes()
         if not self.service_manager.get_user_status():
             widgets.plainTextEdit_log.setPlainText(UIFunctions.menual_info())
-
+ 
 
     # CAN Mangement
     # ///////////////////////////////////////////////////////////////
@@ -316,8 +316,9 @@ class MainWindow(QMainWindow):
                                        is_ok, error_msg, send_data, recv_data, 'write')
                     
                     if is_ok:
-                        self.populate_grid(self.record_values, is_read=is_read)
                         self.uds_manager.copy_write_to_read()
+                        self.populate_grid(self.record_values, is_read=is_read)
+                        
                     else:
                         pass
                 else:
@@ -715,6 +716,7 @@ class MainWindow(QMainWindow):
             for path in paths:
                 if path in sys.path:
                     sys.path.remove(path)
+            
 
         except Exception as e:
             self.error_handler.handle_error(f"Error during application shutdown: {str(e)}")

@@ -462,6 +462,49 @@ class InternalSWVer(UDSBase):
         }
         super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
 
+    def read_parse(self, can_message, record_values):
+        # 먼저 UDSBase의 read_parse 호출
+        super().read_parse(can_message, record_values)
+        
+        # 각 필드에 대해 형식 변환 수행
+        for data_key, data_info in record_values.items():
+            for col_key, col_info in data_info['coloms'].items():
+                if col_key == 'SW_ver':
+                    self.format_sw_ver(col_info)
+                elif col_key == 'SNAND_ver':
+                    self.format_snand_ver(col_info)
+                elif col_key == 'NOR_ver':
+                    self.format_nor_ver(col_info)
+                elif col_key == 'ASK_ver':
+                    self.format_ask_ver(col_info)
+
+    def format_sw_ver(self, col_info):
+        if col_info['r_val'] != "Not Set":
+            hex_value = col_info['r_val']
+            formatted_value = f"{hex_value[0:4]}.{hex_value[4:8]}.{hex_value[8:10]}.{hex_value[10:]}"
+            col_info['r_val'] = formatted_value
+
+    def format_snand_ver(self, col_info):
+        if col_info['r_val'] != "Not Set":
+            hex_value = col_info['r_val']
+            formatted_value = f"{hex_value[0:2]}{hex_value[2:4]}{hex_value[4:]}"
+            col_info['r_val'] = formatted_value
+
+    def format_nor_ver(self, col_info):
+        if col_info['r_val'] != "Not Set":
+            hex_value = col_info['r_val']
+            # 'B' 제거 후 뒤따르는 0 모두 제거
+            formatted_value = hex_value[:].rstrip('0')
+            # 만약 모든 숫자가 0이었다면 최소한 하나의 0은 남겨둠
+            formatted_value = formatted_value or '0'
+            col_info['r_val'] = formatted_value
+
+    def format_ask_ver(self, col_info):
+        if col_info['r_val'] != "Not Set":
+            hex_value = col_info['r_val']
+            formatted_value = f"{int(hex_value[0:2], 16)}.{int(hex_value[2:4], 16)}.{int(hex_value[4:], 16)}"
+            col_info['r_val'] = formatted_value
+
 class DIDB002(UDSBase):
     def __init__(self):
         read_service_id = [0x22]

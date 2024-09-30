@@ -412,7 +412,22 @@ class UIFunctions:
             widget.addItems(list(options.keys()))
             widget.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE if read_val is not None and write_val is not None else StyleSheets.STYLE_SHEET_DEACTIVE)
             widget.setEnabled(not is_read)
+            if is_read:
+                if current_val is not None :
+                    style_sheet = StyleSheets.STYLE_SHEET_ACTIVE 
+                elif current_val is not None :
+                    style_sheet = StyleSheets.STYLE_SHEET_ACTIVE
+                else:
+                    style_sheet = StyleSheets.STYLE_SHEET_DEACTIVE
+            else:
+                if read_val is not None and write_val is not None : 
+                    style_sheet = StyleSheets.STYLE_SHEET_ACTIVE
+                elif read_val is not None and write_val is not None :
+                    style_sheet = StyleSheets.STYLE_SHEET_ACTIVE
+                else:
+                    style_sheet = StyleSheets.STYLE_SHEET_DEACTIVE
             
+            widget.setStyleSheet(style_sheet)
             
             if current_val is not None:
                 key = next((k for k, v in options.items() if v == current_val), None)
@@ -428,7 +443,22 @@ class UIFunctions:
         elif col_type == 'line_edit':
             widget = QLineEdit()
             widget.setText(str(current_val))
-            widget.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE if read_val is not None and write_val is not None else StyleSheets.STYLE_SHEET_DEACTIVE)
+            if is_read:
+                if current_val is not None :
+                    style_sheet = StyleSheets.STYLE_SHEET_ACTIVE 
+                elif current_val is not None :
+                    style_sheet = StyleSheets.STYLE_SHEET_ACTIVE
+                else:
+                    style_sheet = StyleSheets.STYLE_SHEET_DEACTIVE
+            else:
+                if read_val is not None and write_val is not None : 
+                    style_sheet = StyleSheets.STYLE_SHEET_ACTIVE
+                elif read_val is not None and write_val is not None :
+                    style_sheet = StyleSheets.STYLE_SHEET_ACTIVE
+                else:
+                    style_sheet = StyleSheets.STYLE_SHEET_DEACTIVE
+            widget.setStyleSheet(style_sheet)
+            
             if is_read or options == 'auto':
                 widget.setEnabled(False)
             else:
@@ -438,7 +468,21 @@ class UIFunctions:
         elif col_type == 'text_edit':
             widget = QTextEdit()
             widget.setText(str(current_val))
-            widget.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE if read_val is not None and write_val is not None else StyleSheets.STYLE_SHEET_DEACTIVE)
+            if is_read:
+                if current_val is not None :
+                    style_sheet = StyleSheets.STYLE_SHEET_ACTIVE 
+                elif current_val is not None :
+                    style_sheet = StyleSheets.STYLE_SHEET_ACTIVE
+                else:
+                    style_sheet = StyleSheets.STYLE_SHEET_DEACTIVE
+            else:
+                if read_val is not None and write_val is not None : 
+                    style_sheet = StyleSheets.STYLE_SHEET_ACTIVE
+                elif read_val is not None and write_val is not None :
+                    style_sheet = StyleSheets.STYLE_SHEET_ACTIVE
+                else:
+                    style_sheet = StyleSheets.STYLE_SHEET_DEACTIVE
+            widget.setStyleSheet(style_sheet)
             widget.setReadOnly(is_read)
             # widget.setEnabled(not is_read)
 
@@ -448,12 +492,22 @@ class UIFunctions:
             widget.setText('Enable' if current_val and current_val == 1 else 'Disable')
             widget.setCheckable(True)
             widget.setMouseTracking(False)
-            if read_val is not None and write_val is not None and current_val == 1:
-                style_sheet = StyleSheets.PUSHBUTTON_STYLE_SHEET_ACTIVE + StyleSheets.PUSHBUTTON_DISABLE_1
-            elif read_val is not None and write_val is not None and current_val == 0:
-                style_sheet = StyleSheets.PUSHBUTTON_STYLE_SHEET_ACTIVE + StyleSheets.PUSHBUTTON_DISABLE_0
+
+            if is_read:
+                if current_val is not None and current_val == 1:
+                    style_sheet = StyleSheets.PUSHBUTTON_STYLE_SHEET_ACTIVE + StyleSheets.PUSHBUTTON_DISABLE_1
+                elif current_val is not None and current_val == 0:
+                    style_sheet = StyleSheets.PUSHBUTTON_STYLE_SHEET_ACTIVE + StyleSheets.PUSHBUTTON_DISABLE_0
+                else:
+                    style_sheet = StyleSheets.PUSHBUTTON_STYLE_SHEET_DEACTIVE
             else:
-                style_sheet = StyleSheets.PUSHBUTTON_STYLE_SHEET_DEACTIVE
+                if read_val is not None and write_val is not None and current_val == 1: 
+                    style_sheet = StyleSheets.PUSHBUTTON_STYLE_SHEET_ACTIVE + StyleSheets.PUSHBUTTON_DISABLE_1
+                elif read_val is not None and write_val is not None and current_val == 0:
+                    style_sheet = StyleSheets.PUSHBUTTON_STYLE_SHEET_ACTIVE + StyleSheets.PUSHBUTTON_DISABLE_0
+                else:
+                    style_sheet = StyleSheets.PUSHBUTTON_STYLE_SHEET_DEACTIVE
+            
             widget.setStyleSheet(style_sheet)
             widget.setChecked(False if current_val and current_val == 1 else True)
 
@@ -480,11 +534,23 @@ class UIFunctions:
             else: 
                 date_edit.setDate(QDate())
 
-                
-
             # 스타일 적용
-            date_edit.setStyleSheet(StyleSheets.STYLE_SHEET_ACTIVE 
-                                    if read_val is not None and write_val is not None else StyleSheets.STYLE_SHEET_DEACTIVE)
+            
+            if is_read:
+                if current_val is not None :
+                    style_sheet = StyleSheets.STYLE_SHEET_ACTIVE 
+                elif current_val is not None :
+                    style_sheet = StyleSheets.STYLE_SHEET_ACTIVE
+                else:
+                    style_sheet = StyleSheets.STYLE_SHEET_DEACTIVE
+            else:
+                if read_val is not None and write_val is not None : 
+                    style_sheet = StyleSheets.STYLE_SHEET_ACTIVE
+                elif read_val is not None and write_val is not None :
+                    style_sheet = StyleSheets.STYLE_SHEET_ACTIVE
+                else:
+                    style_sheet = StyleSheets.STYLE_SHEET_DEACTIVE
+            date_edit.setStyleSheet(style_sheet)
             
         
             widget = date_edit

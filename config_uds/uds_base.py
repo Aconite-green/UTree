@@ -90,14 +90,13 @@ class UDSBase:
                         elif r_type == 'hex':
                             if extracted_bytes == b'\x00' * byte_size:
                                 current_value = "Not Set"
-                                
                             else:
-                                current_value = hex(int.from_bytes(extracted_bytes, byteorder='big')).upper()[2:]
+                                # 앞의 0을 유지하면서 hex 문자열로 변환
+                                current_value = extracted_bytes.hex().upper()
 
                         elif r_type == 'dec':
                             if extracted_bytes == b'\x00' * byte_size:
                                 current_value = "Not Set"
-                                
                             else:
                                 current_value = int.from_bytes(extracted_bytes, byteorder='big')
 
