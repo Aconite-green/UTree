@@ -518,7 +518,7 @@ class DIDB002(UDSBase):
                 'coloms': {'Supported_PID': {'bit': 32, 'col_type':'line_edit','options':None, 'r_type': 'hex', 'w_type': 'dec', 'r_val': None, 'w_val': None}}},
             'data2': {
                 'row_type': 'bytewise',
-                'coloms': {'Fuel_Input': {'bit': 8, 'col_type':'line_edit','options':None, 'r_type': 'dec', 'w_type': 'dec', 'r_val': None, 'w_val': None}}},
+                'coloms': {'Fuel_Input(Resolution 0.5L)': {'bit': 8, 'col_type':'line_edit','options':None, 'r_type': 'dec', 'w_type': 'dec', 'r_val': None, 'w_val': None}}},
             'data3': {
                 'row_type': 'bytewise',
                 'coloms': {'Battery Voltage on CLU': {'bit': 8, 'col_type':'line_edit','options':None, 'r_type': 'dec', 'w_type': 'dec', 'r_val': None, 'w_val': None}}},
@@ -616,28 +616,44 @@ class DIDB003(UDSBase):
 did_map = {
     "EOL_Coding_R/W(0060/C0DE)": EOLCoding,
     "Vehicle_Odo_R/W(0080)": CarInfo,
-    "ECUReset":ECUReset,
-    "VIN_Reset_W(F110)":InitVIN,
-    "VIN_R/W(F190)":VIN,
-    "CodingErr_UnLock":UnlockNotCoded,
-    "CodingErr_Lock":LockNotCoded,
-    "ServiceReminder_Type_W(0070)":SetServiceType,
-    "ServiceReminder__W(0071)":InitService,
-    "ServiceReminder_Period_W(0073)":SetServiceTerm,
-    "ServiceReminder_Distance_W(0072)":SetServiceDistance,
-    "CANDBVer_R(F100)":CANDBVer,
-    "EtherDBVer_R(F101)":EtherDBVer,
-    "SupplierCode_R(F1A1)":ClusterProductionCode,
-    "OEM_H/Wver_R(F191)":ClusterOEMHWVer,
-    "OEM_S/Wver_R(F1A0)":OEMSWVer,
-    "Supplier_S/Wver_R(F1B1)":AVNUpdateType,
-    "RxSWIN_R(F1EF)":RxSWIN,
-    "Conti_S/Wver_R(0021)":InternalSWVer,
-    "InOutput_B002_R(B002)":DIDB002,
-    "InOutput_B003_R(B003)":DIDB003
+    "CodingErr_UnLock": UnlockNotCoded,
+    "CodingErr_Lock": LockNotCoded,
+    "Conti_S/Wver_R(0021)": InternalSWVer,
+    "Supplier_S/Wver_R(F1B1)": AVNUpdateType,
+    "OEM_S/Wver_R(F1A0)": OEMSWVer,
+    "OEM_H/Wver_R(F191)": ClusterOEMHWVer,
+    "CANDBVer_R(F100)": CANDBVer,
+    "EtherDBVer_R(F101)": EtherDBVer,
+    "SupplierCode_R(F1A1)": ClusterProductionCode,
+    "RxSWIN_R(F1EF)": RxSWIN,
+    "VIN_R/W(F190)": VIN,
+    "VIN_Reset_W(F110)": InitVIN,
+    "ServiceReminder_Type_W(0070)": SetServiceType,
+    "ServiceReminder_W(0071)": InitService,
+    "ServiceReminder_Period_W(0073)": SetServiceTerm,
+    "ServiceReminder_Distance_W(0072)": SetServiceDistance,
+    "InOutput_B002_R(B002)": DIDB002,
+    "InOutput_B003_R(B003)": DIDB003
 }
 
 negative_response_codes = {
+    0x11: "미지원 Service",
+    0x12: "미지원 Sub-function",
+    0x13: "메시지 길이/형식 오류",
+    0x22: "Service 전제조건 오류",
+    0x24: "요청 시퀀스 에러",
+    0x31: "메시지 범위 에러",
+    0x33: "Security Access 오류",
+    0x35: "Key 입력 오류",
+    0x36: "Security Access 접근 횟수 초과",
+    0x37: "Security Access Lock 만료되지 않음(180s)",
+    0x72: "Memory 쓰기 실패",
+    0x78: "시퀀스 진행중",
+    0x7E: "현재 세션에서 Sub-function 미지원",
+    0x7F: "현재 세션에서 Service 미지원"
+}
+
+negative_response_codes_eng = {
     0x11: "Send if the requested service is no supported",
     0x12: "Send if the sub-function parameter in the request message is not supported",
     0x13: "The length of the message is wrong",

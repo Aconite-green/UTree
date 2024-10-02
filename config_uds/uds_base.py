@@ -29,6 +29,7 @@ class UDSBase:
     
         byte_index = 0
         bit_offset = 0
+        last_col_info = None  # 마지막으로 처리한 col_info 저장
     
         # record_values에서 각 row를 순회
         for data_key, data_info in record_values.items():
@@ -40,6 +41,7 @@ class UDSBase:
                 for col_key, col_info in data_info['coloms'].items():
                     bit_size = col_info['bit']
                     current_value = 0
+                    last_col_info = col_info  # 마지막으로 처리한 col_info 업데이트
     
                     # 필요한 비트 수만큼 값을 추출
                     for _ in range(bit_size):
@@ -66,6 +68,7 @@ class UDSBase:
                 for col_key, col_info in data_info['coloms'].items():
                     bit_size = col_info['bit']
                     byte_size = bit_size // 8  # bit 크기를 byte 크기로 변환
+                    last_col_info = col_info  # 마지막으로 처리한 col_info 업데이트
 
                     # 값을 추출
                     extracted_bytes = data_payload[byte_index:byte_index + byte_size]
@@ -112,6 +115,21 @@ class UDSBase:
             else:
                 # 다른 row_type이 있는 경우 처리 추가 가능
                 pass
+
+        # 남은 데이터가 있는 경우 마지막 col_info에 추가
+        if last_col_info and byte_index < len(data_payload):
+            remaining_bytes = data_payload[byte_index:]
+            if last_col_info['r_type'] == 'hex':
+                last_col_info['r_val'] += remaining_bytes.hex().upper()
+            elif last_col_info['r_type'] == 'ascii':
+                try:
+                    last_col_info['r_val'] += remaining_bytes.decode('ascii')
+                except UnicodeDecodeError:
+                    last_col_info['r_val'] += "[Invalid ASCII]"
+            elif last_col_info['r_type'] == 'dec':
+                last_col_info['r_val'] += int.from_bytes(remaining_bytes, byteorder='big')
+            else:
+                last_col_info['r_val'] += int.from_bytes(remaining_bytes, byteorder='big')
 
     def send_parse(self, record_values):
         self.byte_array.clear()
@@ -178,7 +196,7 @@ class UDSBase:
                     elif w_type == 'hex':
                         # HEX 변환
                         if write_val is None:
-                            write_val = 0
+                            write_val = ""
                         try:
                             write_val_bytes = int(write_val, 16).to_bytes(byte_size, byteorder='big')
                         except (ValueError, TypeError) as e:

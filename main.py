@@ -610,8 +610,9 @@ class MainWindow(QMainWindow):
         # QCompleter 생성 및 설정
         self.completer = QCompleter(flattened_search_data, self)
         self.completer.setCaseSensitivity(Qt.CaseInsensitive)  # 대소문자 구분 없이 검색
-
-        # 스타일시트 설정 (자동완성 팝업의 배경색과 글자색 변경)
+        self.completer.setCompletionMode(QCompleter.PopupCompletion)
+        self.completer.setFilterMode(Qt.MatchContains)
+        
         self.completer.popup().setStyleSheet("""
             QAbstractItemView {
                 background-color: rgb(27, 29, 35);
