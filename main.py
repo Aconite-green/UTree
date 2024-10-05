@@ -219,7 +219,7 @@ class MainWindow(QMainWindow):
                     UIFunctions.update_log(widgets.plainTextEdit_log, 
                                        is_ok, error_msg, None, None, 'connection')
                 
-                if is_ok:
+                if not is_ok:
                     
                     # Service MANAGEMENT
                     # ///////////////////////////////////////////////////////////////
@@ -235,7 +235,7 @@ class MainWindow(QMainWindow):
                     # ///////////////////////////////////////////////////////////////
                     
                     # Timer start
-                    self.timer.start()
+                    # self.timer.start()
                     
                     # ASK Settings
                     selected_dll_file = widgets.comboBox_dll.currentText()

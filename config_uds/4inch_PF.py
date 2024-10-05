@@ -613,6 +613,22 @@ class DIDB003(UDSBase):
             # Supported_PID의 r_val에 값 저장
             data_info['r_val'] = current_value
 
+class DataSet(UDSBase):
+     def __init__(self):
+        read_service_id = [None]
+        write_service_id = [0x3D]
+        identifier = []
+        method = ('w')
+        dll_path = None
+        record_values = {
+            'Data1': { 
+                      'row_type': 'bytewise',
+                      'coloms':{ 'Flash_DataSet':{'bit':8,  'col_type':'line_edit','options':'auto', 'r_type': 'dec', 'w_type': 'dec', 'r_val': None, 'w_val': None}}}
+        }
+        super().__init__(read_service_id, write_service_id, identifier, record_values, dll_path, method)
+
+
+
 did_map = {
     "EOL_Coding_R/W(0060/C0DE)": EOLCoding,
     "Vehicle_Odo_R/W(0080)": CarInfo,
